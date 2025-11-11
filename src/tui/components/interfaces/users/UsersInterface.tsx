@@ -6,14 +6,11 @@ import { useHeaderData } from "@/tui/contexts/HeaderContext";
 import { useFooterHelp, useFooterStatus } from "@/tui/contexts/FooterContext";
 import { useSearch } from "@/tui/hooks/useSearch";
 import * as userApi from "@/api/users";
-import * as userProfilesApi from "@/api/userProfiles";
-import type { UserMinimal, UsersInterfaceMode, TeamMember, ProfileImportResult } from "@/types";
+import type { UserMinimal, UsersInterfaceMode, User } from "@/types";
 import { AllUsersTab } from "./AllUsersTab";
 import { ProfilesTab } from "./ProfilesTab";
 import { ImportExportTab } from "./ImportExportTab";
 import { CreateUserTab } from "./CreateUserTab";
-import { exportProfiles } from "@/commands/userProfiles";
-import { EditProfileModal } from "./EditProfileModal";
 import { ConfirmationDialog } from "@comps/modals/ConfirmationDialog";
 import { useUserActions } from "./useUserActions";
 
@@ -40,29 +37,18 @@ export function UsersInterface({
   const [selectedUser, setSelectedUser] = useState<UserMinimal | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Mode flags (like NavDeleteModal's inSelectMode/inReviewMode)
+  // Mode flags
   const [inUserList, setInUserList] = useState(false);
   const [inCreateForm, setInCreateForm] = useState(false);
 
   // Profiles tab state
-  const [profiles, setProfiles] = useState<TeamMember[]>([]);
+  const [profiles, setProfiles] = useState<User[]>([]);
   const [loadingProfiles, setLoadingProfiles] = useState(false);
   const [profilesError, setProfilesError] = useState<string | null>(null);
   const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
   const [inProfilesList, setInProfilesList] = useState(false);
   const [profileSearchQuery, setProfileSearchQuery] = useState("");
   const [inProfileSearchMode, setInProfileSearchMode] = useState(false);
-  const [editingProfile, setEditingProfile] = useState<TeamMember | null>(null);
-  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
-  const [showProfileSaveConfirm, setShowProfileSaveConfirm] = useState(false);
-  const [pendingProfileData, setPendingProfileData] = useState<{
-    team?: string;
-    birthday?: string;
-    bio?: string;
-    hire_date?: string;
-    role?: string;
-  } | null>(null);
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   // Import/Export tab state
   const [importExportMode, setImportExportMode] = useState<"import" | "export">("import");
@@ -75,7 +61,7 @@ export function UsersInterface({
   const [importFilePath, setImportFilePath] = useState("");
   const [importSelectedButton, setImportSelectedButton] = useState<"import" | "clear">("import");
   const [isImporting, setIsImporting] = useState(false);
-  const [importResult, setImportResult] = useState<ProfileImportResult | null>(null);
+  const [importResult, setImportResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
   const [showImportConfirm, setShowImportConfirm] = useState(false);
 
   // Export state
@@ -87,13 +73,13 @@ export function UsersInterface({
   const [exportSelectedButton, setExportSelectedButton] = useState<"export" | "browse" | "cancel">("export");
   const [isExporting, setIsExporting] = useState(false);
 
-  // Search for users and profiles
+  // Search for users
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [inUserSearchMode, setInUserSearchMode] = useState(false);
 
   // Filtered results using search hook
   const filteredUsers = useSearch(users, userSearchQuery, ["name", "email", "providerKey"]);
-  const filteredProfiles = useSearch(profiles, profileSearchQuery, ["name", "email", "team", "role", "jobTitle", "location"]);
+  const filteredProfiles = useSearch(profiles, profileSearchQuery, ["name", "email", "jobTitle", "location"]);
 
   const loadUsers = async () => {
     if (!instance) {
@@ -117,30 +103,6 @@ export function UsersInterface({
     }
   };
 
-  const loadProfiles = async () => {
-    if (!instance) {
-      setStatusMsg("No instance configured");
-      return;
-    }
-
-    setLoadingProfiles(true);
-    setProfilesError(null);
-    setStatusMsg("Loading profiles...");
-    try {
-      const teamMembers = await userProfilesApi.getTeamMembers(instance);
-      setProfiles(teamMembers);
-      setStatusMsg(`${teamMembers.length} profiles loaded`);
-    } catch (error) {
-      const errorMsg = `Error loading profiles: ${
-        error instanceof Error ? error.message : String(error)
-      }`;
-      setProfilesError(errorMsg);
-      setStatusMsg(errorMsg);
-    } finally {
-      setLoadingProfiles(false);
-    }
-  };
-
   const {
     pendingAction,
     fullUser,
@@ -156,34 +118,18 @@ export function UsersInterface({
     onUserUpdate: () => { void loadUsers(); },
   });
 
-  // Dynamic footer help
-  const footerHelpText = currentTab === "users"
-    ? null  // AllUsersTab sets its own
-    : null; // CreateUserTab's UserCreateForm sets its own
+  // Dynamic footer help - each tab sets its own
+  const footerHelpText = null;
 
   useFooterHelp(footerHelpText);
   useFooterStatus(statusMsg);
   useHeaderData({ title: "User Management", metadata: `${users.length} users` });
 
-  // ONE escape handler for ALL modes
+  // Escape handler
   useEscape("users", () => {
     // Handle import confirmation
     if (showImportConfirm) {
-      cancelImport();
-      return;
-    }
-
-    // Handle profile save confirmation
-    if (showProfileSaveConfirm) {
-      cancelProfileSave();
-      return;
-    }
-
-    // Handle edit profile modal
-    if (showEditProfileModal) {
-      setShowEditProfileModal(false);
-      setEditingProfile(null);
-      setPendingProfileData(null);
+      setShowImportConfirm(false);
       return;
     }
 
@@ -254,10 +200,8 @@ export function UsersInterface({
       }
     } else if (currentTab === "profiles") {
       if (inProfilesList) {
-        // Exit content mode (back to tab bar)
         setInProfilesList(false);
       } else {
-        // From tab bar: exit to main menu
         onEsc?.();
       }
     } else if (currentTab === "users") {
@@ -290,6 +234,45 @@ export function UsersInterface({
     }
   });
 
+  const loadProfiles = async () => {
+    if (!instance) {
+      setStatusMsg("No instance configured");
+      return;
+    }
+
+    setLoadingProfiles(true);
+    setProfilesError(null);
+    setStatusMsg("Loading profiles...");
+    try {
+      // Get all users (UserMinimal)
+      const userList = await userApi.listUsers({}, instance);
+
+      // Fetch full User data for each user
+      const fullUsers = await Promise.all(
+        userList.map(async (user) => {
+          try {
+            return await userApi.getUser(user.id, instance);
+          } catch (err) {
+            // If we can't get full data, skip this user
+            return null;
+          }
+        })
+      );
+
+      const validProfiles = fullUsers.filter((u): u is User => u !== null);
+      setProfiles(validProfiles);
+      setStatusMsg(`${validProfiles.length} profiles loaded`);
+    } catch (error) {
+      const errorMsg = `Error loading profiles: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
+      setProfilesError(errorMsg);
+      setStatusMsg(errorMsg);
+    } finally {
+      setLoadingProfiles(false);
+    }
+  };
+
   useEffect(() => {
     void loadUsers();
     void loadProfiles();
@@ -298,17 +281,17 @@ export function UsersInterface({
   useEffect(() => {
     // Initialize export filename with current date
     const date = new Date().toISOString().split("T")[0];
-    setExportFilename(`profiles-export-${date}.json`);
+    setExportFilename(`users-export-${date}.json`);
   }, []);
 
-  // Tab navigation for 4-tab interface
+  // Tab navigation
   useInput((input, key) => {
     if (loading || loadingProfiles) return;
 
     // Block input when dialogs/modals are open
     if (showDeleteConfirm || mode === "confirm" ||
-        showEditProfileModal || showProfileSaveConfirm || showImportConfirm ||
-        showFileBrowser || isSavingProfile || isImporting || isExporting) {
+        showImportConfirm ||
+        showFileBrowser || isImporting || isExporting) {
       return;
     }
 
@@ -508,13 +491,7 @@ export function UsersInterface({
           return;
         }
         if (key.return) {
-          const profile = filteredProfiles[selectedProfileIndex];
-          if (profile) {
-            // Clear search when selecting a profile
-            setProfileSearchQuery("");
-            setInProfileSearchMode(false);
-            handleProfileSelect(profile);
-          }
+          // Just viewing profiles, no action on enter for now
           return;
         }
       }
@@ -694,51 +671,6 @@ export function UsersInterface({
     setFullUser(null);
   };
 
-  // Profile handlers
-  const handleProfileSelect = (profile: TeamMember) => {
-    setEditingProfile(profile);
-    setShowEditProfileModal(true);
-  };
-
-  const handleSaveProfile = (profile: {
-    team?: string;
-    birthday?: string;
-    bio?: string;
-    hire_date?: string;
-    role?: string;
-  }) => {
-    // Store the profile data and show confirmation
-    setPendingProfileData(profile);
-    setShowProfileSaveConfirm(true);
-  };
-
-  const executeProfileSave = async () => {
-    if (!editingProfile || !pendingProfileData) return;
-
-    setShowProfileSaveConfirm(false);
-    setIsSavingProfile(true);
-    setStatusMsg("Saving profile...");
-
-    try {
-      await userProfilesApi.updateUserProfile(editingProfile.id, pendingProfileData, instance ?? undefined);
-      setStatusMsg(`Profile updated for ${editingProfile.name}`);
-      setShowEditProfileModal(false);
-      setEditingProfile(null);
-      setPendingProfileData(null);
-      await loadProfiles(); // Reload to show updated data
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      setStatusMsg(`Error: ${errorMsg}`);
-    } finally {
-      setIsSavingProfile(false);
-    }
-  };
-
-  const cancelProfileSave = () => {
-    setShowProfileSaveConfirm(false);
-    setPendingProfileData(null);
-  };
-
   // Import handlers
   const handleImport = () => {
     if (!importFilePath) {
@@ -753,90 +685,12 @@ export function UsersInterface({
     setShowImportConfirm(false);
     setIsImporting(true);
     setImportExportError(null);
-    setStatusMsg("Importing profiles...");
+    setStatusMsg("Importing users...");
 
     try {
-      const { readFileSync } = await import("fs");
-      const fileContent = readFileSync(importFilePath, "utf-8");
-
-      let profiles: Array<{
-        email: string;
-        portfolio?: string;
-        team?: string;
-        birthday?: string;
-        bio?: string;
-        hire_date?: string;
-        role?: string;
-      }> = [];
-
-      if (importFilePath.endsWith(".json")) {
-        const parsed: unknown = JSON.parse(fileContent);
-        if (!Array.isArray(parsed)) {
-          throw new Error("JSON file must contain an array of user profiles");
-        }
-        profiles = parsed as Array<{
-          email: string;
-          portfolio?: string;
-          team?: string;
-          birthday?: string;
-          bio?: string;
-          hire_date?: string;
-          role?: string;
-        }>;
-      } else if (importFilePath.endsWith(".csv")) {
-        const lines = fileContent.split("\n").filter((line) => line.trim());
-        if (lines.length === 0) {
-          throw new Error("CSV file is empty");
-        }
-
-        const firstLine = lines[0];
-        if (!firstLine) {
-          throw new Error("CSV file has no header row");
-        }
-
-        const headers = firstLine.split(",").map((h) => h.trim());
-
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i];
-          if (!line) continue;
-
-          const values = line.split(",").map((v) => v.trim());
-          const profile: {
-            email: string;
-            portfolio?: string;
-            team?: string;
-            birthday?: string;
-            bio?: string;
-            hire_date?: string;
-            role?: string;
-          } = { email: "" };
-
-          headers.forEach((header, index) => {
-            const value = values[index];
-            if (!value) return;
-
-            if (header === "email") profile.email = value;
-            else if (header === "portfolio") profile.portfolio = value;
-            else if (header === "team") profile.team = value;
-            else if (header === "birthday") profile.birthday = value;
-            else if (header === "bio") profile.bio = value;
-            else if (header === "hire_date") profile.hire_date = value;
-            else if (header === "role") profile.role = value;
-          });
-
-          if (profile.email) {
-            profiles.push(profile);
-          }
-        }
-      }
-
-      const result = await userProfilesApi.importProfiles(profiles, instance ?? undefined);
-      setImportResult(result);
-      setStatusMsg(`Import complete: ${result.success} success, ${result.failed} failed`);
-
-      if (result.success > 0) {
-        await loadProfiles(); // Reload profiles to show imported data
-      }
+      // TODO: Implement user import with standard Wiki.js API
+      setImportExportError("User import not yet implemented with standard API");
+      setStatusMsg("Import not yet implemented");
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
       setImportExportError(errorMsg);
@@ -844,10 +698,6 @@ export function UsersInterface({
     } finally {
       setIsImporting(false);
     }
-  };
-
-  const cancelImport = () => {
-    setShowImportConfirm(false);
   };
 
   const handleClearImport = () => {
@@ -861,7 +711,7 @@ export function UsersInterface({
   const handleExport = async () => {
     setIsExporting(true);
     setImportExportError(null);
-    setStatusMsg("Exporting profiles...");
+    setStatusMsg("Exporting users...");
 
     try {
       const fs = await import("fs/promises");
@@ -870,23 +720,34 @@ export function UsersInterface({
       const fullPath = path.join(exportDirectory, exportFilename);
       const dir = path.dirname(fullPath);
 
+      // Create directory if needed
       try {
         await fs.mkdir(dir, { recursive: true });
       } catch {
         throw new Error(`Failed to create directory: ${dir}`);
       }
 
-      const result = await exportProfiles(fullPath, { instance: instance ?? undefined });
+      // Get all users (returns UserMinimal)
+      const userList = await userApi.listUsers({}, instance ?? undefined);
 
-      if (result.success) {
-        setStatusMsg(`Exported ${result.profileCount} profiles to ${exportFilename}`);
-        // Switch back to import mode after successful export
-        setImportExportMode("import");
-        setInImportExportContent(false);
-      } else {
-        setImportExportError(result.message);
-        setStatusMsg(`Export failed: ${result.message}`);
-      }
+      // Fetch full user data for each user using users.single
+      const fullUsers = await Promise.all(
+        userList.map(async (user) => {
+          try {
+            return await userApi.getUser(user.id, instance ?? undefined);
+          } catch (err) {
+            // If we can't get full data, use what we have
+            return user;
+          }
+        })
+      );
+
+      // Write to file
+      await fs.writeFile(fullPath, JSON.stringify(fullUsers, null, 2), "utf-8");
+
+      setStatusMsg(`Exported ${fullUsers.length} users to ${exportFilename}`);
+      setImportExportMode("import");
+      setInImportExportContent(false);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
       setImportExportError(errorMsg);
@@ -958,7 +819,7 @@ export function UsersInterface({
           backgroundColor={currentTab === "import" ? theme.colors.info : undefined}
           bold={currentTab === "import"}
         >
-          3. Import
+          3. Import/Export
         </Text>
         <Text> | </Text>
         <Text
@@ -973,44 +834,18 @@ export function UsersInterface({
       {/* Import Confirmation */}
       {showImportConfirm && (
         <ConfirmationDialog
-          title="Import Profiles?"
-          message={`Import profiles from ${importFilePath}?`}
+          title="Import Users?"
+          message={`Import users from ${importFilePath}?`}
           confirmText="Import"
           cancelText="Cancel"
           onConfirm={() => void executeImport()}
-          onCancel={cancelImport}
+          onCancel={() => setShowImportConfirm(false)}
           destructive={false}
         />
       )}
 
-      {/* Profile Save Confirmation */}
-      {showProfileSaveConfirm && editingProfile && (
-        <ConfirmationDialog
-          title="Save Profile Changes?"
-          message={`Save changes to ${editingProfile.name}'s profile?`}
-          confirmText="Save"
-          cancelText="Cancel"
-          onConfirm={() => void executeProfileSave()}
-          onCancel={cancelProfileSave}
-          destructive={false}
-        />
-      )}
-
-      {/* Edit Profile Modal */}
-      {!showProfileSaveConfirm && showEditProfileModal && editingProfile && (
-        <EditProfileModal
-          member={editingProfile}
-          onSave={handleSaveProfile}
-          onCancel={() => {
-            setShowEditProfileModal(false);
-            setEditingProfile(null);
-          }}
-          isSaving={isSavingProfile}
-        />
-      )}
-
-      {/* Tab Content - Hide when modal is showing */}
-      {!showEditProfileModal && !showProfileSaveConfirm && !showImportConfirm && (
+      {/* Tab Content */}
+      {!showImportConfirm && (
         <Box flexGrow={1} flexDirection="column" overflow="hidden">
           {currentTab === "users" && (
           <AllUsersTab
@@ -1039,7 +874,7 @@ export function UsersInterface({
         {currentTab === "profiles" && (
           <ProfilesTab
             instance={instance}
-            members={filteredProfiles}
+            users={filteredProfiles}
             selectedIndex={selectedProfileIndex}
             loading={loadingProfiles}
             error={profilesError}
@@ -1068,7 +903,7 @@ export function UsersInterface({
             exportInputValue={exportInputValue}
             exportSelectedButton={exportSelectedButton}
             isExporting={isExporting}
-            profileCount={profiles.length}
+            profileCount={users.length}
             setImportFilePath={setImportFilePath}
             setShowFileBrowser={setShowFileBrowser}
             onExportDirectorySelected={handleExportDirectorySelected}

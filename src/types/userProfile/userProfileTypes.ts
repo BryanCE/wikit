@@ -1,34 +1,22 @@
-export interface TeamMember {
-  id: number;
+// Standard Wiki.js User types for import/export
+export interface UserImportRow {
+  email: string;
   name: string;
-  email: string;
-  pictureUrl?: string;
-  jobTitle?: string;
+  providerKey?: string;
   location?: string;
-  portfolio?: string;
-  team?: string;
-  birthday?: string;
-  bio?: string;
-  hire_date?: string;
-  role?: string;
+  jobTitle?: string;
+  timezone?: string;
+  dateFormat?: string;
+  appearance?: string;
+  groups?: number[];
 }
 
-export interface ProfileImportRow {
-  email: string;
-  portfolio?: string;
-  team?: string;
-  birthday?: string;
-  bio?: string;
-  hire_date?: string;
-  role?: string;
-}
-
-export interface ProfileImportResult {
+export interface UserImportResult {
   success: number;
   failed: number;
   errors: string[];
 }
 
-export interface ProfileCommandOptions {
+export interface UserImportExportOptions {
   instance?: string;
 }

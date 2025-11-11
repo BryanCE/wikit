@@ -1,10 +1,19 @@
 ## WikiJS GraphQL Schema Location
 
-**For ANY Wiki.js installation**: `{wiki_root}/server/graph/schemas/`
-**Bryan's specific path**: `/mnt/c/Users/Bryan/Documents/WebApps/wiki/server/graph/schemas/`
+**wikit** is the CLI tool we're building (this repo: `/mnt/c/Users/bryan/Documents/wikit`)
 
-Key files:
+**Wiki.js source code** is located at: `/mnt/c/Users/bryan/Documents/wiki`
 
-- `site.graphql` - Site config (title, company, etc.)
-- `theming.graphql` - Theme config (theme, darkMode, iconset, etc.)
-- `asset.graphql`, `user.graphql`, `page.graphql`, etc.
+To find the actual GraphQL schema definitions, look in the Wiki.js source:
+- **Schema directory:** `/mnt/c/Users/bryan/Documents/wiki/server/graph/schemas/`
+
+Key schema files:
+- `user.graphql` - **User type definitions (IMPORTANT for wikit export/import)**
+- `group.graphql` - Group type definitions
+- `page.graphql` - Page types
+- `navigation.graphql` - Navigation types
+- `site.graphql` - Site config
+- `common.graphql` - Common types and responses
+- `scalars.graphql` - Custom scalar types
+
+**Full schema reference for this project**: See `wikit/.claude/docs/wikijs-graphql-schema.md` for complete User type definitions extracted from the Wiki.js source.

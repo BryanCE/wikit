@@ -1,5 +1,6 @@
 import { getDynamicConfig } from "@/config/dynamicConfig";
 import { logger } from "@/utils/logger";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import type { PageLinkItem } from "@/types/analysis/analysisTypes";
 import type { Page } from "@/types/page/pageTypes";
 
@@ -14,9 +15,9 @@ interface GraphQLResponse<T> {
 
 export async function graphql<TData, TVars = Record<string, unknown>>(
   query: string,
-  variables?: TVars,
-  instance?: string
+  variables?: TVars
 ): Promise<TData> {
+  const instance = InstanceContext.getInstance();
   const queryPreview = query.trim().split('\n')[0]?.slice(0, 100) ?? "";
   logger.info({ instance, queryPreview, variables }, "GraphQL request starting");
 
@@ -56,7 +57,7 @@ export async function graphql<TData, TVars = Record<string, unknown>>(
   }
 }
 
-export async function getPageLinks(instance?: string): Promise<PageLinkItem[]> {
+export async function getPageLinks(): Promise<PageLinkItem[]> {
   const query = `
     query {
       pages {
@@ -70,11 +71,11 @@ export async function getPageLinks(instance?: string): Promise<PageLinkItem[]> {
     }
   `;
 
-  const data = await graphql<{ pages: { links: PageLinkItem[] } }>(query, {}, instance);
+  const data = await graphql<{ pages: { links: PageLinkItem[] } }>(query, {});
   return data.pages.links;
 }
 
-export async function getAllPages(instance?: string): Promise<Page[]> {
+export async function getAllPages(): Promise<Page[]> {
   const query = `
     query {
       pages {
@@ -93,6 +94,6 @@ export async function getAllPages(instance?: string): Promise<Page[]> {
     }
   `;
 
-  const data = await graphql<{ pages: { list: Page[] } }>(query, {}, instance);
+  const data = await graphql<{ pages: { list: Page[] } }>(query, {});
   return data.pages.list;
 }

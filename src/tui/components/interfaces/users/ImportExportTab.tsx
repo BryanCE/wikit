@@ -5,7 +5,7 @@ import { useFooterHelp } from "@/tui/contexts/FooterContext";
 import { formatHelpText, HELP_TEXT } from "@/tui/constants/keyboard";
 import { FileBrowserModal } from "@/tui/components/modals/FileBrowserModal/FileBrowserModal";
 import { Button } from "@/tui/components/ui/Button";
-import type { ProfileImportResult } from "@/types";
+import type { UserImportResult } from "@/types";
 
 interface ImportExportTabProps {
   // Mode
@@ -22,7 +22,7 @@ interface ImportExportTabProps {
   importFilePath: string;
   importSelectedButton: "import" | "clear";
   isImporting: boolean;
-  importResult: ProfileImportResult | null;
+  importResult: UserImportResult | null;
 
   // Export
   exportDirectory: string;

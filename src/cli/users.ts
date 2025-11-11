@@ -14,11 +14,6 @@ import {
   disable2FACommand,
   resetPasswordCommand,
 } from "@/commands/users";
-import {
-  listTeamMembersCommand,
-  importProfilesCommand,
-  updateProfileCommand,
-} from "@/commands/userProfiles";
 import type { GlobalOptions } from "@/types";
 
 export function register(program: Command) {
@@ -203,53 +198,5 @@ export function register(program: Command) {
     .action(async (id: string) => {
       const globalOptions = program.opts<GlobalOptions>();
       await resetPasswordCommand(parseInt(id), { instance: globalOptions.instance });
-    });
-
-  usersCommand
-    .command("profiles")
-    .description("List all users with extended profile data")
-    .action(async () => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await listTeamMembersCommand({ instance: globalOptions.instance });
-    });
-
-  usersCommand
-    .command("import-profiles")
-    .description("Import user profile data from CSV or JSON file")
-    .argument("<file>", "Path to CSV or JSON file")
-    .option("--dry-run", "Preview import without making changes")
-    .action(async (file: string, options: { dryRun?: boolean }) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await importProfilesCommand(file, {
-        instance: globalOptions.instance,
-        dryRun: options.dryRun,
-      });
-    });
-
-  usersCommand
-    .command("update-profile")
-    .description("Update extended profile data for a user")
-    .argument("<id>", "User ID")
-    .option("--team <name>", "Team name")
-    .option("--birthday <date>", "Birthday (YYYY-MM-DD)")
-    .option("--bio <text>", "Biography")
-    .option("--hire-date <date>", "Hire date (YYYY-MM-DD)")
-    .option("--role <title>", "Role title")
-    .action(async (id: string, options: {
-      team?: string;
-      birthday?: string;
-      bio?: string;
-      hireDate?: string;
-      role?: string;
-    }) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await updateProfileCommand(parseInt(id), {
-        instance: globalOptions.instance,
-        team: options.team,
-        birthday: options.birthday,
-        bio: options.bio,
-        hireDate: options.hireDate,
-        role: options.role,
-      });
     });
 }
