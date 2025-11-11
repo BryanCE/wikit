@@ -14,15 +14,17 @@ import {
   type HealthStatus,
   type AllInstancesStatusResult,
 } from "@/types";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 async function getInstanceStatus(instance: string): Promise<InstanceStatus> {
+  InstanceContext.setInstance(instance);
   const [siteConfig, themeConfig, userSummary, systemInfo, allPages, instanceLabels] =
     await Promise.all([
-      getSiteConfig(instance),
-      getThemeConfig(instance),
-      getUserSummary(instance),
-      getSystemInfo(instance),
-      getAllPages(instance),
+      getSiteConfig(),
+      getThemeConfig(),
+      getUserSummary(),
+      getSystemInfo(),
+      getAllPages(),
       getInstanceLabels(),
     ]);
 
@@ -46,8 +48,9 @@ async function checkInstanceHealth(instance: string): Promise<HealthStatus> {
   const startTime = Date.now();
 
   try {
+    InstanceContext.setInstance(instance);
     // Test basic connectivity by getting system info
-    const systemInfo = await getSystemInfo(instance);
+    const systemInfo = await getSystemInfo();
     const responseTime = Date.now() - startTime;
 
     return {

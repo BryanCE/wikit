@@ -19,6 +19,7 @@ import type {
   CompareOptions,
   CompareResults,
 } from "@/types";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function compareInstances(
   options: CompareOptions
@@ -45,10 +46,10 @@ export async function compareInstances(
       !options.navigation);
 
   if ((options.config ?? false) || shouldCompareAll) {
-    const [config1, config2] = await Promise.all([
-      getSiteConfig(instance1),
-      getSiteConfig(instance2),
-    ]);
+    InstanceContext.setInstance(instance1);
+    const config1 = await getSiteConfig();
+    InstanceContext.setInstance(instance2);
+    const config2 = await getSiteConfig();
     results.siteConfig = compareObjects(
       config1,
       config2,
@@ -59,10 +60,10 @@ export async function compareInstances(
   }
 
   if ((options.theme ?? false) || shouldCompareAll) {
-    const [theme1, theme2] = await Promise.all([
-      getThemeConfig(instance1),
-      getThemeConfig(instance2),
-    ]);
+    InstanceContext.setInstance(instance1);
+    const theme1 = await getThemeConfig();
+    InstanceContext.setInstance(instance2);
+    const theme2 = await getThemeConfig();
     results.themeConfig = compareObjects(
       theme1,
       theme2,
@@ -73,10 +74,10 @@ export async function compareInstances(
   }
 
   if ((options.localization ?? false) || shouldCompareAll) {
-    const [localization1, localization2] = await Promise.all([
-      getLocalizationConfig(instance1),
-      getLocalizationConfig(instance2),
-    ]);
+    InstanceContext.setInstance(instance1);
+    const localization1 = await getLocalizationConfig();
+    InstanceContext.setInstance(instance2);
+    const localization2 = await getLocalizationConfig();
     results.localizationConfig = compareObjects(
       localization1,
       localization2,
@@ -87,10 +88,10 @@ export async function compareInstances(
   }
 
   if ((options.navigation ?? false) || shouldCompareAll) {
-    const [navigation1, navigation2] = await Promise.all([
-      getNavigationConfig(instance1),
-      getNavigationConfig(instance2),
-    ]);
+    InstanceContext.setInstance(instance1);
+    const navigation1 = await getNavigationConfig();
+    InstanceContext.setInstance(instance2);
+    const navigation2 = await getNavigationConfig();
     results.navigationConfig = compareObjects(
       navigation1,
       navigation2,
@@ -101,10 +102,10 @@ export async function compareInstances(
   }
 
   if ((options.users ?? false) || shouldCompareAll) {
-    const [users1, users2] = await Promise.all([
-      getUserSummary(instance1),
-      getUserSummary(instance2),
-    ]);
+    InstanceContext.setInstance(instance1);
+    const users1 = await getUserSummary();
+    InstanceContext.setInstance(instance2);
+    const users2 = await getUserSummary();
     results.userSummary = compareObjects(
       users1,
       users2,
@@ -115,10 +116,10 @@ export async function compareInstances(
   }
 
   if ((options.system ?? false) || shouldCompareAll) {
-    const [system1, system2] = await Promise.all([
-      getSystemInfo(instance1),
-      getSystemInfo(instance2),
-    ]);
+    InstanceContext.setInstance(instance1);
+    const system1 = await getSystemInfo();
+    InstanceContext.setInstance(instance2);
+    const system2 = await getSystemInfo();
     results.systemInfo = compareObjects(
       system1,
       system2,
@@ -130,10 +131,10 @@ export async function compareInstances(
 
   if ((options.pages ?? false) || shouldCompareAll) {
     if (options.pagePrefix) {
-      const [pages1, pages2] = await Promise.all([
-        getAllPages(instance1),
-        getAllPages(instance2),
-      ]);
+      InstanceContext.setInstance(instance1);
+      const pages1 = await getAllPages();
+      InstanceContext.setInstance(instance2);
+      const pages2 = await getAllPages();
 
       const filteredPages1 = pages1
         .filter((p) => p.path.startsWith(options.pagePrefix!))
@@ -148,10 +149,10 @@ export async function compareInstances(
         `Pages under '${options.pagePrefix}'`
       );
     } else {
-      const [pages1, pages2] = await Promise.all([
-        getAllPages(instance1),
-        getAllPages(instance2),
-      ]);
+      InstanceContext.setInstance(instance1);
+      const pages1 = await getAllPages();
+      InstanceContext.setInstance(instance2);
+      const pages2 = await getAllPages();
 
       const summary1 = createPageSummary(pages1);
       const summary2 = createPageSummary(pages2);

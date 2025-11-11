@@ -53,50 +53,50 @@ export async function listUsers(
 ## Checklist
 
 ### src/api/users.ts
-- [ ] `listUsers()` - remove instance param
-- [ ] `searchUsers()` - remove instance param
-- [ ] `getUser()` - remove instance param
-- [ ] `createUser()` - remove instance param
-- [ ] `updateUser()` - remove instance param
-- [ ] `deleteUser()` - remove instance param
-- [ ] `getUsersLastLogin()` - remove instance param
-- [ ] Any other functions
+- [x] `listUsers()` - remove instance param
+- [x] `searchUsers()` - remove instance param
+- [x] `getUser()` - remove instance param
+- [x] `createUser()` - remove instance param
+- [x] `updateUser()` - remove instance param
+- [x] `deleteUser()` - remove instance param
+- [x] `getUsersLastLogin()` - remove instance param
+- [x] Any other functions
 
 ### src/api/groups.ts
-- [ ] `listGroups()` - remove instance param
-- [ ] `getGroup()` - remove instance param
-- [ ] `createGroup()` - remove instance param
-- [ ] `updateGroup()` - remove instance param
-- [ ] `deleteGroup()` - remove instance param
-- [ ] `assignUser()` - remove instance param
-- [ ] `unassignUser()` - remove instance param
-- [ ] Any other functions
+- [x] `listGroups()` - remove instance param
+- [x] `getGroup()` - remove instance param
+- [x] `createGroup()` - remove instance param
+- [x] `updateGroup()` - remove instance param
+- [x] `deleteGroup()` - remove instance param
+- [x] `assignUser()` - remove instance param
+- [x] `unassignUser()` - remove instance param
+- [x] Any other functions
 
 ### src/api/pages.ts
-- [ ] `listPages()` - remove instance param
-- [ ] `getPage()` - remove instance param
-- [ ] `createPage()` - remove instance param
-- [ ] `updatePage()` - remove instance param
-- [ ] `deletePage()` - remove instance param
-- [ ] `movePage()` - remove instance param
-- [ ] `convertPage()` - remove instance param
-- [ ] Any other functions
+- [x] `listPages()` - remove instance param
+- [x] `getPage()` - remove instance param
+- [x] `createPage()` - remove instance param
+- [x] `updatePage()` - remove instance param
+- [x] `deletePage()` - remove instance param
+- [x] `movePage()` - remove instance param
+- [x] `convertPage()` - remove instance param
+- [x] Any other functions
 
 ### src/api/navigation.ts
-- [ ] `getNavigationTree()` - remove instance param
-- [ ] `updateNavigationTree()` - remove instance param
-- [ ] `createNavigationItem()` - remove instance param
-- [ ] `updateNavigationItem()` - remove instance param
-- [ ] `deleteNavigationItem()` - remove instance param
-- [ ] Any other functions
+- [x] `getNavigationTree()` - remove instance param
+- [x] `updateNavigationTree()` - remove instance param
+- [x] `createNavigationItem()` - remove instance param
+- [x] `updateNavigationItem()` - remove instance param
+- [x] `deleteNavigationItem()` - remove instance param
+- [x] Any other functions
 
 ### src/api/sync.ts
-- [ ] `syncPages()` - remove instance param
-- [ ] `syncUsers()` - remove instance param
-- [ ] Any other functions
+- [x] `syncPages()` - remove instance param
+- [x] `syncUsers()` - remove instance param
+- [x] Any other functions
 
 ### src/api/config.ts
-- [ ] Any functions that use instance parameter
+- [x] Any functions that use instance parameter
 
 ## Verification
 

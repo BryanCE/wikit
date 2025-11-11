@@ -3,11 +3,14 @@ import { updateSiteConfig, updateThemeConfig, updateAssetInfo } from "@/api/sync
 import { getAllPages, getPageContent, createPage } from "@/api/pages";
 import { instanceLabels } from "@/config";
 import { type SyncOptions, type SyncResult, type SyncSummary, type SyncCommandOptions } from "@/types";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 async function syncSiteConfig(fromInstance: string, toInstance: string, dryRun = false): Promise<SyncResult> {
   try {
-    const sourceConfig = await getSiteConfig(fromInstance);
-    const targetConfig = await getSiteConfig(toInstance);
+    InstanceContext.setInstance(fromInstance);
+    const sourceConfig = await getSiteConfig();
+    InstanceContext.setInstance(toInstance);
+    const targetConfig = await getSiteConfig();
 
     const changes: Record<string, { from: unknown; to: unknown }> = {};
     let hasChanges = false;
@@ -39,7 +42,8 @@ async function syncSiteConfig(fromInstance: string, toInstance: string, dryRun =
       };
     }
 
-    const result = await updateSiteConfig(sourceConfig, toInstance);
+    InstanceContext.setInstance(toInstance);
+    const result = await updateSiteConfig(sourceConfig);
 
     if (result.succeeded) {
       return {
@@ -67,8 +71,10 @@ async function syncSiteConfig(fromInstance: string, toInstance: string, dryRun =
 
 async function syncThemeConfig(fromInstance: string, toInstance: string, dryRun = false): Promise<SyncResult> {
   try {
-    const sourceTheme = await getThemeConfig(fromInstance);
-    const targetTheme = await getThemeConfig(toInstance);
+    InstanceContext.setInstance(fromInstance);
+    const sourceTheme = await getThemeConfig();
+    InstanceContext.setInstance(toInstance);
+    const targetTheme = await getThemeConfig();
 
     const changes: Record<string, { from: unknown; to: unknown }> = {};
     let hasChanges = false;
@@ -100,7 +106,8 @@ async function syncThemeConfig(fromInstance: string, toInstance: string, dryRun 
       };
     }
 
-    const result = await updateThemeConfig(sourceTheme, toInstance);
+    InstanceContext.setInstance(toInstance);
+    const result = await updateThemeConfig(sourceTheme);
 
     if (result.succeeded) {
       return {
@@ -128,8 +135,10 @@ async function syncThemeConfig(fromInstance: string, toInstance: string, dryRun 
 
 async function syncAssetInfo(fromInstance: string, toInstance: string, dryRun = false): Promise<SyncResult> {
   try {
-    const sourceAssets = await getAssetInfo(fromInstance);
-    const targetAssets = await getAssetInfo(toInstance);
+    InstanceContext.setInstance(fromInstance);
+    const sourceAssets = await getAssetInfo();
+    InstanceContext.setInstance(toInstance);
+    const targetAssets = await getAssetInfo();
 
     const changes: Record<string, { from: unknown; to: unknown }> = {};
     let hasChanges = false;
@@ -161,7 +170,8 @@ async function syncAssetInfo(fromInstance: string, toInstance: string, dryRun = 
       };
     }
 
-    const result = await updateAssetInfo(sourceAssets, toInstance);
+    InstanceContext.setInstance(toInstance);
+    const result = await updateAssetInfo(sourceAssets);
 
     if (result.succeeded) {
       return {
@@ -189,8 +199,10 @@ async function syncAssetInfo(fromInstance: string, toInstance: string, dryRun = 
 
 async function syncPages(fromInstance: string, toInstance: string, pagePrefix?: string, dryRun = false): Promise<SyncResult> {
   try {
-    const sourcePages = await getAllPages(fromInstance);
-    const targetPages = await getAllPages(toInstance);
+    InstanceContext.setInstance(fromInstance);
+    const sourcePages = await getAllPages();
+    InstanceContext.setInstance(toInstance);
+    const targetPages = await getAllPages();
 
     const filteredPages = pagePrefix
       ? sourcePages.filter(page => page.path.startsWith(pagePrefix))
@@ -224,13 +236,15 @@ async function syncPages(fromInstance: string, toInstance: string, pagePrefix?: 
 
     for (const page of pagesToCopy) {
       try {
-        const fullPageData = await getPageContent(page.path, fromInstance);
+        InstanceContext.setInstance(fromInstance);
+        const fullPageData = await getPageContent(page.path);
         if (!fullPageData) {
           errors.push(`Failed to get content for ${page.path}`);
           errorCount++;
           continue;
         }
 
+        InstanceContext.setInstance(toInstance);
         const result = await createPage({
           path: fullPageData.path,
           title: fullPageData.title,
@@ -241,7 +255,7 @@ async function syncPages(fromInstance: string, toInstance: string, pagePrefix?: 
           isPublished: fullPageData.isPublished,
           isPrivate: fullPageData.isPrivate,
           tags: fullPageData.tags?.map(tag => tag.title),
-        }, toInstance);
+        });
 
         if (result.responseResult.succeeded) {
           successCount++;

@@ -124,7 +124,7 @@ export function PagesInterface({
     if (!instance) return;
     try {
       setStatusMsg("Loading pages for export...");
-      const exportPages = await getAllPages(instance);
+      const exportPages = await getAllPages();
       setPages(exportPages);
       setStatusMsg(`${exportPages.length} pages ready for export`);
     } catch (err) {
@@ -196,7 +196,6 @@ export function PagesInterface({
     }
 
     const result = await exportPages(fullPath, {
-      instance: instance ?? undefined,
       includeContent,
       onProgress: setProgress,
     });
@@ -487,16 +486,16 @@ export function PagesInterface({
             setProgress(`Deleting page ${i + 1}/${pages.length}: ${page.path}`);
 
             try {
-              const result = await deletePage(page.id, instance ?? undefined);
+              const result = await deletePage(page.id);
               if (result.succeeded) {
                 successCount++;
               } else {
                 errorCount++;
-                logger.error({ pageId: page.id, path: page.path, message: result.message, instance }, "Failed to delete page");
+                logger.error({ pageId: page.id, path: page.path, message: result.message }, "Failed to delete page");
               }
             } catch (error) {
               errorCount++;
-              logger.error({ err: error, pageId: page.id, path: page.path, instance }, "Error deleting page");
+              logger.error({ err: error, pageId: page.id, path: page.path }, "Error deleting page");
             }
           }
 

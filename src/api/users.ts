@@ -11,8 +11,7 @@ import type {
 } from "@/types";
 
 export async function listUsers(
-  options: UserListOptions,
-  instance?: string
+  options: UserListOptions
 ): Promise<UserMinimal[]> {
   const query = `
     query($filter: String, $orderBy: String) {
@@ -33,16 +32,14 @@ export async function listUsers(
 
   const result = await graphql<{ users: { list: UserMinimal[] } }>(
     query,
-    { filter: options.filter, orderBy: options.orderBy },
-    instance
+    { filter: options.filter, orderBy: options.orderBy }
   );
 
   return result.users.list;
 }
 
 export async function searchUsers(
-  query: string,
-  instance?: string
+  query: string
 ): Promise<UserMinimal[]> {
   const gqlQuery = `
     query($query: String!) {
@@ -63,14 +60,13 @@ export async function searchUsers(
 
   const result = await graphql<{ users: { search: UserMinimal[] } }>(
     gqlQuery,
-    { query },
-    instance
+    { query }
   );
 
   return result.users.search;
 }
 
-export async function getUser(id: number, instance?: string): Promise<User> {
+export async function getUser(id: number): Promise<User> {
   const query = `
     query($id: Int!) {
       users {
@@ -106,14 +102,13 @@ export async function getUser(id: number, instance?: string): Promise<User> {
 
   const result = await graphql<{ users: { single: User } }>(
     query,
-    { id },
-    instance
+    { id }
   );
 
   return result.users.single;
 }
 
-export async function getLastLogins(instance?: string): Promise<UserLastLogin[]> {
+export async function getLastLogins(): Promise<UserLastLogin[]> {
   const query = `
     query {
       users {
@@ -128,16 +123,14 @@ export async function getLastLogins(instance?: string): Promise<UserLastLogin[]>
 
   const result = await graphql<{ users: { lastLogins: UserLastLogin[] } }>(
     query,
-    {},
-    instance
+    {}
   );
 
   return result.users.lastLogins;
 }
 
 export async function createUser(
-  input: CreateUserInput,
-  instance?: string
+  input: CreateUserInput
 ): Promise<UserResponse> {
   const mutation = `
     mutation(
@@ -188,16 +181,14 @@ export async function createUser(
 
   const result = await graphql<{ users: { create: UserResponse } }>(
     mutation,
-    variables,
-    instance
+    variables
   );
 
   return result.users.create;
 }
 
 export async function updateUser(
-  input: UpdateUserInput,
-  instance?: string
+  input: UpdateUserInput
 ): Promise<DefaultResponse> {
   const mutation = `
     mutation(
@@ -252,14 +243,12 @@ export async function updateUser(
   logger.info({
     input,
     variables,
-    instance,
     mutation: mutation.substring(0, 100)
   }, "updateUser API call - sending GraphQL mutation");
 
   const result = await graphql<{ users: { update: DefaultResponse } }>(
     mutation,
-    variables,
-    instance
+    variables
   );
 
   logger.info({ result, userId: input.id }, "updateUser API call - received response");
@@ -269,8 +258,7 @@ export async function updateUser(
 
 export async function deleteUser(
   id: number,
-  replaceId: number,
-  instance?: string
+  replaceId: number
 ): Promise<DefaultResponse> {
   const mutation = `
     mutation($id: Int!, $replaceId: Int!) {
@@ -289,16 +277,14 @@ export async function deleteUser(
 
   const result = await graphql<{ users: { delete: DefaultResponse } }>(
     mutation,
-    { id, replaceId },
-    instance
+    { id, replaceId }
   );
 
   return result.users.delete;
 }
 
 export async function activateUser(
-  id: number,
-  instance?: string
+  id: number
 ): Promise<DefaultResponse> {
   const mutation = `
     mutation($id: Int!) {
@@ -317,16 +303,14 @@ export async function activateUser(
 
   const result = await graphql<{ users: { activate: DefaultResponse } }>(
     mutation,
-    { id },
-    instance
+    { id }
   );
 
   return result.users.activate;
 }
 
 export async function deactivateUser(
-  id: number,
-  instance?: string
+  id: number
 ): Promise<DefaultResponse> {
   const mutation = `
     mutation($id: Int!) {
@@ -345,16 +329,14 @@ export async function deactivateUser(
 
   const result = await graphql<{ users: { deactivate: DefaultResponse } }>(
     mutation,
-    { id },
-    instance
+    { id }
   );
 
   return result.users.deactivate;
 }
 
 export async function verifyUser(
-  id: number,
-  instance?: string
+  id: number
 ): Promise<DefaultResponse> {
   const mutation = `
     mutation($id: Int!) {
@@ -373,16 +355,14 @@ export async function verifyUser(
 
   const result = await graphql<{ users: { verify: DefaultResponse } }>(
     mutation,
-    { id },
-    instance
+    { id }
   );
 
   return result.users.verify;
 }
 
 export async function enable2FA(
-  id: number,
-  instance?: string
+  id: number
 ): Promise<DefaultResponse> {
   const mutation = `
     mutation($id: Int!) {
@@ -401,16 +381,14 @@ export async function enable2FA(
 
   const result = await graphql<{ users: { enableTFA: DefaultResponse } }>(
     mutation,
-    { id },
-    instance
+    { id }
   );
 
   return result.users.enableTFA;
 }
 
 export async function disable2FA(
-  id: number,
-  instance?: string
+  id: number
 ): Promise<DefaultResponse> {
   const mutation = `
     mutation($id: Int!) {
@@ -429,16 +407,14 @@ export async function disable2FA(
 
   const result = await graphql<{ users: { disableTFA: DefaultResponse } }>(
     mutation,
-    { id },
-    instance
+    { id }
   );
 
   return result.users.disableTFA;
 }
 
 export async function resetPassword(
-  id: number,
-  instance?: string
+  id: number
 ): Promise<DefaultResponse> {
   const mutation = `
     mutation($id: Int!) {
@@ -457,8 +433,7 @@ export async function resetPassword(
 
   const result = await graphql<{ users: { resetPassword: DefaultResponse } }>(
     mutation,
-    { id },
-    instance
+    { id }
   );
 
   return result.users.resetPassword;

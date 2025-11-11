@@ -3,10 +3,9 @@ import { logger } from "@/utils/logger";
 import type { Group, GroupMinimal, PageRule } from "@/types";
 
 export async function listGroups(
-  instance: string,
   filter?: string
 ): Promise<GroupMinimal[]> {
-  logger.info({ instance, filter }, "listGroups called");
+  logger.info({ filter }, "listGroups called");
 
   const query = `
     query($filter: String) {
@@ -24,21 +23,20 @@ export async function listGroups(
   `;
 
   try {
-    logger.info({ instance, filter }, "Calling GraphQL for groups.list");
+    logger.info({ filter }, "Calling GraphQL for groups.list");
     const result = await graphql<{ groups: { list: GroupMinimal[] } }>(
       query,
-      { filter },
-      instance
+      { filter }
     );
-    logger.info({ instance, groupCount: result.groups.list.length }, "listGroups succeeded");
+    logger.info({ groupCount: result.groups.list.length }, "listGroups succeeded");
     return result.groups.list;
   } catch (error) {
-    logger.error({ err: error, instance, filter }, "listGroups failed");
+    logger.error({ err: error, filter }, "listGroups failed");
     throw error;
   }
 }
 
-export async function getGroup(id: number, instance?: string): Promise<Group> {
+export async function getGroup(id: number): Promise<Group> {
   const query = `
     query($id: Int!) {
       groups {
@@ -70,14 +68,13 @@ export async function getGroup(id: number, instance?: string): Promise<Group> {
 
   const result = await graphql<{ groups: { single: Group } }>(
     query,
-    { id },
-    instance
+    { id }
   );
 
   return result.groups.single;
 }
 
-export async function createGroup(name: string, instance?: string) {
+export async function createGroup(name: string) {
   const mutation = `
     mutation($name: String!) {
       groups {
@@ -107,7 +104,7 @@ export async function createGroup(name: string, instance?: string) {
         group?: { id: number; name: string };
       };
     };
-  }>(mutation, { name }, instance);
+  }>(mutation, { name });
 
   return result.groups.create;
 }
@@ -119,8 +116,7 @@ export async function updateGroup(
     redirectOnLogin: string;
     permissions: string[];
     pageRules: PageRule[];
-  },
-  instance?: string
+  }
 ) {
   const mutation = `
     mutation($id: Int!, $name: String!, $redirectOnLogin: String!, $permissions: [String]!, $pageRules: [PageRuleInput]!) {
@@ -152,12 +148,12 @@ export async function updateGroup(
         };
       };
     };
-  }>(mutation, { id, ...data }, instance);
+  }>(mutation, { id, ...data });
 
   return result.groups.update.responseResult;
 }
 
-export async function deleteGroup(id: number, instance?: string) {
+export async function deleteGroup(id: number) {
   const mutation = `
     mutation($id: Int!) {
       groups {
@@ -182,15 +178,14 @@ export async function deleteGroup(id: number, instance?: string) {
         };
       };
     };
-  }>(mutation, { id }, instance);
+  }>(mutation, { id });
 
   return result.groups.delete.responseResult;
 }
 
 export async function assignUser(
   groupId: number,
-  userId: number,
-  instance?: string
+  userId: number
 ) {
   const mutation = `
     mutation($groupId: Int!, $userId: Int!) {
@@ -216,15 +211,14 @@ export async function assignUser(
         };
       };
     };
-  }>(mutation, { groupId, userId }, instance);
+  }>(mutation, { groupId, userId });
 
   return result.groups.assignUser.responseResult;
 }
 
 export async function unassignUser(
   groupId: number,
-  userId: number,
-  instance?: string
+  userId: number
 ) {
   const mutation = `
     mutation($groupId: Int!, $userId: Int!) {
@@ -250,7 +244,7 @@ export async function unassignUser(
         };
       };
     };
-  }>(mutation, { groupId, userId }, instance);
+  }>(mutation, { groupId, userId });
 
   return result.groups.unassignUser.responseResult;
 }
@@ -262,15 +256,13 @@ export async function unassignUser(
  * Note: groups.list returns GroupMinimal which doesn't have users field,
  * so we fetch the minimal list first, then fetch full details for each group
  */
-export async function getAllGroupsWithUsers(
-  instance: string
-): Promise<Group[]> {
+export async function getAllGroupsWithUsers(): Promise<Group[]> {
   // First get the list of all groups (returns GroupMinimal)
-  const groupsList = await listGroups(instance);
+  const groupsList = await listGroups();
 
   // Then fetch full details for each group (includes users)
   const fullGroups = await Promise.all(
-    groupsList.map((group) => getGroup(group.id, instance))
+    groupsList.map((group) => getGroup(group.id))
   );
 
   return fullGroups;

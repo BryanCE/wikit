@@ -2,19 +2,21 @@ import * as pageApi from "@/api/pages";
 import { getAllPages, getAllPagesWithContent } from "@/api/pages";
 import type { PageExportData } from "@/types";
 import { logger } from "@/utils/logger";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function exportPagesCommand(
   filePath: string,
   options: { instance?: string; includeContent?: boolean }
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Exporting pages${options.includeContent ? " with content" : ""} to ${filePath}...`);
 
   try {
     const pages = options.includeContent
-      ? await getAllPagesWithContent(options.instance, (current, total) => {
+      ? await getAllPagesWithContent((current, total) => {
           process.stdout.write(`\rFetching page content: ${current}/${total}`);
         })
-      : await getAllPages(options.instance);
+      : await getAllPages();
 
     if (options.includeContent) {
       console.log(); // New line after progress
@@ -51,15 +53,16 @@ export async function exportPages(
   filePath: string,
   options: { instance?: string; includeContent?: boolean; onProgress?: (msg: string) => void }
 ): Promise<{ success: boolean; message: string; pageCount?: number }> {
+  InstanceContext.setInstance(options.instance ?? "");
   try {
     options.onProgress?.("Loading pages...");
     logger.info({ filePath, instance: options.instance, includeContent: options.includeContent }, "Exporting pages");
 
     const pages = options.includeContent
-      ? await getAllPagesWithContent(options.instance, (current, total) => {
+      ? await getAllPagesWithContent((current, total) => {
           options.onProgress?.(`Fetching content: ${current}/${total}`);
         })
-      : await getAllPages(options.instance);
+      : await getAllPages();
 
     options.onProgress?.(`Writing ${pages.length} pages to file...`);
 
@@ -102,13 +105,13 @@ export async function movePageCommand(
   destinationPath: string,
   options: { locale?: string; instance?: string }
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Moving page ${id} to ${destinationPath}${options.locale ? ` (${options.locale})` : ""}...`);
 
   const result = await pageApi.movePage(
     id,
     destinationPath,
-    options.locale ?? "en",
-    options.instance
+    options.locale ?? "en"
   );
 
   if (result.succeeded) {
@@ -124,9 +127,10 @@ export async function convertPageCommand(
   editor: string,
   options: { instance?: string }
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Converting page ${id} to ${editor} editor...`);
 
-  const result = await pageApi.convertPage(id, editor, options.instance);
+  const result = await pageApi.convertPage(id, editor);
 
   if (result.succeeded) {
     console.log(`Page ${id} converted successfully to ${editor}`);
@@ -140,9 +144,10 @@ export async function renderPageCommand(
   id: number,
   options: { instance?: string }
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Rendering page ${id}...`);
 
-  const result = await pageApi.renderPage(id, options.instance);
+  const result = await pageApi.renderPage(id);
 
   if (result.succeeded) {
     console.log(`Page ${id} rendered successfully`);
@@ -157,12 +162,12 @@ export async function migrateLocaleCommand(
   targetLocale: string,
   options: { instance?: string }
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Migrating pages from ${sourceLocale} to ${targetLocale}...`);
 
   const result = await pageApi.migrateLocale(
     sourceLocale,
-    targetLocale,
-    options.instance
+    targetLocale
   );
 
   if (result.responseResult.succeeded) {
@@ -176,9 +181,10 @@ export async function migrateLocaleCommand(
 }
 
 export async function rebuildTreeCommand(options: { instance?: string }) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log("Rebuilding page tree...");
 
-  const result = await pageApi.rebuildTree(options.instance);
+  const result = await pageApi.rebuildTree();
 
   if (result.succeeded) {
     console.log("Page tree rebuilt successfully");

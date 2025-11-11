@@ -156,8 +156,8 @@ export function NavInterface({
 
     try {
       const [tree, config] = await Promise.all([
-        getNavigationTree(instance),
-        getNavigationConfig(instance),
+        getNavigationTree(),
+        getNavigationConfig(),
       ]);
 
       setNavigationTree(tree);

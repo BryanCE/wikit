@@ -1,7 +1,7 @@
 import { graphql } from "@/api";
 import { type Page, type PageWithContent } from "@/types";
 
-export async function getAllPages(instance?: string): Promise<Page[]> {
+export async function getAllPages(): Promise<Page[]> {
   const query = `query {
     pages {
       list(limit: 500, orderBy: PATH) {
@@ -16,18 +16,16 @@ export async function getAllPages(instance?: string): Promise<Page[]> {
 
   const result = await graphql<{ pages: { list: Page[] } }>(
     query,
-    undefined,
-    instance
+    undefined
   );
   return result.pages.list;
 }
 
 export async function getAllPagesWithContent(
-  instance?: string,
   onProgress?: (current: number, total: number) => void
 ): Promise<PageWithContent[]> {
   // First, get the list of all pages
-  const pages = await getAllPages(instance);
+  const pages = await getAllPages();
 
   // Then fetch full content for each page
   const pagesWithContent: PageWithContent[] = [];
@@ -37,7 +35,7 @@ export async function getAllPagesWithContent(
     if (!page) continue;
 
     try {
-      const fullPage = await getPageContent(page.path, instance, page.locale);
+      const fullPage = await getPageContent(page.path, page.locale);
       if (fullPage) {
         pagesWithContent.push(fullPage as PageWithContent);
       }
@@ -64,7 +62,7 @@ export async function getAllPagesWithContent(
   return pagesWithContent;
 }
 
-export async function deletePage(pageId: string, instance?: string) {
+export async function deletePage(pageId: string) {
   const mutation = `mutation ($id: Int!) {
     pages {
       delete(id: $id) {
@@ -87,12 +85,12 @@ export async function deletePage(pageId: string, instance?: string) {
         };
       };
     };
-  }>(mutation, { id: parseInt(pageId) }, instance);
+  }>(mutation, { id: parseInt(pageId) });
 
   return result.pages.delete.responseResult;
 }
 
-export async function getPageContent(path: string, instance?: string, locale = "en") {
+export async function getPageContent(path: string, locale = "en") {
   const query = `query ($path: String!, $locale: String!) {
     pages {
       singleByPath(path: $path, locale: $locale) {
@@ -136,7 +134,7 @@ export async function getPageContent(path: string, instance?: string, locale = "
         hash?: string;
       } | null;
     };
-  }>(query, { path, locale }, instance);
+  }>(query, { path, locale });
 
   return result.pages.singleByPath;
 }
@@ -152,8 +150,7 @@ export async function createPage(
     isPublished?: boolean;
     isPrivate?: boolean;
     tags?: string[];
-  },
-  instance?: string
+  }
 ) {
   const mutation = `mutation ($content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) {
     pages {
@@ -209,7 +206,7 @@ export async function createPage(
         };
       };
     };
-  }>(mutation, variables, instance);
+  }>(mutation, variables);
 
   return result.pages.create;
 }
@@ -217,8 +214,7 @@ export async function createPage(
 export async function movePage(
   id: number,
   destinationPath: string,
-  destinationLocale: string,
-  instance?: string
+  destinationLocale: string
 ) {
   const mutation = `mutation ($id: Int!, $destinationPath: String!, $destinationLocale: String!) {
     pages {
@@ -242,15 +238,14 @@ export async function movePage(
         };
       };
     };
-  }>(mutation, { id, destinationPath, destinationLocale }, instance);
+  }>(mutation, { id, destinationPath, destinationLocale });
 
   return result.pages.move.responseResult;
 }
 
 export async function convertPage(
   id: number,
-  editor: string,
-  instance?: string
+  editor: string
 ) {
   const mutation = `mutation ($id: Int!, $editor: String!) {
     pages {
@@ -274,12 +269,12 @@ export async function convertPage(
         };
       };
     };
-  }>(mutation, { id, editor }, instance);
+  }>(mutation, { id, editor });
 
   return result.pages.convert.responseResult;
 }
 
-export async function renderPage(id: number, instance?: string) {
+export async function renderPage(id: number) {
   const mutation = `mutation ($id: Int!) {
     pages {
       render(id: $id) {
@@ -302,15 +297,14 @@ export async function renderPage(id: number, instance?: string) {
         };
       };
     };
-  }>(mutation, { id }, instance);
+  }>(mutation, { id });
 
   return result.pages.render.responseResult;
 }
 
 export async function migrateLocale(
   sourceLocale: string,
-  targetLocale: string,
-  instance?: string
+  targetLocale: string
 ) {
   const mutation = `mutation ($sourceLocale: String!, $targetLocale: String!) {
     pages {
@@ -336,12 +330,12 @@ export async function migrateLocale(
         count?: number;
       };
     };
-  }>(mutation, { sourceLocale, targetLocale }, instance);
+  }>(mutation, { sourceLocale, targetLocale });
 
   return result.pages.migrateToLocale;
 }
 
-export async function rebuildTree(instance?: string) {
+export async function rebuildTree() {
   const mutation = `mutation {
     pages {
       rebuildTree {
@@ -364,7 +358,7 @@ export async function rebuildTree(instance?: string) {
         };
       };
     };
-  }>(mutation, undefined, instance);
+  }>(mutation, undefined);
 
   return result.pages.rebuildTree.responseResult;
 }

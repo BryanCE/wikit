@@ -1,12 +1,14 @@
 import { deletePage, getAllPages } from "@/api/pages";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function deletePages(
   pathPrefix: string,
   options: { force?: boolean; instance?: string }
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`🔍 Fetching pages under '${pathPrefix}'...`);
 
-  const allPages = await getAllPages(options.instance);
+  const allPages = await getAllPages();
   const matches = allPages.filter((p) => p.path.startsWith(pathPrefix));
 
   if (!matches.length) {
@@ -38,7 +40,7 @@ export async function deletePages(
 
   for (const page of matches) {
     try {
-      const result = await deletePage(page.id, options.instance);
+      const result = await deletePage(page.id);
 
       if (result.succeeded) {
         console.log(`✔ Deleted ${page.path}`);

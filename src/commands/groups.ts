@@ -1,10 +1,12 @@
 import * as groupApi from "@/api/groups";
 import type { GroupCommandOptions } from "@/types";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function listGroupsCommand(
   options: { filter?: string } & GroupCommandOptions
 ) {
-  const groups = await groupApi.listGroups(options.instance ?? "", options.filter);
+  InstanceContext.setInstance(options.instance ?? "");
+  const groups = await groupApi.listGroups(options.filter);
 
   if (groups.length === 0) {
     console.log("No groups found");
@@ -37,7 +39,8 @@ export async function showGroupCommand(
   id: number,
   options: GroupCommandOptions
 ) {
-  const group = await groupApi.getGroup(id, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const group = await groupApi.getGroup(id);
 
   console.log("\nGroup Details:\n");
   console.log(`ID:              ${group.id}`);
@@ -82,7 +85,8 @@ export async function createGroupCommand(
   name: string,
   options: GroupCommandOptions
 ) {
-  const response = await groupApi.createGroup(name, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const response = await groupApi.createGroup(name);
 
   if (response.responseResult.succeeded) {
     console.log(`\nGroup created successfully!`);
@@ -102,7 +106,8 @@ export async function deleteGroupCommand(
   id: number,
   options: GroupCommandOptions
 ) {
-  const response = await groupApi.deleteGroup(id, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const response = await groupApi.deleteGroup(id);
 
   if (response.succeeded) {
     console.log(`\nGroup ${id} deleted successfully!`);
@@ -117,10 +122,10 @@ export async function assignUserCommand(
   userId: number,
   options: GroupCommandOptions
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   const response = await groupApi.assignUser(
     groupId,
-    userId,
-    options.instance
+    userId
   );
 
   if (response.succeeded) {
@@ -136,10 +141,10 @@ export async function unassignUserCommand(
   userId: number,
   options: GroupCommandOptions
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   const response = await groupApi.unassignUser(
     groupId,
-    userId,
-    options.instance
+    userId
   );
 
   if (response.succeeded) {

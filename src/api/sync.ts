@@ -1,7 +1,7 @@
 import { graphql } from "@/api";
 import type { SiteConfig, ThemeConfig, AssetInfo } from "@/types";
 
-export async function updateSiteConfig(config: SiteConfig, instance?: string) {
+export async function updateSiteConfig(config: SiteConfig) {
   const mutation = `mutation ($title: String!, $company: String!, $language: String!, $contentLicense: String!) {
     site {
       updateConfig(
@@ -29,12 +29,12 @@ export async function updateSiteConfig(config: SiteConfig, instance?: string) {
         };
       };
     };
-  }>(mutation, config, instance);
+  }>(mutation, config);
 
   return result.site.updateConfig.responseResult;
 }
 
-export async function updateThemeConfig(theme: ThemeConfig, instance?: string) {
+export async function updateThemeConfig(theme: ThemeConfig) {
   const mutation = `mutation ($theme: String!, $iconset: String!, $darkMode: Boolean!, $tocPosition: String, $injectCSS: String, $injectHead: String, $injectBody: String) {
     theming {
       setConfig(
@@ -65,12 +65,12 @@ export async function updateThemeConfig(theme: ThemeConfig, instance?: string) {
         };
       };
     };
-  }>(mutation, theme, instance);
+  }>(mutation, theme);
 
   return result.theming.setConfig.responseResult;
 }
 
-export async function updateAssetInfo(assets: AssetInfo, instance?: string) {
+export async function updateAssetInfo(assets: AssetInfo) {
   const mutation = `mutation ($logoUrl: String!, $customCss: String, $customJs: String) {
     site {
       updateAssets(
@@ -97,7 +97,7 @@ export async function updateAssetInfo(assets: AssetInfo, instance?: string) {
         };
       };
     };
-  }>(mutation, assets, instance);
+  }>(mutation, assets);
 
   return result.site.updateAssets.responseResult;
 }

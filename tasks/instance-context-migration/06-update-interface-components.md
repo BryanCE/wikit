@@ -62,68 +62,68 @@ useEffect(() => {
 ## Checklist
 
 ### UsersInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all `userApi.*()` calls
-- [ ] Remove instance from all `userProfilesApi.*()` calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all `userApi.*()` calls
+- [x] Remove instance from all `userProfilesApi.*()` calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ### GroupsInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all `groupApi.*()` calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all `groupApi.*()` calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ### PagesInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all `pageApi.*()` calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all `pageApi.*()` calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ### NavInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all `navigationApi.*()` calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all `navigationApi.*()` calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ### StatusInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all API calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all API calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ### SyncInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all `syncApi.*()` calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all `syncApi.*()` calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ### CompareInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all API calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all API calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ### AnalysisInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all API calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all API calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ### PageCopyInterface.tsx
-- [ ] Import InstanceContext (if subscribing)
-- [ ] Keep instance prop in interface
-- [ ] Remove instance from all API calls
-- [ ] Add subscription if needed
-- [ ] Verify TypeScript compiles
+- [x] Import InstanceContext (if subscribing)
+- [x] Keep instance prop in interface
+- [x] Remove instance from all API calls
+- [x] Add subscription if needed
+- [x] Verify TypeScript compiles
 
 ## Verification
 

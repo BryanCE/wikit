@@ -90,7 +90,7 @@ export function UsersInterface({
     setLoading(true);
     setStatusMsg("Loading users...");
     try {
-      const userList = await userApi.listUsers({}, instance);
+      const userList = await userApi.listUsers({});
       setUsers(userList);
       setStatusMsg(`${userList.length} users loaded`);
     } catch (error) {
@@ -245,13 +245,13 @@ export function UsersInterface({
     setStatusMsg("Loading profiles...");
     try {
       // Get all users (UserMinimal)
-      const userList = await userApi.listUsers({}, instance);
+      const userList = await userApi.listUsers({});
 
       // Fetch full User data for each user
       const fullUsers = await Promise.all(
         userList.map(async (user) => {
           try {
-            return await userApi.getUser(user.id, instance);
+            return await userApi.getUser(user.id);
           } catch (err) {
             // If we can't get full data, skip this user
             return null;
@@ -728,13 +728,13 @@ export function UsersInterface({
       }
 
       // Get all users (returns UserMinimal)
-      const userList = await userApi.listUsers({}, instance ?? undefined);
+      const userList = await userApi.listUsers({});
 
       // Fetch full user data for each user using users.single
       const fullUsers = await Promise.all(
         userList.map(async (user) => {
           try {
-            return await userApi.getUser(user.id, instance ?? undefined);
+            return await userApi.getUser(user.id);
           } catch (err) {
             // If we can't get full data, use what we have
             return user;

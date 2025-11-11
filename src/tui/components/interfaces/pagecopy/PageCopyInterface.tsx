@@ -82,27 +82,24 @@ export function PageCopyInterface({
 
     for (const page of pagesToCopy) {
       try {
-        const fullPageData = await getPageContent(page.path, instance);
+        const fullPageData = await getPageContent(page.path);
         if (!fullPageData) {
           errors.push(`Failed to get content for ${page.path}`);
           errorCount++;
           continue;
         }
 
-        const result = await createPage(
-          {
-            path: fullPageData.path,
-            title: fullPageData.title,
-            content: fullPageData.content,
-            description: fullPageData.description,
-            editor: fullPageData.editor,
-            locale: fullPageData.locale,
-            isPublished: fullPageData.isPublished,
-            isPrivate: fullPageData.isPrivate,
-            tags: fullPageData.tags?.map((tag) => tag.title),
-          },
-          targetInstance
-        );
+        const result = await createPage({
+          path: fullPageData.path,
+          title: fullPageData.title,
+          content: fullPageData.content,
+          description: fullPageData.description,
+          editor: fullPageData.editor,
+          locale: fullPageData.locale,
+          isPublished: fullPageData.isPublished,
+          isPrivate: fullPageData.isPrivate,
+          tags: fullPageData.tags?.map((tag) => tag.title),
+        });
 
         if (result.responseResult.succeeded) {
           successCount++;

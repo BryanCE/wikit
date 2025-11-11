@@ -53,10 +53,10 @@ export function AppContent({ instance: initialInstance }: AppProps) {
 
 ## Checklist
 
-- [ ] Add import for InstanceContext
-- [ ] Add useEffect to sync currentInstance with context
-- [ ] Verify placement is correct (after state, before other effects)
-- [ ] TypeScript compiles without errors
+- [x] Add import for InstanceContext
+- [x] Add useEffect to sync currentInstance with context
+- [x] Verify placement is correct (after state, before other effects)
+- [x] TypeScript compiles without errors
 
 ## Verification
 

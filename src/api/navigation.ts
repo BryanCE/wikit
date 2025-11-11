@@ -1,7 +1,7 @@
 import { graphql } from "@/api";
 import type { NavigationTree, NavigationConfig, NavigationItem } from "@/types";
 
-export async function getNavigationTree(instance?: string): Promise<NavigationTree[]> {
+export async function getNavigationTree(): Promise<NavigationTree[]> {
   const query = `query {
     navigation {
       tree {
@@ -22,13 +22,12 @@ export async function getNavigationTree(instance?: string): Promise<NavigationTr
 
   const result = await graphql<{ navigation: { tree: NavigationTree[] } }>(
     query,
-    undefined,
-    instance
+    undefined
   );
   return result.navigation.tree;
 }
 
-export async function getNavigationConfig(instance?: string): Promise<NavigationConfig> {
+export async function getNavigationConfig(): Promise<NavigationConfig> {
   const query = `query {
     navigation {
       config {
@@ -39,15 +38,13 @@ export async function getNavigationConfig(instance?: string): Promise<Navigation
 
   const result = await graphql<{ navigation: { config: NavigationConfig } }>(
     query,
-    undefined,
-    instance
+    undefined
   );
   return result.navigation.config;
 }
 
 export async function updateNavigationTree(
-  tree: NavigationTree[],
-  instance?: string
+  tree: NavigationTree[]
 ) {
   // Remove UI-only fields that aren't accepted by the GraphQL schema
   const sanitizeItem = (item: NavigationItem): Omit<NavigationItem, 'expanded'> => {
@@ -86,14 +83,13 @@ export async function updateNavigationTree(
         };
       };
     };
-  }>(mutation, { tree: sanitizedTree }, instance);
+  }>(mutation, { tree: sanitizedTree });
 
   return result.navigation.updateTree.responseResult;
 }
 
 export async function updateNavigationMode(
-  mode: NavigationConfig["mode"],
-  instance?: string
+  mode: NavigationConfig["mode"]
 ) {
   const mutation = `mutation ($mode: NavigationMode!) {
     navigation {
@@ -117,7 +113,7 @@ export async function updateNavigationMode(
         };
       };
     };
-  }>(mutation, { mode }, instance);
+  }>(mutation, { mode });
 
   return result.navigation.updateConfig.responseResult;
 }

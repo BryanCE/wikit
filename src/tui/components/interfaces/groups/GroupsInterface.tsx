@@ -66,7 +66,7 @@ export function GroupsInterface({
   const loadGroups = async () => {
     setLoadingGroups(true);
     try {
-      const groupList = await groupApi.listGroups(instance ?? "");
+      const groupList = await groupApi.listGroups();
       setGroups(groupList);
       setSelectedGroupIndex(0);
       setStatusMsg(`Loaded ${groupList.length} groups`);
@@ -83,7 +83,7 @@ export function GroupsInterface({
 
   const loadGroupDetails = async (id: number) => {
     try {
-      const group = await groupApi.getGroup(id, instance);
+      const group = await groupApi.getGroup(id);
       setFullGroup(group);
       setMode("detail");
     } catch (error) {
@@ -99,8 +99,8 @@ export function GroupsInterface({
     setLoadingOrphaned(true);
     try {
       const [allUsers, groupsWithUsers] = await Promise.all([
-        userApi.listUsers({ orderBy: "name" }, instance),
-        groupApi.getAllGroupsWithUsers(instance),
+        userApi.listUsers({ orderBy: "name" }),
+        groupApi.getAllGroupsWithUsers(),
       ]);
 
       const orphaned = findOrphanedUsers(allUsers, groupsWithUsers);

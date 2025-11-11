@@ -1,13 +1,14 @@
 import * as userApi from "@/api/users";
 import type { UserCommandOptions, CreateUserInput, UpdateUserInput } from "@/types";
 import { getProviderName } from "@/utils/users";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function listUsersCommand(
   options: { filter?: string; orderBy?: string } & UserCommandOptions
 ): Promise<void> {
+  InstanceContext.setInstance(options.instance ?? "");
   const users = await userApi.listUsers(
-    { filter: options.filter, orderBy: options.orderBy },
-    options.instance
+    { filter: options.filter, orderBy: options.orderBy }
   );
 
   if (users.length === 0) {
@@ -43,7 +44,8 @@ export async function searchUsersCommand(
   query: string,
   options: UserCommandOptions
 ): Promise<void> {
-  const users = await userApi.searchUsers(query, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const users = await userApi.searchUsers(query);
 
   if (users.length === 0) {
     console.log(`No users found matching: ${query}`);
@@ -76,7 +78,8 @@ export async function showUserCommand(
   id: number,
   options: UserCommandOptions
 ): Promise<void> {
-  const user = await userApi.getUser(id, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const user = await userApi.getUser(id);
 
   console.log("\nUser Details:\n");
   console.log(`ID:              ${user.id}`);
@@ -112,7 +115,8 @@ export async function showUserCommand(
 export async function lastLoginsCommand(
   options: UserCommandOptions
 ): Promise<void> {
-  const users = await userApi.getLastLogins(options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const users = await userApi.getLastLogins();
 
   if (users.length === 0) {
     console.log("No login history found");
@@ -141,7 +145,8 @@ export async function createUserCommand(
   input: CreateUserInput,
   options: UserCommandOptions
 ): Promise<void> {
-  const response = await userApi.createUser(input, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const response = await userApi.createUser(input);
 
   if (response.responseResult.succeeded) {
     console.log(`\nUser created successfully!`);
@@ -160,7 +165,8 @@ export async function updateUserCommand(
   input: UpdateUserInput,
   options: UserCommandOptions
 ): Promise<void> {
-  const response = await userApi.updateUser(input, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const response = await userApi.updateUser(input);
 
   if (response.responseResult.succeeded) {
     console.log(`\nUser ${input.id} updated successfully!`);
@@ -175,7 +181,8 @@ export async function deleteUserCommand(
   replaceId: number,
   options: UserCommandOptions
 ): Promise<void> {
-  const response = await userApi.deleteUser(id, replaceId, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const response = await userApi.deleteUser(id, replaceId);
 
   if (response.responseResult.succeeded) {
     console.log(`\nUser ${id} deleted successfully! Content reassigned to user ${replaceId}.`);
@@ -189,7 +196,8 @@ export async function activateUserCommand(
   id: number,
   options: UserCommandOptions
 ): Promise<void> {
-  const response = await userApi.activateUser(id, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const response = await userApi.activateUser(id);
 
   if (response.responseResult.succeeded) {
     console.log(`\nUser ${id} activated successfully!`);
@@ -203,7 +211,8 @@ export async function deactivateUserCommand(
   id: number,
   options: UserCommandOptions
 ): Promise<void> {
-  const response = await userApi.deactivateUser(id, options.instance);
+  InstanceContext.setInstance(options.instance ?? "");
+  const response = await userApi.deactivateUser(id);
 
   if (response.responseResult.succeeded) {
     console.log(`\nUser ${id} deactivated successfully!`);
@@ -217,8 +226,9 @@ export async function verifyUserCommand(
   id: number,
   options: UserCommandOptions
 ): Promise<void> {
+  InstanceContext.setInstance(options.instance ?? "");
   // Get user to check their provider
-  const user = await userApi.getUser(id, options.instance);
+  const user = await userApi.getUser(id);
 
   // Only allow manual verification for local authentication users
   if (user.providerKey !== "local") {
@@ -227,7 +237,7 @@ export async function verifyUserCommand(
     process.exit(1);
   }
 
-  const response = await userApi.verifyUser(id, options.instance);
+  const response = await userApi.verifyUser(id);
 
   if (response.responseResult.succeeded) {
     console.log(`\nUser ${id} verified successfully!`);
@@ -241,8 +251,9 @@ export async function enable2FACommand(
   id: number,
   options: UserCommandOptions
 ): Promise<void> {
+  InstanceContext.setInstance(options.instance ?? "");
   // Get user to check their provider
-  const user = await userApi.getUser(id, options.instance);
+  const user = await userApi.getUser(id);
 
   // Only allow 2FA management for local authentication users
   if (user.providerKey !== "local") {
@@ -251,7 +262,7 @@ export async function enable2FACommand(
     process.exit(1);
   }
 
-  const response = await userApi.enable2FA(id, options.instance);
+  const response = await userApi.enable2FA(id);
 
   if (response.responseResult.succeeded) {
     console.log(`\n2FA enabled for user ${id}!`);
@@ -265,8 +276,9 @@ export async function disable2FACommand(
   id: number,
   options: UserCommandOptions
 ): Promise<void> {
+  InstanceContext.setInstance(options.instance ?? "");
   // Get user to check their provider
-  const user = await userApi.getUser(id, options.instance);
+  const user = await userApi.getUser(id);
 
   // Only allow 2FA management for local authentication users
   if (user.providerKey !== "local") {
@@ -275,7 +287,7 @@ export async function disable2FACommand(
     process.exit(1);
   }
 
-  const response = await userApi.disable2FA(id, options.instance);
+  const response = await userApi.disable2FA(id);
 
   if (response.responseResult.succeeded) {
     console.log(`\n2FA disabled for user ${id}!`);
@@ -289,8 +301,9 @@ export async function resetPasswordCommand(
   id: number,
   options: UserCommandOptions
 ): Promise<void> {
+  InstanceContext.setInstance(options.instance ?? "");
   // Get user to check their provider
-  const user = await userApi.getUser(id, options.instance);
+  const user = await userApi.getUser(id);
 
   // Only allow password reset for local authentication users
   if (user.providerKey !== "local") {
@@ -299,7 +312,7 @@ export async function resetPasswordCommand(
     process.exit(1);
   }
 
-  const response = await userApi.resetPassword(id, options.instance);
+  const response = await userApi.resetPassword(id);
 
   if (response.responseResult.succeeded) {
     console.log(`\nPassword reset email sent to user ${id}!`);

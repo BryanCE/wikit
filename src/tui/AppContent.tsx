@@ -11,6 +11,7 @@ import { AppProviders } from "@comps/app/AppProviders";
 import { Footer } from "@comps/ui/Footer.js";
 import { Header } from "@comps/ui/Header";
 import { COMMON_HELP_PATTERNS, formatHelpText, HELP_TEXT } from "@/tui/constants/keyboard";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 interface AppProps {
   instance?: string;
@@ -43,6 +44,11 @@ export function AppContent({ instance: initialInstance }: AppProps) {
   const { theme } = useTheme();
   const { helpText, statusMessage } = useFooter();
   const headerData = useHeader();
+
+  // Update global InstanceContext whenever currentInstance changes
+  useEffect(() => {
+    InstanceContext.setInstance(currentInstance);
+  }, [currentInstance]);
 
   // Set mode-specific default help text (child components will override when they mount)
   const modeHelpText = useMemo(() => {

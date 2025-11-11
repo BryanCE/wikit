@@ -6,6 +6,7 @@ import {
 } from "@/api/navigation";
 import type { NavigationItem, NavigationConfig, NavigationTree } from "@/types";
 import { logger } from "@/utils/logger";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 interface NavigationExportData {
   config: NavigationConfig;
@@ -18,12 +19,13 @@ interface NavigationOptions {
 }
 
 export async function listNavigation(options: NavigationOptions = {}) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log("🔍 Fetching navigation tree...");
 
   try {
     const [tree, config] = await Promise.all([
-      getNavigationTree(options.instance),
-      getNavigationConfig(options.instance),
+      getNavigationTree(),
+      getNavigationConfig(),
     ]);
 
     console.log(`📋 Navigation Mode: ${config.mode}`);
@@ -73,10 +75,11 @@ export async function setNavigationMode(
   mode: NavigationConfig["mode"],
   options: NavigationOptions = {}
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`🔧 Setting navigation mode to: ${mode}`);
 
   try {
-    const result = await updateNavigationMode(mode, options.instance);
+    const result = await updateNavigationMode(mode);
 
     if (result.succeeded) {
       console.log("✅ Navigation mode updated successfully");
@@ -107,10 +110,11 @@ export async function addNavigationItem(
   },
   options: NavigationOptions = {}
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   logger.info({ itemData, options }, "Adding navigation item");
 
   try {
-    const tree = await getNavigationTree(options.instance);
+    const tree = await getNavigationTree();
     const locale = itemData.locale ?? "en";
 
     let localeTree = tree.find((t) => t.locale === locale);
@@ -150,7 +154,7 @@ export async function addNavigationItem(
     }
 
     logger.info({ tree, locale }, "Updating navigation tree");
-    const result = await updateNavigationTree(tree, options.instance);
+    const result = await updateNavigationTree(tree);
 
     if (result.succeeded) {
       logger.info({ result }, "Navigation item added successfully");
@@ -174,10 +178,11 @@ export async function removeNavigationItem(
   itemId: string,
   options: NavigationOptions & { locale?: string } = {}
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`🗑️ Removing navigation item: ${itemId}`);
 
   try {
-    const tree = await getNavigationTree(options.instance);
+    const tree = await getNavigationTree();
     const locale = options.locale ?? "en";
 
     const localeTree = tree.find((t) => t.locale === locale);
@@ -193,7 +198,7 @@ export async function removeNavigationItem(
       return;
     }
 
-    const result = await updateNavigationTree(tree, options.instance);
+    const result = await updateNavigationTree(tree);
 
     if (result.succeeded) {
       console.log("✅ Navigation item removed successfully");
@@ -216,12 +221,13 @@ export async function exportNavigation(
   filePath: string,
   options: NavigationOptions = {}
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`📄 Exporting navigation to: ${filePath}`);
 
   try {
     const [tree, config] = await Promise.all([
-      getNavigationTree(options.instance),
-      getNavigationConfig(options.instance),
+      getNavigationTree(),
+      getNavigationConfig(),
     ]);
 
     const exportData = {
@@ -247,6 +253,7 @@ export async function importNavigation(
   filePath: string,
   options: NavigationOptions & { mode?: boolean } = {}
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   console.log(`📄 Importing navigation from: ${filePath}`);
 
   try {
@@ -256,8 +263,7 @@ export async function importNavigation(
 
     if (options.mode && importData.config) {
       const modeResult = await updateNavigationMode(
-        importData.config.mode,
-        options.instance
+        importData.config.mode
       );
       if (!modeResult.succeeded) {
         console.error(
@@ -269,8 +275,7 @@ export async function importNavigation(
 
     if (importData.tree) {
       const treeResult = await updateNavigationTree(
-        importData.tree,
-        options.instance
+        importData.tree
       );
       if (!treeResult.succeeded) {
         console.error(
@@ -327,10 +332,11 @@ export async function moveNavigationItem(
   itemId: string,
   options: NavigationOptions & { locale?: string; insertAfterId?: string } = {}
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   logger.info({ itemId, options }, "Moving navigation item");
 
   try {
-    const tree = await getNavigationTree(options.instance);
+    const tree = await getNavigationTree();
     const locale = options.locale ?? "en";
 
     const localeTree = tree.find((t) => t.locale === locale);
@@ -374,7 +380,7 @@ export async function moveNavigationItem(
     }
 
     logger.info({ tree, locale }, "Updating navigation tree after move");
-    const result = await updateNavigationTree(tree, options.instance);
+    const result = await updateNavigationTree(tree);
 
     if (result.succeeded) {
       logger.info({ result }, "Navigation item moved successfully");
@@ -398,6 +404,7 @@ export async function moveNavigationItems(
   itemIds: string[],
   options: NavigationOptions & { locale?: string; insertAfterId?: string } = {}
 ) {
+  InstanceContext.setInstance(options.instance ?? "");
   logger.info({ itemIds, options }, "Moving multiple navigation items");
 
   if (itemIds.length === 0) {
@@ -410,7 +417,7 @@ export async function moveNavigationItems(
   }
 
   try {
-    const tree = await getNavigationTree(options.instance);
+    const tree = await getNavigationTree();
     const locale = options.locale ?? "en";
 
     const localeTree = tree.find((t) => t.locale === locale);
@@ -470,7 +477,7 @@ export async function moveNavigationItems(
       { tree, locale, itemCount: itemIds.length },
       "Updating navigation tree after moving multiple items"
     );
-    const result = await updateNavigationTree(tree, options.instance);
+    const result = await updateNavigationTree(tree);
 
     if (result.succeeded) {
       logger.info(
