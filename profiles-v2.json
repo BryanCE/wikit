@@ -1,0 +1,480 @@
+[
+  {
+    "email": "nancy@primecreditline.com",
+    "portfolio": "TFG",
+    "team": "TFG Nancy",
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "TL",
+    "name": "Nancy Alcantara"
+  },
+  {
+    "email": "angelicac@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Nancy",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2019-02-21",
+    "role": "RM",
+    "name": "Angelica Camacho"
+  },
+  {
+    "email": "estephanier@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Nancy",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2023-04-03",
+    "role": "RM",
+    "name": "Estephanie Rojas"
+  },
+  {
+    "email": "karema@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Nancy",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2020-07-20",
+    "role": "RM",
+    "name": "Karem Angel"
+  },
+  {
+    "email": "nataliem@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Nancy",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2020-11-02",
+    "role": "RM",
+    "name": "Natalie Moran"
+  },
+  {
+    "email": "risak@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Nancy",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-02-10",
+    "role": "RM",
+    "name": "Risa Keller"
+  },
+  {
+    "email": "willowl@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Nancy",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2020-07-23",
+    "role": "RM",
+    "name": "Willow Lewis"
+  },
+  {
+    "email": "berlynt@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Berlyn",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-01",
+    "role": "TL",
+    "name": "Berlyn Taylor"
+  },
+  {
+    "email": "desia@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Berlyn",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-06-30",
+    "role": "RM",
+    "name": "Desiree Adams (Desi)"
+  },
+  {
+    "email": "kenzies@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Berlyn",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-06-30",
+    "role": "RM",
+    "name": "McKenzie Stock (Kenzie)"
+  },
+  {
+    "email": "mial@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Berlyn",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-06-30",
+    "role": "RM",
+    "name": "Maliya Lewis (Mia)"
+  },
+  {
+    "email": "mariahd@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": "TFG Berlyn",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-14",
+    "role": "RM",
+    "name": "Mariah Darling"
+  },
+  {
+    "email": "cinthias@primecreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Cinthia",
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "TL",
+    "name": "Cinthia Serrano"
+  },
+  {
+    "email": "mariat@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Cinthia",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2023-07-10",
+    "role": "RM",
+    "name": "Maria Tapia"
+  },
+  {
+    "email": "rosel@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Cinthia",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2024-11-12",
+    "role": "RM",
+    "name": "Rose Langi"
+  },
+  {
+    "email": "shelby@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Cinthia",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2019-07-15",
+    "role": "RM",
+    "name": "Shelby Mair"
+  },
+  {
+    "email": "tanyag@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Cinthia",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2021-02-01",
+    "role": "RM",
+    "name": "Tanya Garibay"
+  },
+  {
+    "email": "americab@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Cinthia",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-14",
+    "role": "RM",
+    "name": "America Baldwin"
+  },
+  {
+    "email": "rociou@titanfundinggroup.com",
+    "portfolio": "CCL",
+    "team": "CCL Rocio",
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "TL",
+    "name": "Rocio Uribe"
+  },
+  {
+    "email": "hollands@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Rocio",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-14",
+    "role": "RM",
+    "name": "Holland Smith"
+  },
+  {
+    "email": "jasminem@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Rocio",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2024-05-13",
+    "role": "RM",
+    "name": "Jasmine Molina"
+  },
+  {
+    "email": "nancyb@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Rocio",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-02-10",
+    "role": "RM",
+    "name": "Nancy Baldwin"
+  },
+  {
+    "email": "tracim@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Rocio",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-14",
+    "role": "RM",
+    "name": "Traci Morrison"
+  },
+  {
+    "email": "valeriag@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": "CCL Rocio",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2023-10-10",
+    "role": "RM",
+    "name": "Valeria Garcia"
+  },
+  {
+    "email": "liz@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Liz",
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "TL",
+    "name": "Liz Tapia"
+  },
+  {
+    "email": "aria@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Liz",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-14",
+    "role": "RM",
+    "name": "Ariana Adams"
+  },
+  {
+    "email": "emmaa@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Liz",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-02-10",
+    "role": "RM",
+    "name": "Emma Autry"
+  },
+  {
+    "email": "gisellee@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Liz",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2022-10-11",
+    "role": "RM",
+    "name": "Giselle Elizarraraz"
+  },
+  {
+    "email": "grettyl@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Liz",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2021-02-01",
+    "role": "RM",
+    "name": "Gretty Lopez"
+  },
+  {
+    "email": "jolley@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Liz",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-07-22",
+    "role": "RM",
+    "name": "jolley (abby)"
+  },
+  {
+    "email": "trinityk@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Liz",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2020-05-11",
+    "role": "RM",
+    "name": "Trinity Kaye"
+  },
+  {
+    "email": "meghannf@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Meghann",
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "TL",
+    "name": "Meghann Finau"
+  },
+  {
+    "email": "ashleyu@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Meghann",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2023-10-10",
+    "role": "RM",
+    "name": "Ashley Uribe"
+  },
+  {
+    "email": "shekeylal@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Meghann",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2024-06-24",
+    "role": "RM",
+    "name": "Shekeyla Lopez-Luna"
+  },
+  {
+    "email": "sarinab@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Meghann",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-04-07",
+    "role": "RM",
+    "name": "Sarina Brown"
+  },
+  {
+    "email": "katieg@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Meghann",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2024-11-12",
+    "role": "RM",
+    "name": "Katie Guest"
+  },
+  {
+    "email": "mariam@primecreditline.com",
+    "portfolio": "PCL",
+    "team": "PCL Meghann",
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-14",
+    "role": "RM",
+    "name": "Maria Maciel"
+  },
+  {
+    "email": "bekahk@primecreditline.com",
+    "portfolio": "PCL",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-02-10",
+    "role": "RM"
+  },
+  {
+    "email": "bryane@ileadserve.com",
+    "portfolio": "iLeadServe",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "Developer"
+  },
+  {
+    "email": "cass@primecreditline.com",
+    "portfolio": "PCL",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "Operations Manager"
+  },
+  {
+    "email": "casss@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-14",
+    "role": "RM"
+  },
+  {
+    "email": "destinyr@primecreditline.com",
+    "portfolio": "PCL",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2022-01-18",
+    "role": "Operations Manager"
+  },
+  {
+    "email": "francisca@ileadserve.com",
+    "portfolio": "iLeadServe",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "Operations Manager"
+  },
+  {
+    "email": "leticiaz@titanfundinggroup.com",
+    "portfolio": "TFG",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2023-07-10",
+    "role": "RM"
+  },
+  {
+    "email": "lexig@primecreditline.com",
+    "portfolio": "PCL",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "TL"
+  },
+  {
+    "email": "maddiej@communitycreditline.com",
+    "portfolio": "CCL",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": "2025-08-14",
+    "role": "RM"
+  },
+  {
+    "email": "marci@ileadserve.com",
+    "portfolio": "iLeadServe",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "Operations Manager"
+  },
+  {
+    "email": "natasha@primecreditline.com",
+    "portfolio": "PCL",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "Operations Manager"
+  },
+  {
+    "email": "tylern@ileadserve.com",
+    "portfolio": "iLeadServe",
+    "team": null,
+    "birthday": null,
+    "bio": null,
+    "hire_date": null,
+    "role": "TL"
+  }
+]
