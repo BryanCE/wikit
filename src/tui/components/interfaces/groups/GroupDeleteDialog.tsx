@@ -7,14 +7,12 @@ import type { GroupMinimal } from "@/types";
 
 interface GroupDeleteDialogProps {
   group: GroupMinimal;
-  instance: string;
   onSuccess: () => void;
   onStatusChange: (message: string) => void;
 }
 
 export function GroupDeleteDialog({
   group,
-  instance,
   onSuccess,
   onStatusChange,
 }: GroupDeleteDialogProps) {
@@ -27,7 +25,7 @@ export function GroupDeleteDialog({
     onStatusChange(`Deleting group "${group.name}"...`);
 
     try {
-      const result = await deleteGroup(group.id, instance);
+      const result = await deleteGroup(group.id);
 
       if (result.succeeded) {
         onStatusChange(`Group "${group.name}" deleted successfully`);

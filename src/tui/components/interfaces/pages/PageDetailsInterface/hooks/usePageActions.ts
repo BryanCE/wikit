@@ -4,14 +4,12 @@ import type { Page } from "@/types";
 
 interface UsePageActionsProps {
   page: Page;
-  instance?: string;
   setCopyStatus: (status: string) => void;
   loadPageDetails: () => Promise<void>;
 }
 
 export function usePageActions({
   page,
-  instance,
   setCopyStatus,
   loadPageDetails,
 }: UsePageActionsProps) {
@@ -29,7 +27,7 @@ export function usePageActions({
   };
 
   const handleDelete = async () => {
-    const result = await deletePage(page.id, instance);
+    const result = await deletePage(page.id);
 
     if (!result.succeeded) {
       throw new Error(result.message ?? "Failed to delete page");
@@ -38,7 +36,7 @@ export function usePageActions({
 
   const handleMove = async (destinationPath: string, locale: string) => {
     const { movePage } = await import("@/api/pages");
-    const result = await movePage(parseInt(page.id), destinationPath, locale, instance);
+    const result = await movePage(parseInt(page.id), destinationPath, locale);
 
     if (!result.succeeded) {
       throw new Error(result.message ?? "Failed to move page");
@@ -47,7 +45,7 @@ export function usePageActions({
 
   const handleConvert = async (editor: string) => {
     const { convertPage } = await import("@/api/pages");
-    const result = await convertPage(parseInt(page.id), editor, instance);
+    const result = await convertPage(parseInt(page.id), editor);
 
     if (!result.succeeded) {
       throw new Error(result.message ?? "Failed to convert page");
@@ -58,7 +56,7 @@ export function usePageActions({
 
   const handleRender = async () => {
     const { renderPage } = await import("@/api/pages");
-    const result = await renderPage(parseInt(page.id), instance);
+    const result = await renderPage(parseInt(page.id));
 
     if (!result.succeeded) {
       throw new Error(result.message ?? "Failed to render page");

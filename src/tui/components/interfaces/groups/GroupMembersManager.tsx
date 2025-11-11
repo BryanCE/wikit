@@ -14,7 +14,6 @@ import { useGroupMembersKeyboard } from "./hooks/useGroupMembersKeyboard";
 
 interface GroupMembersManagerProps {
   group: Group;
-  instance: string;
   onSuccess: () => void;
   onStatusChange: (message: string) => void;
   onClose: () => void;
@@ -24,7 +23,6 @@ type TabType = "members" | "add";
 
 export function GroupMembersManager({
   group,
-  instance,
   onSuccess,
   onStatusChange,
   onClose,
@@ -87,7 +85,7 @@ export function GroupMembersManager({
   const loadUsers = async () => {
     setIsLoadingUsers(true);
     try {
-      const users = await listUsers({}, instance);
+      const users = await listUsers({});
       setAvailableUsers(users);
     } catch (error) {
       onStatusChange(
@@ -105,7 +103,7 @@ export function GroupMembersManager({
     onStatusChange("Adding user to group...");
 
     try {
-      const result = await assignUser(group.id, userId, instance);
+      const result = await assignUser(group.id, userId);
 
       if (result.succeeded) {
         onStatusChange("User added to group successfully");
@@ -141,7 +139,7 @@ export function GroupMembersManager({
 
     for (const userId of marked) {
       try {
-        const result = await unassignUser(group.id, userId, instance);
+        const result = await unassignUser(group.id, userId);
         if (result.succeeded) {
           successCount++;
         } else {

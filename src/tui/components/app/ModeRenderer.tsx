@@ -61,7 +61,6 @@ export function ModeRenderer({
     case AppMode.PAGES:
       return (
         <PagesInterface
-          instance={currentInstance ?? ""}
           onEsc={handleEscape}
         />
       );
@@ -69,7 +68,6 @@ export function ModeRenderer({
     case AppMode.COPY_PAGES:
       return (
         <PageCopyInterface
-          instance={currentInstance ?? ""}
           onEsc={handleEscape}
         />
       );
@@ -80,7 +78,6 @@ export function ModeRenderer({
     case AppMode.COMPARE:
       return (
         <CompareInterface
-          instance={currentInstance ?? ""}
           onEsc={handleEscape}
         />
       );
@@ -88,7 +85,6 @@ export function ModeRenderer({
     case AppMode.STATUS:
       return (
         <StatusInterface
-          instance={currentInstance ?? ""}
           onEsc={handleEscape}
         />
       );
@@ -96,7 +92,6 @@ export function ModeRenderer({
     case AppMode.SYNC:
       return (
         <SyncInterface
-          instance={currentInstance ?? ""}
           onEsc={handleEscape}
         />
       );
@@ -111,7 +106,6 @@ export function ModeRenderer({
     case AppMode.NAVIGATION:
       return (
         <NavInterface
-          instance={currentInstance ?? ""}
           onEsc={() => setCurrentMode(AppMode.COMMAND)}
         />
       );
@@ -119,7 +113,6 @@ export function ModeRenderer({
     case AppMode.USERS:
       return (
         <UsersInterface
-          instance={currentInstance ?? ""}
           onEsc={handleEscape}
         />
       );
@@ -127,7 +120,6 @@ export function ModeRenderer({
     case AppMode.GROUPS:
       return (
         <GroupsInterface
-          instance={currentInstance ?? ""}
           onEsc={handleEscape}
         />
       );
@@ -136,7 +128,6 @@ export function ModeRenderer({
       // Always render AnalysisInterface - it handles everything internally
       return (
         <AnalysisInterface
-          instance={currentInstance ?? undefined}
           onEsc={handleEscape}
         />
       );

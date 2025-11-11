@@ -13,12 +13,10 @@ import { PageSelector } from "./PageSelector.js";
 import { MarkedPagesSummary } from "./MarkedPagesSummary.js";
 
 interface PageCopyInterfaceProps {
-  instance: string;
   onEsc?: () => void;
 }
 
 export function PageCopyInterface({
-  instance,
   onEsc,
 }: PageCopyInterfaceProps) {
   // Setup escape handling
@@ -36,6 +34,7 @@ export function PageCopyInterface({
   const [statusMsg, setStatusMsg] = useState("");
   useFooterStatus(statusMsg);
 
+  const instance = "rmwiki"; // TODO: Get from InstanceContext
   const targetInstance = instance === "rmwiki" ? "tlwiki" : "rmwiki";
 
   useHeaderData({
@@ -45,7 +44,7 @@ export function PageCopyInterface({
 
   useEffect(() => {
     void loadPages();
-  }, [instance]);
+  }, []);
 
   const loadPages = async () => {
     try {

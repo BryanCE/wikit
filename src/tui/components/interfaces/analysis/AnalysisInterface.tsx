@@ -24,12 +24,10 @@ export type AnalysisTab =
   | "orphaned";
 
 interface AnalysisInterfaceProps {
-  instance?: string;
   onEsc?: () => void;
 }
 
 export function AnalysisInterface({
-  instance,
   onEsc,
 }: AnalysisInterfaceProps) {
   const { theme } = useTheme();
@@ -336,7 +334,6 @@ export function AnalysisInterface({
     orphanResult,
     onOrphanComplete: setOrphanResult,
     // Shared callbacks
-    instance,
     onPageSelect: setSelectedPage,
   });
 
@@ -345,7 +342,6 @@ export function AnalysisInterface({
     return (
       <PageDetails
         page={selectedPage}
-        instance={instance}
         onClose={() => setSelectedPage(null)}
         onSetStatus={(message, duration) => {
           setStatusMsg(message);
@@ -437,7 +433,6 @@ export function AnalysisInterface({
         {currentTab === "analyze" && (
           <AnalyzeTab
             inContent={inAnalyzeContent}
-            instance={instance}
             pagesExportPath={analyzePagesPath}
             navExportPath={analyzeNavPath}
             currentField={analyzeCurrentField}
@@ -462,7 +457,6 @@ export function AnalysisInterface({
         {currentTab === "comparePages" && (
           <ComparePagesTab
             inContent={inComparePagesContent}
-            instance={instance}
             oldPagesPath={comparePagesOldPath}
             newPagesPath={comparePagesNewPath}
             currentField={comparePagesCurrentField}
@@ -487,7 +481,6 @@ export function AnalysisInterface({
         {currentTab === "compareNav" && (
           <CompareNavTab
             inContent={inCompareNavContent}
-            instance={instance}
             oldNavPath={compareNavOldPath}
             newNavPath={compareNavNewPath}
             currentField={compareNavCurrentField}
@@ -512,7 +505,6 @@ export function AnalysisInterface({
         {currentTab === "orphaned" && (
           <OrphanedTab
             inContent={inOrphanedContent}
-            instance={instance}
             focusArea={orphanedFocusArea}
             isFetching={isFetchingOrphans}
             error={orphanedError}

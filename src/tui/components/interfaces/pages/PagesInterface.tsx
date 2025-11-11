@@ -19,7 +19,6 @@ import { usePagesKeyboard } from "./hooks/usePagesKeyboard";
 import type { Page } from "@/types";
 
 interface PagesInterfaceProps {
-  instance: string | null;
   onEsc?: () => void;
 }
 
@@ -28,7 +27,6 @@ type FocusArea = "fields" | "buttons";
 type ActionButton = "export" | "browse" | "cancel";
 
 export function PagesInterface({
-  instance,
   onEsc,
 }: PagesInterfaceProps) {
   const { theme } = useTheme();
@@ -88,23 +86,19 @@ export function PagesInterface({
   useEffect(() => {
     const date = new Date().toISOString().split("T")[0];
     setFilename(`pages-export-${date}.json`);
-    if (instance) {
-      void loadBothPageSets();
-    }
-  }, [instance]);
+    void loadBothPageSets();
+  }, []);
 
   const loadBothPageSets = async () => {
     await Promise.all([loadPagesForList(), loadPagesForExport(), loadPagesForDelete()]);
   };
 
   const loadPagesForList = async () => {
-    if (!instance) return;
     try {
       setLoadingPages(true);
       setPagesError(null);
       setStatusMsg("Loading pages...");
       const pageList = await getPages("", {
-        instance,
         recursive: true,
         limit: 500,
       });
@@ -121,7 +115,6 @@ export function PagesInterface({
   };
 
   const loadPagesForExport = async () => {
-    if (!instance) return;
     try {
       setStatusMsg("Loading pages for export...");
       const exportPages = await getAllPages();
@@ -135,13 +128,11 @@ export function PagesInterface({
   };
 
   const loadPagesForDelete = async () => {
-    if (!instance) return;
     try {
       setLoadingDeletePages(true);
       setDeleteError(null);
       setStatusMsg("Loading pages for deletion...");
       const deletePages = await getPages("", {
-        instance,
         recursive: true,
         limit: 500,
       });
@@ -172,12 +163,6 @@ export function PagesInterface({
   };
 
   const handleExport = () => {
-    if (!instance) {
-      logger.error("No instance configured for export");
-      setError("No instance configured");
-      setStatusMsg("Error: No instance configured");
-      return;
-    }
     setShowExportDialog(true);
   };
 
@@ -263,7 +248,7 @@ export function PagesInterface({
     title: "Pages",
     metadata: currentTab === "delete"
       ? `${markedForDeletion.size} marked`
-      : instance ?? "No instance"
+      : "Pages"
   });
 
   // Footer help text
@@ -419,16 +404,6 @@ export function PagesInterface({
     setInDeleteSearchMode,
   });
 
-  if (!instance) {
-    return (
-      <Box flexDirection="column">
-        <Text color={theme.colors.error}>
-          No instance configured. Please run setup first.
-        </Text>
-      </Box>
-    );
-  }
-
   // If export dialog is open, render it
   if (showExportDialog) {
     const fullPath = `${directory}/${filename}`;
@@ -436,7 +411,6 @@ export function PagesInterface({
       `• Location: ${fullPath}`,
       `• Pages: ${pages.length} (${pages.filter(p => p.isPublished).length} published, ${pages.filter(p => !p.isPublished).length} unpublished)`,
       `• Include Content: ${includeContent ? "Yes" : "No"}`,
-      `• Instance: ${instance}`,
     ];
 
     return (
@@ -526,7 +500,6 @@ export function PagesInterface({
     return (
       <PageDetails
         page={selectedPage}
-        instance={instance}
         onClose={() => setSelectedPage(null)}
         onRefresh={loadPagesForList}
         onSetStatus={(message, duration) => {
@@ -615,7 +588,6 @@ export function PagesInterface({
 
         {currentTab === "export" && (
           <ExportTab
-            instance={instance}
             directory={directory}
             filename={filename}
             includeContent={includeContent}

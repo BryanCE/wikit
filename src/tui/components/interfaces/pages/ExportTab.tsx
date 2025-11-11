@@ -15,7 +15,6 @@ const FORM_FIELDS = [
 ] as const;
 
 interface ExportTabProps {
-  instance: string;
   directory: string;
   filename: string;
   includeContent: boolean;

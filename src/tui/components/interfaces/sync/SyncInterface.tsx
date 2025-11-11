@@ -11,12 +11,10 @@ import { SyncConfirmation } from "./SyncConfirmation.js";
 import { SyncResults } from "./SyncResults.js";
 
 interface SyncInterfaceProps {
-  instance: string;
   onEsc?: () => void;
 }
 
 export function SyncInterface({
-  instance,
   onEsc,
 }: SyncInterfaceProps) {
   // Setup escape handling
@@ -31,6 +29,7 @@ export function SyncInterface({
   const [statusMsg, setStatusMsg] = useState("");
   useFooterStatus(statusMsg);
 
+  const instance = "rmwiki"; // TODO: Get from InstanceContext
   const otherInstance = instance === "rmwiki" ? "tlwiki" : "rmwiki";
 
   useHeaderData({

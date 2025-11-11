@@ -4,14 +4,12 @@ import type { UserMinimal, User, UsersInterfaceMode } from "@/types";
 import { getProviderName } from "@/utils/users";
 
 interface UseUserActionsProps {
-  instance: string | null;
   onStatusChange: (message: string) => void;
   onModeChange: (mode: UsersInterfaceMode) => void;
   onUserUpdate: () => void;
 }
 
 export function useUserActions({
-  instance,
   onStatusChange,
   onModeChange,
   onUserUpdate,
@@ -78,10 +76,7 @@ export function useUserActions({
 
     if (action === "view") {
       try {
-        const fullUserData = await userApi.getUser(
-          user.id,
-          instance ?? undefined
-        );
+        const fullUserData = await userApi.getUser(user.id);
         setFullUser(fullUserData);
         onModeChange("detail");
       } catch (error) {
@@ -93,10 +88,7 @@ export function useUserActions({
       }
     } else if (action === "edit") {
       try {
-        const fullUserData = await userApi.getUser(
-          user.id,
-          instance ?? undefined
-        );
+        const fullUserData = await userApi.getUser(user.id);
         setFullUser(fullUserData);
         onModeChange("edit");
       } catch (error) {
@@ -111,10 +103,7 @@ export function useUserActions({
       onModeChange("delete");
     } else if (action === "activate") {
       try {
-        const response = await userApi.activateUser(
-          user.id,
-          instance ?? undefined
-        );
+        const response = await userApi.activateUser(user.id);
         if (response.responseResult.succeeded) {
           onStatusChange(`User ${user.name} activated successfully!`);
           onUserUpdate();
@@ -143,10 +132,7 @@ export function useUserActions({
       }
 
       try {
-        const response = await userApi.enable2FA(
-          user.id,
-          instance ?? undefined
-        );
+        const response = await userApi.enable2FA(user.id);
         if (response.responseResult.succeeded) {
           onStatusChange(`2FA enabled for user ${user.name}!`);
           onUserUpdate();
@@ -173,10 +159,7 @@ export function useUserActions({
 
     if (action === "deactivate") {
       try {
-        const response = await userApi.deactivateUser(
-          user.id,
-          instance ?? undefined
-        );
+        const response = await userApi.deactivateUser(user.id);
         if (response.responseResult.succeeded) {
           onStatusChange(`User ${user.name} deactivated successfully!`);
           onUserUpdate();
@@ -206,10 +189,7 @@ export function useUserActions({
       }
 
       try {
-        const response = await userApi.verifyUser(
-          user.id,
-          instance ?? undefined
-        );
+        const response = await userApi.verifyUser(user.id);
         if (response.responseResult.succeeded) {
           onStatusChange(`User ${user.name} verified successfully!`);
           onUserUpdate();
@@ -239,10 +219,7 @@ export function useUserActions({
       }
 
       try {
-        const response = await userApi.disable2FA(
-          user.id,
-          instance ?? undefined
-        );
+        const response = await userApi.disable2FA(user.id);
         if (response.responseResult.succeeded) {
           onStatusChange(`2FA disabled for user ${user.name}!`);
           onUserUpdate();
@@ -272,10 +249,7 @@ export function useUserActions({
       }
 
       try {
-        const response = await userApi.resetPassword(
-          user.id,
-          instance ?? undefined
-        );
+        const response = await userApi.resetPassword(user.id);
         if (response.responseResult.succeeded) {
           onStatusChange(`Password reset email sent to ${user.name}!`);
           onUserUpdate();

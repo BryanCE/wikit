@@ -11,12 +11,10 @@ import { CompareOptions as CompareOptionsComponent } from "./CompareOptions.js";
 import { CompareResultsDisplay } from "./CompareResults.js";
 
 interface CompareInterfaceProps {
-  instance: string;
   onEsc?: () => void;
 }
 
 export function CompareInterface({
-  instance,
   onEsc,
 }: CompareInterfaceProps) {
   const { theme } = useTheme();
@@ -28,6 +26,7 @@ export function CompareInterface({
   const [statusMsg, setStatusMsg] = useState("");
   useFooterStatus(statusMsg);
 
+  const instance = "rmwiki"; // TODO: Get from InstanceContext
   const otherInstance = instance === "rmwiki" ? "tlwiki" : "rmwiki";
 
   const options = [

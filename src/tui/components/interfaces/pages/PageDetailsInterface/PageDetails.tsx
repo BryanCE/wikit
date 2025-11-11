@@ -18,7 +18,6 @@ import { usePageDetailsKeyboard } from "./hooks/usePageDetailsKeyboard";
 
 interface PageDetailsModalProps {
   page: Page;
-  instance?: string;
   onClose: () => void;
   onRefresh?: () => Promise<void>;
   onSetStatus?: (message: string, duration?: number) => void;
@@ -26,7 +25,6 @@ interface PageDetailsModalProps {
 
 export function PageDetails({
   page,
-  instance,
   onClose,
   onRefresh,
   onSetStatus,
@@ -48,10 +46,7 @@ export function PageDetails({
   const { width, height } = useTerminalDimensions();
 
   // Use custom hooks
-  const { detailedPage, loading, error, loadPageDetails } = usePageDetails(
-    page,
-    instance
-  );
+  const { detailedPage, loading, error, loadPageDetails } = usePageDetails(page);
 
   const {
     handleCopyPath,
@@ -61,7 +56,6 @@ export function PageDetails({
     handleRender,
   } = usePageActions({
     page,
-    instance,
     setCopyStatus,
     loadPageDetails,
   });
@@ -152,9 +146,6 @@ export function PageDetails({
           <Text color={theme.colors.warning}>
             Attempted locale: {page.locale}
           </Text>
-          <Text color={theme.colors.warning}>
-            Instance: {instance ?? "default"}
-          </Text>
         </Box>
       );
     }
@@ -176,7 +167,6 @@ export function PageDetails({
         return (
           <InfoTab
             detailedPage={detailedPage}
-            instance={instance}
             selectedIndex={infoScrollPosition}
           />
         );

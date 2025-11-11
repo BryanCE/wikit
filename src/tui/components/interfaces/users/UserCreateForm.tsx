@@ -10,7 +10,6 @@ import { formatHelpText, HELP_TEXT, COMMON_HELP_PATTERNS } from "@/tui/constants
 import type { CreateUserInput } from "@/types";
 
 interface UserCreateFormProps {
-  instance?: string;
   onSuccess: () => void;
   onStatusChange: (message: string) => void;
   inCreateForm?: boolean;
@@ -51,7 +50,6 @@ const FORM_FIELDS: FormField[] = [
 const PROVIDER_OPTIONS = ["local", "oauth2", "saml"];
 
 export function UserCreateForm({
-  instance,
   onSuccess,
   onStatusChange,
   inCreateForm = false,
@@ -201,7 +199,7 @@ export function UserCreateForm({
         input.passwordRaw = formData.password;
       }
 
-      const response = await createUser(input, instance);
+      const response = await createUser(input);
 
       if (response.responseResult.succeeded) {
         onStatusChange(`User created successfully! ID: ${response.user?.id}`);
@@ -258,7 +256,6 @@ export function UserCreateForm({
   if (showGroupSelector) {
     return (
       <GroupSelector
-        instance={instance}
         selectedGroupIds={formData.groups}
         onConfirm={(groupIds) => {
           setFormData((prev: CreateUserInput & { password?: string }) => ({

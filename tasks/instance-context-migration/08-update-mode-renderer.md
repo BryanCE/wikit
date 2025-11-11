@@ -62,18 +62,18 @@ Update all mode cases:
 
 ## Checklist
 
-- [ ] Remove `instance={currentInstance}` from UsersInterface
-- [ ] Remove `instance={currentInstance}` from GroupsInterface
-- [ ] Remove `instance={currentInstance}` from PagesInterface
-- [ ] Remove `instance={currentInstance}` from NavInterface
-- [ ] Remove `instance={currentInstance}` from StatusInterface
-- [ ] Remove `instance={currentInstance}` from SyncInterface
-- [ ] Remove `instance={currentInstance}` from CompareInterface
-- [ ] Remove `instance={currentInstance}` from AnalysisInterface
-- [ ] Remove `instance={currentInstance}` from PageCopyInterface
-- [ ] Remove from any other interface components
-- [ ] Check if `currentInstance` variable is still needed elsewhere
-- [ ] TypeScript compiles without errors
+- [x] Remove `instance={currentInstance}` from UsersInterface
+- [x] Remove `instance={currentInstance}` from GroupsInterface
+- [x] Remove `instance={currentInstance}` from PagesInterface
+- [x] Remove `instance={currentInstance}` from NavInterface
+- [x] Remove `instance={currentInstance}` from StatusInterface
+- [x] Remove `instance={currentInstance}` from SyncInterface
+- [x] Remove `instance={currentInstance}` from CompareInterface
+- [x] Remove `instance={currentInstance}` from AnalysisInterface
+- [x] Remove `instance={currentInstance}` from PageCopyInterface
+- [x] Remove from any other interface components
+- [x] Check if `currentInstance` variable is still needed elsewhere
+- [x] TypeScript compiles without errors
 
 ## Verification
 

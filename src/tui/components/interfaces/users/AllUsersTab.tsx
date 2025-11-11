@@ -15,7 +15,6 @@ interface AllUsersTabProps {
   mode: UsersInterfaceMode;
   selectedUser: UserMinimal | null;
   fullUser: User | null;
-  instance: string | null;
   onStatusChange: (message: string) => void;
   onUserUpdate: () => void;
   onAction: (action: string, user: UserMinimal) => void;
@@ -37,7 +36,6 @@ export function AllUsersTab({
   mode,
   selectedUser,
   fullUser,
-  instance,
   onStatusChange,
   onUserUpdate,
   onAction,
@@ -72,7 +70,6 @@ export function AllUsersTab({
     return (
       <UserEditForm
         user={fullUser}
-        instance={instance ?? undefined}
         onSuccess={onUserUpdate}
         onStatusChange={onStatusChange}
       />
@@ -102,7 +99,6 @@ export function AllUsersTab({
     return (
       <UserDeleteDialog
         user={selectedUser}
-        instance={instance ?? undefined}
         onSuccess={onUserUpdate}
         onStatusChange={onStatusChange}
       />

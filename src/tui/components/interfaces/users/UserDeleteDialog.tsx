@@ -8,14 +8,12 @@ import type { UserMinimal } from "@/types";
 
 interface UserDeleteDialogProps {
   user: UserMinimal;
-  instance?: string;
   onSuccess: () => void;
   onStatusChange: (message: string) => void;
 }
 
 export function UserDeleteDialog({
   user,
-  instance,
   onSuccess,
   onStatusChange,
 }: UserDeleteDialogProps) {
@@ -30,12 +28,12 @@ export function UserDeleteDialog({
 
   useEffect(() => {
     void loadReplacementUsers();
-  }, [instance]);
+  }, []);
 
   const loadReplacementUsers = async () => {
     setLoading(true);
     try {
-      const users = await listUsers({}, instance);
+      const users = await listUsers({});
       const filtered = users.filter((u) => u.id !== user.id && !u.isSystem);
       setReplacementUsers(filtered);
     } catch (error) {
@@ -65,7 +63,7 @@ export function UserDeleteDialog({
     onStatusChange(`Deleting user ${user.name}...`);
 
     try {
-      const response = await deleteUser(user.id, replacementUser.id, instance);
+      const response = await deleteUser(user.id, replacementUser.id);
 
       if (response.responseResult.succeeded) {
         onStatusChange(

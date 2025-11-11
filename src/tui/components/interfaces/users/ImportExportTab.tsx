@@ -13,7 +13,6 @@ interface ImportExportTabProps {
   inContent: boolean;
 
   // Shared
-  instance: string;
   focusArea: "fields" | "buttons";
   showFileBrowser: boolean;
   error: string | null;
@@ -43,7 +42,6 @@ interface ImportExportTabProps {
 export function ImportExportTab({
   mode,
   inContent,
-  instance: _instance,
   focusArea,
   showFileBrowser,
   error,

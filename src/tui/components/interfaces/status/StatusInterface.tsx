@@ -11,12 +11,10 @@ import { formatHelpText, HELP_TEXT } from "@/tui/constants/keyboard";
 import { Button } from "@/tui/components/ui/Button";
 
 interface StatusInterfaceProps {
-  instance: string;
   onEsc?: () => void;
 }
 
 export function StatusInterface({
-  instance: _instance,
   onEsc,
 }: StatusInterfaceProps) {
   // Setup escape handling

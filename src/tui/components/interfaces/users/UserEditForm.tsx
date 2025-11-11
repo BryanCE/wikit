@@ -14,7 +14,6 @@ import type { User, UpdateUserInput, GroupMinimal } from "@/types";
 
 interface UserEditFormProps {
   user: User;
-  instance?: string;
   onSuccess: () => void;
   onStatusChange: (message: string) => void;
 }
@@ -63,7 +62,6 @@ const FORM_FIELDS: FormField[] = [
 
 export function UserEditForm({
   user,
-  instance,
   onSuccess,
   onStatusChange,
 }: UserEditFormProps) {
@@ -161,7 +159,7 @@ export function UserEditForm({
     onStatusChange("Saving user changes...");
 
     try {
-      const response = await updateUser(formData, instance);
+      const response = await updateUser(formData);
 
       if (response.responseResult.succeeded) {
         onStatusChange("User updated successfully!");
@@ -205,7 +203,6 @@ export function UserEditForm({
   if (showGroupSelector) {
     return (
       <GroupSelector
-        instance={instance}
         selectedGroupIds={formData.groups ?? []}
         onConfirm={(groupIds) => {
           logger.info({
@@ -247,13 +244,11 @@ export function UserEditForm({
             userId: user.id,
             userName: user.name,
             currentGroups: formData.groups,
-            pendingGroups: pendingGroupIds,
-            instance
+            pendingGroups: pendingGroupIds
           }, "Group update started via AsyncActionDialog");
 
           const response = await updateUser(
-            { id: user.id, groups: pendingGroupIds },
-            instance
+            { id: user.id, groups: pendingGroupIds }
           );
 
           logger.info({

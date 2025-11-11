@@ -14,7 +14,7 @@ export interface DetailedPage extends Page {
   contentType?: string;
 }
 
-export function usePageDetails(page: Page, instance?: string) {
+export function usePageDetails(page: Page) {
   const [detailedPage, setDetailedPage] = useState<DetailedPage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export function usePageDetails(page: Page, instance?: string) {
       setLoading(true);
       setError(null);
 
-      const result = await getPageContent(page.path, instance, page.locale);
+      const result = await getPageContent(page.path, page.locale);
 
       if (!result) {
         setError(
@@ -44,7 +44,7 @@ export function usePageDetails(page: Page, instance?: string) {
 
   useEffect(() => {
     void loadPageDetails();
-  }, [page.id, instance]);
+  }, [page.id]);
 
   return {
     detailedPage,

@@ -9,14 +9,12 @@ import type { GroupMinimal } from "@/types";
 import { COMMON_HELP_PATTERNS } from "@/tui/constants/keyboard";
 
 interface GroupSelectorProps {
-  instance?: string;
   selectedGroupIds: number[];
   onConfirm: (groupIds: number[]) => void;
   onCancel: () => void;
 }
 
 export function GroupSelector({
-  instance,
   selectedGroupIds,
   onConfirm,
   onCancel,
@@ -35,20 +33,20 @@ export function GroupSelector({
 
   useEffect(() => {
     void loadGroups();
-  }, [instance]);
+  }, []);
 
   const loadGroups = async () => {
-    logger.info({ instance, component: "GroupSelector" }, "Loading groups");
+    logger.info({ component: "GroupSelector" }, "Loading groups");
     setLoading(true);
     setError(null);
     try {
-      const groupList = await listGroups(instance ?? "");
-      logger.info({ instance, groupCount: groupList.length }, "Groups loaded successfully");
+      const groupList = await listGroups();
+      logger.info({ groupCount: groupList.length }, "Groups loaded successfully");
       setGroups(groupList);
       setError(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
-      logger.error({ err, instance }, "Failed to load groups in GroupSelector");
+      logger.error({ err }, "Failed to load groups in GroupSelector");
       setError(errorMessage);
     } finally {
       setLoading(false);

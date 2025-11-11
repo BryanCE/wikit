@@ -18,7 +18,6 @@ interface DetailedPage extends Page {
 
 interface InfoTabProps {
   detailedPage: DetailedPage;
-  instance?: string;
   selectedIndex: number;
 }
 
@@ -28,7 +27,7 @@ interface InfoItem {
   color?: string;
 }
 
-export function InfoTab({ detailedPage, instance, selectedIndex }: InfoTabProps) {
+export function InfoTab({ detailedPage, selectedIndex }: InfoTabProps) {
   const { theme } = useTheme();
 
   const items = useMemo<InfoItem[]>(() => {
@@ -47,7 +46,6 @@ export function InfoTab({ detailedPage, instance, selectedIndex }: InfoTabProps)
         value: detailedPage.isPrivate ? "[PRIVATE]" : "[PUBLIC]",
         color: detailedPage.isPrivate ? "yellow" : "green",
       },
-      { label: "Instance", value: instance ?? "default" },
       { label: "Description", value: detailedPage.description ?? "No description" },
     ];
 
@@ -59,7 +57,7 @@ export function InfoTab({ detailedPage, instance, selectedIndex }: InfoTabProps)
     }
 
     return result;
-  }, [detailedPage, instance]);
+  }, [detailedPage]);
 
   return (
     <Box flexDirection="column" paddingX={1} flexGrow={1}>

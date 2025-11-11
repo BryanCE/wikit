@@ -20,7 +20,6 @@ import { GroupPageRulesView } from "./GroupPageRulesView";
 import { useGroupsKeyboard } from "./hooks/useGroupsKeyboard";
 
 interface GroupsInterfaceProps {
-  instance: string;
   onEsc?: () => void;
 }
 
@@ -36,7 +35,6 @@ type GroupsInterfaceMode =
   | "delete";
 
 export function GroupsInterface({
-  instance,
   onEsc,
 }: GroupsInterfaceProps) {
   const { theme } = useTheme();
@@ -120,7 +118,7 @@ export function GroupsInterface({
 
   useEffect(() => {
     void loadGroups();
-  }, [instance]);
+  }, []);
 
   // Load orphaned users when switching to that tab
   useEffect(() => {
@@ -243,7 +241,6 @@ export function GroupsInterface({
     return (
       <GroupMembersManager
         group={fullGroup}
-        instance={instance}
         onSuccess={() => {
           void loadGroupDetails(fullGroup.id);
           void loadGroups();
@@ -265,7 +262,6 @@ export function GroupsInterface({
   if (mode === "create") {
     return (
       <GroupCreateForm
-        instance={instance}
         onSuccess={() => {
           void loadGroups();
           setMode("list");
@@ -279,7 +275,6 @@ export function GroupsInterface({
     return (
       <GroupDeleteDialog
         group={selectedGroup}
-        instance={instance}
         onSuccess={() => {
           void loadGroups();
           setMode("list");

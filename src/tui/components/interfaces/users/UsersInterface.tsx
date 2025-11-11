@@ -15,14 +15,12 @@ import { ConfirmationDialog } from "@comps/modals/ConfirmationDialog";
 import { useUserActions } from "./useUserActions";
 
 interface UsersInterfaceProps {
-  instance: string | null;
   onEsc?: () => void;
 }
 
 type TabType = "users" | "profiles" | "import" | "create";
 
 export function UsersInterface({
-  instance,
   onEsc,
 }: UsersInterfaceProps) {
   const { theme } = useTheme();
@@ -82,11 +80,6 @@ export function UsersInterface({
   const filteredProfiles = useSearch(profiles, profileSearchQuery, ["name", "email", "jobTitle", "location"]);
 
   const loadUsers = async () => {
-    if (!instance) {
-      setStatusMsg("No instance configured");
-      return;
-    }
-
     setLoading(true);
     setStatusMsg("Loading users...");
     try {
@@ -112,7 +105,6 @@ export function UsersInterface({
     cancelPendingAction,
     getConfirmationMessage,
   } = useUserActions({
-    instance,
     onStatusChange: setStatusMsg,
     onModeChange: setMode,
     onUserUpdate: () => { void loadUsers(); },
@@ -235,11 +227,6 @@ export function UsersInterface({
   });
 
   const loadProfiles = async () => {
-    if (!instance) {
-      setStatusMsg("No instance configured");
-      return;
-    }
-
     setLoadingProfiles(true);
     setProfilesError(null);
     setStatusMsg("Loading profiles...");
@@ -276,7 +263,7 @@ export function UsersInterface({
   useEffect(() => {
     void loadUsers();
     void loadProfiles();
-  }, [instance]);
+  }, []);
 
   useEffect(() => {
     // Initialize export filename with current date
@@ -771,16 +758,6 @@ export function UsersInterface({
     setShowFileBrowser(false);
   };
 
-  if (!instance) {
-    return (
-      <Box flexDirection="column">
-        <Text color={theme.colors.error}>
-          No instance configured. Please run setup first.
-        </Text>
-      </Box>
-    );
-  }
-
   if (loading) {
     return (
       <Box flexDirection="column">
@@ -854,7 +831,6 @@ export function UsersInterface({
             mode={mode}
             selectedUser={selectedUser}
             fullUser={fullUser}
-            instance={instance}
             onStatusChange={setStatusMsg}
             onUserUpdate={handleUserUpdate}
             onAction={handleAction}
@@ -873,7 +849,6 @@ export function UsersInterface({
 
         {currentTab === "profiles" && (
           <ProfilesTab
-            instance={instance}
             users={filteredProfiles}
             selectedIndex={selectedProfileIndex}
             loading={loadingProfiles}
@@ -888,7 +863,6 @@ export function UsersInterface({
           <ImportExportTab
             mode={importExportMode}
             inContent={inImportExportContent}
-            instance={instance}
             focusArea={focusArea}
             showFileBrowser={showFileBrowser}
             error={importExportError}
@@ -912,7 +886,6 @@ export function UsersInterface({
 
         {currentTab === "create" && (
           <CreateUserTab
-            instance={instance}
             onStatusChange={setStatusMsg}
             onSuccess={() => {
               void loadUsers();

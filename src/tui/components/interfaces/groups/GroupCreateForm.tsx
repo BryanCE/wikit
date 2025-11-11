@@ -6,13 +6,11 @@ import { useFooterHelp } from "@/tui/contexts/FooterContext";
 import { createGroup } from "@/api/groups";
 
 interface GroupCreateFormProps {
-  instance: string;
   onSuccess: () => void;
   onStatusChange: (message: string) => void;
 }
 
 export function GroupCreateForm({
-  instance,
   onSuccess,
   onStatusChange,
 }: GroupCreateFormProps) {
@@ -32,7 +30,7 @@ export function GroupCreateForm({
     onStatusChange(`Creating group "${groupName}"...`);
 
     try {
-      const result = await createGroup(groupName, instance);
+      const result = await createGroup(groupName);
 
       if (result.responseResult.succeeded) {
         onStatusChange(`Group "${groupName}" created successfully!`);

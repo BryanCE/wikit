@@ -20,7 +20,6 @@ import {
 } from "@/tui/contexts/HeaderContext";
 
 interface NavInterfaceProps {
-  instance: string;
   onEsc?: () => void;
 }
 
@@ -74,7 +73,6 @@ const NAVIGATION_OPTIONS = [
 ];
 
 export function NavInterface({
-  instance,
   onEsc,
 }: NavInterfaceProps) {
   useEscape("navigation", () => {
@@ -122,7 +120,7 @@ export function NavInterface({
   // ALWAYS set header unconditionally - children override when they render (PagesInterface pattern)
   useHeaderData({
     title: "Navigation Management",
-    metadata: navigationConfig ? `Mode: ${navigationConfig.mode} • Locale: ${selectedLocale}` : instance
+    metadata: navigationConfig ? `Mode: ${navigationConfig.mode} • Locale: ${selectedLocale}` : "Navigation"
   });
 
   useInput((input, key) => {
@@ -180,7 +178,7 @@ export function NavInterface({
 
   useEffect(() => {
     void loadNavigation();
-  }, [instance]);
+  }, []);
 
   const currentLocaleTree = navigationTree.find(
     (t) => t.locale === selectedLocale
@@ -249,7 +247,6 @@ export function NavInterface({
         <NavTreeDisplay
           tree={currentLocaleTree}
           theme={theme}
-          instance={instance}
           onItemSelect={(itemId) => {
             setStatusMsg(`Selected item: ${itemId}`);
           }}
@@ -258,7 +255,6 @@ export function NavInterface({
 
       {currentMode === NavMode.ADD_ITEM && (
         <NavItemForm
-          instance={instance}
           locale={selectedLocale}
           existingTree={currentLocaleTree}
           onSubmit={handleNavigationUpdate}
@@ -268,7 +264,6 @@ export function NavInterface({
 
       {currentMode === NavMode.MOVE_ITEM && (
         <NavItemMoveInterface
-          instance={instance}
           locale={selectedLocale}
           existingTree={currentLocaleTree}
           onSubmit={handleNavigationUpdate}
@@ -278,7 +273,6 @@ export function NavInterface({
 
       {currentMode === NavMode.MODE_SELECT && (
         <NavModeSelector
-          instance={instance}
           currentMode={navigationConfig?.mode ?? "NONE"}
           onModeChange={handleNavigationUpdate}
           onCancel={() => setCurrentMode(NavMode.OPTIONS)}
@@ -287,7 +281,6 @@ export function NavInterface({
 
       {currentMode === NavMode.EXPORT && (
         <NavExportForm
-          instance={instance}
           onSuccess={() => {
             setStatusMsg("Navigation exported successfully");
             setCurrentMode(NavMode.OPTIONS);
@@ -299,7 +292,6 @@ export function NavInterface({
 
       {currentMode === NavMode.IMPORT && (
         <NavImportForm
-          instance={instance}
           onSuccess={handleNavigationUpdate}
           onCancel={() => setCurrentMode(NavMode.OPTIONS)}
         />
@@ -308,7 +300,6 @@ export function NavInterface({
       {currentMode === NavMode.DELETE_ITEM && currentLocaleTree && (
         <NavDeleteModal
           tree={currentLocaleTree}
-          instance={instance}
           onClose={() => setCurrentMode(NavMode.OPTIONS)}
           onSuccess={handleNavigationUpdate}
           onStatusChange={setStatusMsg}
