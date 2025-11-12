@@ -6,7 +6,7 @@ import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
 import { useFooterStatus } from "@/tui/contexts/FooterContext";
-import { getAvailableInstances, getInstanceLabels } from "@/config";
+import { getAvailableInstances, getInstanceLabels } from "@/config/dynamicConfig";
 import { InstanceContext } from "@/contexts/InstanceContext";
 import { CompareOptions as CompareOptionsComponent } from "./CompareOptions.js";
 import { CompareResultsDisplay } from "./CompareResults.js";

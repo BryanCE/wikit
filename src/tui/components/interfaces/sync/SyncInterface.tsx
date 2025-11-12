@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useInput } from "ink";
 import { syncForTui } from "@/commands/sync";
 import { type SyncCommandOptions, type SyncSummary } from "@/types";
-import { getAvailableInstances, getInstanceLabels } from "@/config";
+import { getAvailableInstances, getInstanceLabels } from "@/config/dynamicConfig";
 import { InstanceContext } from "@/contexts/InstanceContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";

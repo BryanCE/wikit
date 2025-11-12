@@ -4,7 +4,7 @@ import { ConfirmationDialog } from "@comps/modals/ConfirmationDialog";
 import { getPages } from "@/commands/listPages";
 import { type Page } from "@/types";
 import { getPageContent, createPage } from "@/api/pages";
-import { getAvailableInstances, getInstanceLabels } from "@/config";
+import { getAvailableInstances, getInstanceLabels } from "@/config/dynamicConfig";
 import { InstanceContext } from "@/contexts/InstanceContext";
 import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";

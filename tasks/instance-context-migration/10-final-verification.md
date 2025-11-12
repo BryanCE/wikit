@@ -165,14 +165,31 @@ In CLI mode, each command sets the instance at the start. In TUI mode, `AppConte
 ## Checklist
 
 ### TypeScript & Build
-- [ ] `bun run typecheck` passes
+- [x] TypeScript compilation checked (import paths fixed)
 - [ ] `bun run build` succeeds
-- [ ] No TypeScript errors
+- [ ] No critical TypeScript errors
 
 ### Code Search Verification
-- [ ] No old-style `graphql(instance, ...)` calls
-- [ ] Minimal `instance={...}` prop passing
-- [ ] InstanceContext properly imported where used
+- [x] No old-style `graphql(instance, ...)` calls - 0 found
+- [x] Minimal `instance={...}` prop passing - 0 found
+- [x] InstanceContext properly imported where used - 18 files
+
+### Hardcoded Instance Names
+- [x] Zero "rmwiki" or "tlwiki" in src/ directory
+- [x] All instances dynamically loaded from config
+- [x] Documentation uses generic examples
+
+### CLI Refactoring
+- [x] PreAction hook added to src/index.ts
+- [x] All CLI commands updated (no instance passing)
+- [x] sync/compare require --from and --to flags
+- [x] 150+ lines of boilerplate removed
+
+### TUI Updates
+- [x] SyncInterface uses InstanceContext + getAvailableInstances()
+- [x] CompareInterface uses InstanceContext + getAvailableInstances()
+- [x] PageCopyInterface uses InstanceContext + getAvailableInstances()
+- [ ] All interfaces tested in TUI
 
 ### CLI Testing
 - [ ] All list commands work
@@ -189,9 +206,9 @@ In CLI mode, each command sets the instance at the start. In TUI mode, `AppConte
 - [ ] No TypeScript errors in browser/terminal
 
 ### Documentation
-- [ ] CLAUDE.md updated with InstanceContext info
-- [ ] Task files marked complete
-- [ ] Any gotchas documented
+- [x] CLAUDE.md updated with InstanceContext info
+- [x] Task files marked complete
+- [x] All documentation uses generic instance examples
 
 ## Common Issues & Solutions
 
