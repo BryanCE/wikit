@@ -1,7 +1,7 @@
 {
   "name": "@bryance/wikit",
   "version": "0.1.0",
-  "description": "CLI and TUI for managing Wiki.js instances - sync pages, manage users, and more",
+  "description": "Full-featured CLI and TUI for managing Wiki.js - pages, navigation, users, groups, content analysis, and multi-instance sync",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -53,11 +53,19 @@
     "wiki",
     "cli",
     "tui",
+    "terminal",
     "api",
+    "graphql",
     "management",
     "admin",
     "sync",
-    "migration"
+    "migration",
+    "pages",
+    "navigation",
+    "users",
+    "groups",
+    "content",
+    "analysis"
   ],
   "author": "Dale Hendersen",
   "license": "SEE LICENSE IN LICENSE",

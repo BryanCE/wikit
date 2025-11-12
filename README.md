@@ -262,43 +262,107 @@ wikit -i wiki2 tui                     # Launch TUI with specific instance
 
 The TUI provides an interactive terminal interface with the following features:
 
-### Navigation
+### Keyboard Navigation
 
-- **ESC**: Go back/exit current mode
-- **Enter**: Select/confirm action
-- **Arrow keys**: Navigate menus and lists
-- **Tab**: Switch between interface sections
+The TUI follows consistent keyboard patterns across all interfaces:
+
+**Core Navigation:**
+- **↑↓** (Arrow Up/Down): Navigate through lists and menus
+- **→←** (Arrow Right/Left): Expand/collapse tree items or navigate button groups
+- **Enter**: Confirm selection, open items, or submit forms
+- **Space**: Toggle selections in multi-select lists
+- **Esc**: Go back, cancel, or exit current mode
+
+**Standard Patterns:**
+- **Lists**: ↑↓ to navigate, Enter to select, Esc to go back
+- **Multi-select**: ↑↓ to navigate, Space to toggle, Enter to confirm, Esc to cancel
+- **Trees**: ↑↓ to navigate, → to expand, ← to collapse, Enter to select
+- **Forms**: ↑↓ to navigate fields, Enter to edit/submit, Esc to cancel
+- **Menus**: ↑↓ to navigate options, Enter to select, Esc to close
 
 ### Commands
 
 Once in TUI mode, you can use these commands:
 
-- `pages`: Browse and manage all wiki pages
+**Page Management:**
+- `pages`: Browse, search, and manage wiki pages with detailed views
 - `search [query]`: Search for pages by title or path
-- `delete`: Bulk delete pages with confirmation
+
+**Navigation Management:**
+- `nav` or `navigation`: Manage navigation tree (add, edit, move, delete items)
+
+**User & Group Management:**
+- `users`: Create, edit, and manage Wiki.js users
+- `groups`: Manage groups, members, permissions, and page rules
+
+**Analysis & Comparison:**
+- `analyze`: Analyze page structure, find orphaned pages, compare navigation
 - `compare`: Compare pages between instances
-- `copy`: Copy pages between instances
 - `status`: Show instance status and info
-- `sync`: Synchronize between instances
-- `theme`: Switch between light/dark themes
+
+**Instance Operations:**
+- `copy`: Copy pages between instances
+- `sync`: Synchronize configurations between instances
+- `config`: Manage instance configurations
+
+**Interface:**
+- `theme`: Switch between color themes
 - `i [instance]`: Switch Wiki.js instance
-- `help`: Show help screen
+- `help`: Show help screen with keyboard shortcuts
 - `exit` or `quit`: Exit TUI
 
-### Page Browser
+### Key Interfaces
 
-- Browse pages in a paginated list
-- View page details (content, metadata, actions)
-- Mark pages for bulk operations
-- Filter and search functionality
+**Pages Interface:**
+- Browse all pages with virtualized scrolling
+- View detailed page information (content, metadata, tags)
+- Edit page properties and content
+- Move pages to different paths
+- Convert between editor types (markdown/code)
+- Delete single or multiple pages
+- Export pages to JSON
+
+**Navigation Interface:**
+- View and manage navigation tree structure
+- Add new items (links, headers, dividers)
+- Edit existing navigation items
+- Move items with visual placement picker
+- Delete navigation items (single or bulk)
+- Import/export navigation configurations
+
+**Users Interface:**
+- List all Wiki.js users
+- Create new users with group assignments
+- Edit user details and passwords
+- Manage user group memberships
+- Delete users with confirmation
+- Import/export user profiles
+
+**Groups Interface:**
+- View all groups and their members
+- Create new groups with permissions
+- Manage group membership (add/remove users)
+- View and edit group permissions
+- Configure page access rules
+- Find orphaned users (not in any group)
+
+**Analysis Interface:**
+- Analyze page structure and relationships
+- Find orphaned pages (no navigation links)
+- Compare navigation between instances
+- Compare page content and metadata
+- Export analysis results
 
 ### Interactive Features
 
-- **Real-time search**: Type to filter results instantly
-- **Bulk selection**: Mark multiple pages for operations
-- **Confirmation dialogs**: Safe operations with confirmation prompts
-- **Status indicators**: Visual feedback for operations
-- **Theme switching**: Light/dark mode support
+- **Real-time search**: Type to filter results instantly across all interfaces
+- **Bulk selection**: Mark multiple items for batch operations
+- **Confirmation dialogs**: Safe operations with detailed confirmation prompts
+- **Visual previews**: See changes before applying (navigation placement, etc.)
+- **Async operations**: Background processing with progress indicators
+- **Context-aware help**: Footer shows relevant keyboard shortcuts for current screen
+- **Theme switching**: Multiple color themes (Dracula, Tokyo Night, Monokai, etc.)
+- **Nerd Font support**: Rich icons when Nerd Fonts are available
 
 ## Development
 
@@ -306,22 +370,62 @@ Once in TUI mode, you can use these commands:
 
 ```
 src/
-├── index.ts              # CLI entry point
-├── api.ts                # GraphQL client wrapper
-├── config.ts             # Multi-instance configuration
-├── types.ts              # TypeScript type definitions
-├── commands/             # CLI command implementations
-│   ├── listPages.ts
-│   ├── deletePages.ts
-│   ├── compare.ts
-│   ├── status.ts
-│   └── sync.ts
-└── tui/                  # Terminal UI components
-    ├── App.tsx           # Main TUI application
-    ├── AppContent.tsx    # TUI content and routing
-    ├── theme.ts          # Theme definitions
-    ├── commands.ts       # TUI command definitions
-    └── components/       # React/Ink UI components
+├── index.ts                    # CLI entry point with Commander.js
+├── api/                        # GraphQL API layer
+│   ├── index.ts                # Core graphql() function
+│   ├── pages.ts                # Page queries/mutations
+│   ├── navigation.ts           # Navigation queries/mutations
+│   ├── users.ts                # User queries/mutations
+│   ├── groups.ts               # Group queries/mutations
+│   └── config.ts               # Configuration queries
+├── commands/                   # CLI command implementations
+│   ├── pages.ts                # Page management commands
+│   ├── navigation.ts           # Navigation commands
+│   ├── users.ts                # User management commands
+│   ├── groups.ts               # Group management commands
+│   ├── analyze.ts              # Analysis commands
+│   ├── compare.ts              # Comparison commands
+│   ├── sync.ts                 # Synchronization commands
+│   └── config.ts               # Configuration commands
+├── config/                     # Configuration management
+│   ├── configManager.ts        # Core config CRUD operations
+│   ├── dynamicConfig.ts        # Runtime configuration
+│   └── migration.ts            # Config migration utilities
+├── contexts/                   # Global state management
+│   └── InstanceContext.ts      # Singleton instance manager
+├── types/                      # TypeScript type definitions
+│   ├── page/                   # Page-related types
+│   ├── navigation/             # Navigation types
+│   ├── user/                   # User types
+│   ├── group/                  # Group types
+│   └── ...                     # Other domain types
+├── utils/                      # Utility functions
+│   ├── analyzer.ts             # Page analysis utilities
+│   ├── commandParser.ts        # Command parsing
+│   └── ...                     # Other utilities
+└── tui/                        # Terminal UI (React/Ink)
+    ├── AppContent.tsx          # Main TUI router
+    ├── components/
+    │   ├── interfaces/         # Main feature interfaces
+    │   │   ├── pages/          # Pages interface
+    │   │   ├── navigation/     # Navigation interface
+    │   │   ├── users/          # Users interface
+    │   │   ├── groups/         # Groups interface
+    │   │   ├── analysis/       # Analysis interface
+    │   │   └── ...             # Other interfaces
+    │   ├── ui/                 # Reusable UI components
+    │   │   ├── VirtualizedList.tsx
+    │   │   ├── Table.tsx
+    │   │   └── ...
+    │   └── modals/             # Dialog components
+    ├── contexts/               # React contexts
+    │   ├── ThemeContext.tsx    # Theme management
+    │   ├── HeaderContext.tsx   # Header state (stack-based)
+    │   ├── FooterContext.tsx   # Footer help text
+    │   ├── EscapeContext.tsx   # Escape key handlers
+    │   └── IconContext.tsx     # Icon formatting
+    ├── themes/                 # Color theme definitions
+    └── hooks/                  # Custom React hooks
 ```
 
 ### Available Scripts
@@ -332,18 +436,63 @@ src/
 - `bun run typecheck`: Run TypeScript type checking
 - `bun run lint`: Run ESLint
 
-### Adding New Commands
+### Architecture Patterns
 
-1. Create command implementation in `src/commands/`
-2. Add command definition to `src/index.ts`
-3. Update types in `src/types.ts`
-4. Add TUI support in `src/tui/commands.ts`
+**InstanceContext Singleton:**
+The application uses a global `InstanceContext` singleton to manage the current Wiki.js instance:
+- CLI mode: A preAction hook in `src/index.ts` sets the instance before commands run
+- TUI mode: `AppContent` syncs instance state with the context via useEffect
+- API layer: The `graphql()` function automatically uses `InstanceContext.getInstance()`
+- Benefits: Eliminates prop drilling, cleaner function signatures, centralized management
+
+**Context Stack Pattern:**
+Several contexts use a stack-based approach:
+- `HeaderContext`: Components push header data, automatically restored on unmount
+- `FooterContext`: Stack-based help text management
+- `EscapeContext`: Stacked escape handlers for nested modals/dialogs
+
+**Keyboard Navigation:**
+Consistent patterns across all interfaces:
+- Arrow keys for navigation
+- Space for toggle/selection
+- Enter for confirm/action
+- Escape for back/cancel
+- Defined in `src/tui/constants/keyboard.ts`
+
+### Adding New Features
+
+**Adding CLI Commands:**
+1. Create command function in `src/commands/[feature].ts`
+2. Add command definition to `src/index.ts` (Commander.js)
+3. Define types in `src/types/[feature]/`
+4. Create API functions in `src/api/[feature].ts`
+
+**Adding TUI Interfaces:**
+1. Create interface component in `src/tui/components/interfaces/[feature]/`
+2. Add command to `src/tui/commands.ts`
+3. Update `AppContent.tsx` mode handling
+4. Use consistent keyboard navigation patterns
+5. Use context hooks (useHeaderData, useFooterHelp, useEscape)
+
+**Adding API Functions:**
+1. Define GraphQL queries/mutations in `src/api/[feature].ts`
+2. Use the core `graphql()` function from `src/api/index.ts`
+3. Define response types in `src/types/[feature]/`
+4. No need to pass instance - it's handled by InstanceContext
 
 ### Theme Customization
 
-Themes are defined in `src/tui/theme.ts`. The application supports:
-- Light theme (Alucard color scheme)
-- Dark theme (Dracula color scheme)
+Themes are defined in `src/tui/themes/`. The application includes:
+- Dracula
+- Tokyo Night
+- Monokai
+- Synthwave
+- Duskfox
+- Horizon
+- Scarlet Protocol
+- ILS Theme
+
+Create new themes by implementing the `Theme` interface from `src/tui/themes/types.ts`.
 
 ## Troubleshooting
 

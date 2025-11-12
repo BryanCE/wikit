@@ -190,17 +190,58 @@ async function removeInstance(instanceId: string): Promise<void> {
       return;
     }
 
+    const instances = await getAvailableInstances();
+    const isLastInstance = instances.length === 1;
+
     console.log(`Remove Instance: ${info.name}`);
     console.log("");
-    console.log("This action cannot be undone.");
 
-    const confirm = await question("Are you sure you want to remove this instance? (y/N): ");
+    if (isLastInstance) {
+      // Strong warnings for last instance
+      console.log("⚠ WARNING: THIS IS YOUR LAST CONFIGURED INSTANCE! ⚠");
+      console.log("");
+      console.log("After deletion:");
+      console.log("  • You will have NO configured Wiki.js instances");
+      console.log("  • You will need to run 'wikit config --setup' to configure a new instance");
+      console.log("  • This action CANNOT be undone");
+      console.log("");
 
-    if (confirm.toLowerCase() === "y" || confirm.toLowerCase() === "yes") {
+      const typeConfirm = await question(`Type the instance name '${instanceId}' to confirm deletion: `);
+
+      if (typeConfirm !== instanceId) {
+        console.log(`Instance name does not match. Expected '${instanceId}', got '${typeConfirm}'.`);
+        console.log("Operation cancelled.");
+        return;
+      }
+
+      const finalConfirm = await question("Are you ABSOLUTELY SURE you want to delete the last instance? (yes/NO): ");
+
+      if (finalConfirm.toLowerCase() !== "yes") {
+        console.log("Operation cancelled.");
+        return;
+      }
+
       await configManager.removeInstance(instanceId);
+      console.log("");
       console.log(`Instance '${info.name}' removed successfully.`);
+      console.log("");
+      console.log("All instances have been deleted.");
+      console.log("Run 'wikit config --setup' to configure a new instance.");
+
     } else {
-      console.log("Operation cancelled.");
+      // Normal deletion for non-last instance
+      console.log(`${instances.length} instances configured, ${instances.length - 1} will remain after deletion.`);
+      console.log("This action cannot be undone.");
+      console.log("");
+
+      const confirm = await question("Are you sure you want to remove this instance? (y/N): ");
+
+      if (confirm.toLowerCase() === "y" || confirm.toLowerCase() === "yes") {
+        await configManager.removeInstance(instanceId);
+        console.log(`Instance '${info.name}' removed successfully.`);
+      } else {
+        console.log("Operation cancelled.");
+      }
     }
 
   } catch (error) {

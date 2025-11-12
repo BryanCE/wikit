@@ -208,7 +208,13 @@ class ConfigManager {
     }
 
     this.config.instances.splice(instanceIndex, 1);
-    this.saveConfig();
+
+    // If this was the last instance, delete the config file entirely
+    if (this.config.instances.length === 0) {
+      await this.resetConfig();
+    } else {
+      this.saveConfig();
+    }
   }
 
   getInstanceIds(): string[] {

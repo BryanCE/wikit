@@ -80,7 +80,7 @@ const COMMAND_DETAILS: Record<string, { details: string; examples: string[] }> =
     },
     config: {
       details:
-        "Manage your Wiki.js instance configurations. Add new instances, edit existing ones, or remove instances you no longer need.",
+        "Manage your Wiki.js instance configurations. Add new instances via 'Add instance', or use 'List instances' to view, edit, or delete existing instances. When deleting the last instance, you'll be required to type the instance name for confirmation.",
       examples: ["/config"],
     },
     theme: {

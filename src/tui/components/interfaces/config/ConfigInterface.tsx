@@ -38,6 +38,7 @@ interface ConfigState {
   newInstance: Partial<WikiInstance>;
   showInstanceActions: boolean;
   instanceActionIndex: number;
+  deleteConfirmationInput: string;
 }
 
 export function ConfigInterface({
@@ -52,6 +53,7 @@ export function ConfigInterface({
     newInstance: { id: "", name: "", url: "", key: "" },
     showInstanceActions: false,
     instanceActionIndex: 0,
+    deleteConfirmationInput: "",
   });
   const [statusMsg, setStatusMsg] = useState("");
   useFooterStatus(statusMsg);
@@ -67,7 +69,10 @@ export function ConfigInterface({
         }
         return formatHelpText(HELP_TEXT.NAVIGATE, HELP_TEXT.ENTER_ACTIONS, HELP_TEXT.BACK);
       case ConfigMode.DELETE:
-        return formatHelpText(HELP_TEXT.ENTER_CONFIRM, HELP_TEXT.CANCEL);
+        const isLastInstance = state.instances.length === 1;
+        return isLastInstance
+          ? "Type instance name to confirm • Enter confirm • Esc cancel"
+          : formatHelpText(HELP_TEXT.ENTER_CONFIRM, HELP_TEXT.CANCEL);
       case ConfigMode.STATUS:
       case ConfigMode.MIGRATE_TO_ENCRYPTED:
       case ConfigMode.MIGRATE_TO_ENV:
@@ -213,7 +218,7 @@ export function ConfigInterface({
               showInstanceActions: false,
               instanceActionIndex: 0,
             }));
-          } else {
+          } else if (state.instanceActionIndex === 1) {
             // Delete
             const toDelete = state.instances[state.selectedIndex];
             setState((prev) => ({
@@ -258,15 +263,30 @@ export function ConfigInterface({
   const handleDeleteInstance = async () => {
     if (!state.editingInstance) return;
 
+    const isLastInstance = state.instances.length === 1;
+
+    // For last instance, require typing the instance name
+    if (isLastInstance && state.deleteConfirmationInput !== state.editingInstance) {
+      setStatusMsg(`You must type the instance name '${state.editingInstance}' to confirm deletion of the last instance.`);
+      return;
+    }
+
     try {
       const configManager = getConfigManager();
       await configManager.removeInstance(state.editingInstance);
-      setStatusMsg(`Instance '${state.editingInstance}' deleted`);
+
+      if (isLastInstance) {
+        setStatusMsg(`All instances deleted. Run setup wizard to configure a new instance.`);
+      } else {
+        setStatusMsg(`Instance '${state.editingInstance}' deleted`);
+      }
+
       await loadInstances();
       setState((prev) => ({
         ...prev,
         mode: ConfigMode.MENU,
         selectedIndex: 0,
+        deleteConfirmationInput: "",
       }));
     } catch (error) {
       setStatusMsg(
@@ -320,6 +340,7 @@ export function ConfigInterface({
         ...prev,
         mode: ConfigMode.MENU,
         selectedIndex: 0,
+        deleteConfirmationInput: "", // Clear any confirmation input
       }));
     }
   });
@@ -351,8 +372,27 @@ export function ConfigInterface({
         }
         break;
       case ConfigMode.DELETE:
-        if (key.return) {
-          void handleDeleteInstance();
+        const isDeletingLastInstance = state.instances.length === 1;
+        if (isDeletingLastInstance) {
+          // Handle text input for confirmation when deleting last instance
+          if (key.return) {
+            void handleDeleteInstance();
+          } else if (key.backspace || key.delete) {
+            setState((prev) => ({
+              ...prev,
+              deleteConfirmationInput: prev.deleteConfirmationInput.slice(0, -1),
+            }));
+          } else if (input && !key.ctrl && !key.meta && input.length === 1) {
+            setState((prev) => ({
+              ...prev,
+              deleteConfirmationInput: prev.deleteConfirmationInput + input,
+            }));
+          }
+        } else {
+          // Simple confirmation for non-last instance
+          if (key.return) {
+            void handleDeleteInstance();
+          }
         }
         break;
     }
@@ -412,7 +452,7 @@ export function ConfigInterface({
                   : theme.colors.text
               }
             >
-              {index === state.selectedIndex ? "▶ " : "  "}
+              {index === state.selectedIndex ? " ► " : "   "}
               {item.label}
             </Text>
             <Box marginLeft={2}>
@@ -440,6 +480,8 @@ export function ConfigInterface({
 
     if (state.showInstanceActions) {
       const selectedInstance = state.instances[state.selectedIndex];
+      const isLastInstance = state.instances.length === 1;
+
       return (
         <Box flexDirection="column">
           <Box marginBottom={1}>
@@ -457,7 +499,7 @@ export function ConfigInterface({
               }
               bold={state.instanceActionIndex === 0}
             >
-              {state.instanceActionIndex === 0 ? "▶ " : "  "}
+              {state.instanceActionIndex === 0 ? " ► " : "   "}
               Edit Instance
             </Text>
           </Box>
@@ -471,8 +513,8 @@ export function ConfigInterface({
               }
               bold={state.instanceActionIndex === 1}
             >
-              {state.instanceActionIndex === 1 ? "▶ " : "  "}
-              Delete Instance
+              {state.instanceActionIndex === 1 ? " ► " : "   "}
+              Delete Instance{isLastInstance ? " ⚠" : ""}
             </Text>
           </Box>
         </Box>
@@ -496,7 +538,7 @@ export function ConfigInterface({
                   : theme.colors.text
               }
             >
-              {index === state.selectedIndex ? "▶ " : "  "}
+              {index === state.selectedIndex ? " ► " : "   "}
               {instance}
             </Text>
           </Box>
@@ -505,25 +547,106 @@ export function ConfigInterface({
     );
   };
 
-  const renderDeleteConfirmation = () => (
-    <Box flexDirection="column">
-      <Box marginBottom={1}>
-        <Text color={theme.colors.error} bold>
-          Delete Instance
-        </Text>
-      </Box>
+  const renderDeleteConfirmation = () => {
+    const instanceCount = state.instances.length;
+    const isLastInstance = instanceCount === 1;
 
-      <Box marginBottom={1}>
-        <Text color={theme.colors.warning}>
-          Are you sure you want to delete instance '{state.editingInstance}'?
-        </Text>
-      </Box>
+    if (isLastInstance) {
+      // Strong warnings and confirmation input for last instance
+      return (
+        <Box flexDirection="column">
+          <Box marginBottom={1}>
+            <Text color={theme.colors.error} bold>
+              ⚠ WARNING: DELETING LAST INSTANCE ⚠
+            </Text>
+          </Box>
 
-      <Box marginBottom={1}>
-        <Text color={theme.colors.error}>This action cannot be undone.</Text>
+          <Box marginBottom={1} flexDirection="column">
+            <Text color={theme.colors.error} bold>
+              This is your LAST configured instance!
+            </Text>
+            <Text color={theme.colors.error}>
+              After deletion, you will need to run the setup wizard to configure a new instance.
+            </Text>
+          </Box>
+
+          <Box marginBottom={1} flexDirection="column">
+            <Text color={theme.colors.warning}>Instance to delete: {state.editingInstance}</Text>
+            <Text color={theme.colors.muted}>This action cannot be undone.</Text>
+          </Box>
+
+          <Box marginTop={1} marginBottom={1} flexDirection="column">
+            <Text color={theme.colors.text} bold>
+              Type the instance name to confirm deletion:
+            </Text>
+          </Box>
+
+          <Box
+            borderStyle="round"
+            borderColor={
+              state.deleteConfirmationInput === state.editingInstance
+                ? theme.colors.success
+                : theme.colors.error
+            }
+            paddingX={1}
+          >
+            <Text color={theme.colors.text}>
+              {state.deleteConfirmationInput || " "}
+            </Text>
+          </Box>
+
+          {state.deleteConfirmationInput && state.deleteConfirmationInput !== state.editingInstance && (
+            <Box marginTop={1}>
+              <Text color={theme.colors.error}>
+                Incorrect. Type '{state.editingInstance}' exactly.
+              </Text>
+            </Box>
+          )}
+
+          {state.deleteConfirmationInput === state.editingInstance && (
+            <Box marginTop={1}>
+              <Text color={theme.colors.success}>
+                Confirmed. Press Enter to delete.
+              </Text>
+            </Box>
+          )}
+        </Box>
+      );
+    }
+
+    // Normal deletion confirmation for non-last instance
+    return (
+      <Box flexDirection="column">
+        <Box marginBottom={1}>
+          <Text color={theme.colors.error} bold>
+            Delete Instance
+          </Text>
+        </Box>
+
+        <Box marginBottom={1}>
+          <Text color={theme.colors.warning}>
+            Are you sure you want to delete instance '{state.editingInstance}'?
+          </Text>
+        </Box>
+
+        <Box marginBottom={1}>
+          <Text color={theme.colors.error}>This action cannot be undone.</Text>
+        </Box>
+
+        <Box marginTop={1}>
+          <Text color={theme.colors.muted}>
+            {instanceCount} instances configured • {instanceCount - 1} will remain after deletion
+          </Text>
+        </Box>
+
+        <Box marginTop={1}>
+          <Text color={theme.colors.text}>
+            Press Enter to confirm deletion, or Esc to cancel.
+          </Text>
+        </Box>
       </Box>
-    </Box>
-  );
+    );
+  };
 
   return (() => {
     switch (state.mode) {
