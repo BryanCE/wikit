@@ -116,7 +116,6 @@ interface UseAnalysisKeyboardProps {
   orphanResult: OrphanAnalysisResult | null;
   onOrphanComplete: (result: OrphanAnalysisResult | null) => void;
   // Shared callbacks
-  instance?: string;
   onPageSelect?: (page: Page) => void;
   isPageDetailsOpen: boolean;
 }
@@ -209,7 +208,6 @@ export function useAnalysisKeyboard(props: UseAnalysisKeyboardProps) {
     orphanResult,
     onOrphanComplete,
     // Shared
-    instance,
     onPageSelect,
     isPageDetailsOpen,
   } = props;
@@ -329,8 +327,8 @@ export function useAnalysisKeyboard(props: UseAnalysisKeyboardProps) {
 
     try {
       const [pages, pageLinks] = await Promise.all([
-        getAllPages(instance),
-        getPageLinks(instance),
+        getAllPages(),
+        getPageLinks(),
       ]);
 
       const result = findOrphanedPages(pages, pageLinks);

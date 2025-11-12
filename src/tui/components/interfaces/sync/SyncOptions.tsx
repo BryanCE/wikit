@@ -1,8 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { useTheme } from "@/tui/contexts/ThemeContext";
-import { InstanceContext } from "@/contexts/InstanceContext";
-import { instanceLabels } from "@/config";
 
 interface SyncOption {
   key: string;
@@ -11,22 +9,25 @@ interface SyncOption {
 }
 
 interface SyncOptionsProps {
-  otherInstance: string;
+  fromInstance: string;
+  toInstance: string;
   selectedOption: number;
   isDryRun: boolean;
   isLoading: boolean;
   options: SyncOption[];
+  instanceLabels: Record<string, string>;
 }
 
 export function SyncOptions({
-  otherInstance,
+  fromInstance,
+  toInstance,
   selectedOption,
   isDryRun,
   isLoading,
   options,
+  instanceLabels,
 }: SyncOptionsProps) {
   const { theme } = useTheme();
-  const instance = InstanceContext.getInstance();
 
   return (
     <Box flexDirection="column">
@@ -38,7 +39,7 @@ export function SyncOptions({
 
       <Box marginBottom={1}>
         <Text color={theme.colors.secondary}>
-          Syncing {instanceLabels[instance]} → {instanceLabels[otherInstance]}
+          Syncing {instanceLabels[fromInstance]} → {instanceLabels[toInstance]}
         </Text>
       </Box>
 
@@ -75,9 +76,7 @@ export function SyncOptions({
         <Text color={theme.colors.muted}>
           {isLoading
             ? "⏳ Syncing..."
-            : `↑↓ Select • d=toggle mode • Enter=${
-                isDryRun ? "preview" : "confirm"
-              } • Esc=return`}
+            : `↑↓=navigate • Enter=select • Esc=return`}
         </Text>
       </Box>
     </Box>

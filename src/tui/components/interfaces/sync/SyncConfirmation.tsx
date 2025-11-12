@@ -2,8 +2,6 @@ import React from "react";
 import { Box, Text } from "ink";
 import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useFooterHelp } from "@/tui/contexts/FooterContext";
-import { InstanceContext } from "@/contexts/InstanceContext";
-import { instanceLabels } from "@/config";
 
 interface SyncOption {
   key: string;
@@ -12,18 +10,21 @@ interface SyncOption {
 }
 
 interface SyncConfirmationProps {
-  otherInstance: string;
+  fromInstance: string;
+  toInstance: string;
   selectedOption: number;
   options: SyncOption[];
+  instanceLabels: Record<string, string>;
 }
 
 export function SyncConfirmation({
-  otherInstance,
+  fromInstance,
+  toInstance,
   selectedOption,
   options,
+  instanceLabels,
 }: SyncConfirmationProps) {
   const { theme } = useTheme();
-  const instance = InstanceContext.getInstance();
 
   useFooterHelp("Y=Yes • N/Esc=Cancel");
 
@@ -34,8 +35,8 @@ export function SyncConfirmation({
       </Text>
       <Box marginY={1}>
         <Text color={theme.colors.text}>
-          This will overwrite configurations in {instanceLabels[otherInstance]}{" "}
-          with settings from {instanceLabels[instance]}.
+          This will overwrite configurations in {instanceLabels[toInstance]}{" "}
+          with settings from {instanceLabels[fromInstance]}.
         </Text>
       </Box>
       <Text color={theme.colors.text}>

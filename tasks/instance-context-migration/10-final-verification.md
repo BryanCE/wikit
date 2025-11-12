@@ -166,8 +166,8 @@ In CLI mode, each command sets the instance at the start. In TUI mode, `AppConte
 
 ### TypeScript & Build
 - [x] TypeScript compilation checked (import paths fixed)
-- [ ] `bun run build` succeeds
-- [ ] No critical TypeScript errors
+- [x] `bun run build` succeeds
+- [x] No critical TypeScript errors - ALL FIXED
 
 ### Code Search Verification
 - [x] No old-style `graphql(instance, ...)` calls - 0 found

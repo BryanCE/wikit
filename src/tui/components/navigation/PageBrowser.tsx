@@ -9,7 +9,6 @@ import { useHeaderData } from "@/tui/contexts/HeaderContext";
 import { useFooterHelp } from "@/tui/contexts/FooterContext";
 
 interface PageBrowserProps {
-  instance?: string;
   onPageSelect?: (page: Page) => void;
   searchQuery?: string;
   refreshTrigger?: number; // Used to trigger refresh from parent
@@ -18,7 +17,6 @@ interface PageBrowserProps {
 }
 
 export function PageBrowser({
-  instance,
   onPageSelect,
   searchQuery,
   refreshTrigger,
@@ -62,7 +60,7 @@ export function PageBrowser({
 
   useEffect(() => {
     void loadPages();
-  }, [instance, refreshTrigger]);
+  }, [refreshTrigger]);
 
   const loadPages = async () => {
     try {
@@ -70,7 +68,6 @@ export function PageBrowser({
       setError(null);
 
       const pages = await getPages("", {
-        instance,
         recursive: true,
         limit: 500,
       });

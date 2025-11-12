@@ -120,7 +120,6 @@ export function AppContent({ instance: initialInstance }: AppProps) {
     <Box flexDirection="column" width={width} height={height}>
       {/* Header */}
       <Header
-        instance={currentInstance}
         headerData={headerData}
       />
 

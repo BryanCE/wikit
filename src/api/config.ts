@@ -8,7 +8,7 @@ import type {
   SystemInfo
 } from "@/types";
 
-export async function getSiteConfig(instance?: string): Promise<SiteConfig> {
+export async function getSiteConfig(): Promise<SiteConfig> {
   const query = `query {
     site {
       config {
@@ -32,11 +32,11 @@ export async function getSiteConfig(instance?: string): Promise<SiteConfig> {
     }
   }`;
 
-  const result = await graphql<{ site: { config: SiteConfig } }>(query, undefined, instance);
+  const result = await graphql<{ site: { config: SiteConfig } }>(query);
   return result.site.config;
 }
 
-export async function getThemeConfig(instance?: string): Promise<ThemeConfig> {
+export async function getThemeConfig(): Promise<ThemeConfig> {
   const query = `query {
     theming {
       config {
@@ -51,11 +51,11 @@ export async function getThemeConfig(instance?: string): Promise<ThemeConfig> {
     }
   }`;
 
-  const result = await graphql<{ theming: { config: ThemeConfig } }>(query, undefined, instance);
+  const result = await graphql<{ theming: { config: ThemeConfig } }>(query);
   return result.theming.config;
 }
 
-export async function getLocalizationConfig(instance?: string): Promise<LocalizationConfig> {
+export async function getLocalizationConfig(): Promise<LocalizationConfig> {
   const query = `query {
     localization {
       config {
@@ -67,11 +67,11 @@ export async function getLocalizationConfig(instance?: string): Promise<Localiza
     }
   }`;
 
-  const result = await graphql<{ localization: { config: LocalizationConfig } }>(query, undefined, instance);
+  const result = await graphql<{ localization: { config: LocalizationConfig } }>(query);
   return result.localization.config;
 }
 
-export async function getUserSummary(instance?: string): Promise<UserSummary> {
+export async function getUserSummary(): Promise<UserSummary> {
   const query = `query {
     users {
       list {
@@ -102,7 +102,7 @@ export async function getUserSummary(instance?: string): Promise<UserSummary> {
         isSystem: boolean;
       }>;
     };
-  }>(query, undefined, instance);
+  }>(query);
 
   const users = result.users.list;
   const adminGroups = result.groups.list.filter(group =>
@@ -118,7 +118,7 @@ export async function getUserSummary(instance?: string): Promise<UserSummary> {
   };
 }
 
-export async function getAssetInfo(instance?: string): Promise<AssetInfo> {
+export async function getAssetInfo(): Promise<AssetInfo> {
   const query = `query {
     site {
       config {
@@ -136,7 +136,7 @@ export async function getAssetInfo(instance?: string): Promise<AssetInfo> {
   const result = await graphql<{
     site: { config: { logoUrl: string } };
     theming: { config: { injectCSS: string; injectHead: string } };
-  }>(query, undefined, instance);
+  }>(query);
 
   return {
     logoUrl: result.site.config.logoUrl,
@@ -145,7 +145,7 @@ export async function getAssetInfo(instance?: string): Promise<AssetInfo> {
   };
 }
 
-export async function getSystemInfo(instance?: string): Promise<SystemInfo> {
+export async function getSystemInfo(): Promise<SystemInfo> {
   const query = `query {
     system {
       info {
@@ -170,7 +170,7 @@ export async function getSystemInfo(instance?: string): Promise<SystemInfo> {
     }
   }`;
 
-  const result = await graphql<{ system: { info: SystemInfo } }>(query, undefined, instance);
+  const result = await graphql<{ system: { info: SystemInfo } }>(query);
   return result.system.info;
 }
 

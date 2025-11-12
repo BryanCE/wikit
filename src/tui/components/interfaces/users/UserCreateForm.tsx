@@ -79,7 +79,7 @@ export function UserCreateForm({
     : isEditing
     ? COMMON_HELP_PATTERNS.FORM_EDITING
     : inCreateForm
-    ? formatHelpText("Tab/1-2=switch tabs", HELP_TEXT.NAVIGATE, HELP_TEXT.ENTER_SELECT, HELP_TEXT.BACK)
+    ? formatHelpText("Tab/1-2=switch tabs", HELP_TEXT.NAVIGATE, HELP_TEXT.TOGGLE, HELP_TEXT.ENTER_SELECT, HELP_TEXT.BACK)
     : formatHelpText("Tab/←→ switch tabs", "1-2 quick jump", "↓ enter form", HELP_TEXT.BACK);
 
   useFooterHelp(helpText);
@@ -111,6 +111,16 @@ export function UserCreateForm({
     }
   };
 
+  const toggleProvider = () => {
+    const currentIndex = PROVIDER_OPTIONS.indexOf(formData.providerKey);
+    const nextIndex = (currentIndex + 1) % PROVIDER_OPTIONS.length;
+    setFormData((prev: CreateUserInput & { password?: string }) => ({
+      ...prev,
+      providerKey: PROVIDER_OPTIONS[nextIndex] ?? "local",
+    }));
+    setInputValue(PROVIDER_OPTIONS[nextIndex] ?? "local");
+  };
+
   const startEditing = () => {
     if (currentField === FORM_FIELDS.length) {
       setShowGroupSelector(true);
@@ -119,19 +129,16 @@ export function UserCreateForm({
 
     if (currentField === FORM_FIELDS.length + 1) {
       setShowOptions(true);
+      setCurrentField(0); // Reset to first option
       return;
     }
 
     const field = FORM_FIELDS[currentField];
     if (field) {
       if (field.key === "providerKey") {
-        const currentIndex = PROVIDER_OPTIONS.indexOf(formData.providerKey);
-        const nextIndex = (currentIndex + 1) % PROVIDER_OPTIONS.length;
-        setFormData((prev: CreateUserInput & { password?: string }) => ({
-          ...prev,
-          providerKey: PROVIDER_OPTIONS[nextIndex] ?? "local",
-        }));
-        setInputValue(PROVIDER_OPTIONS[nextIndex] ?? "local");
+        // Provider is a toggle field - don't start editing, just do nothing
+        // (Space will toggle it)
+        return;
       } else if (field.key === "password") {
         setInputValue(formData.password ?? "");
         setIsEditing(true);
@@ -221,7 +228,44 @@ export function UserCreateForm({
   };
 
   useInput((input, key) => {
-    if (isCreating || showGroupSelector || showOptions) return;
+    if (isCreating || showGroupSelector) return;
+
+    // Handle options dialog separately
+    if (showOptions) {
+      if (key.escape) {
+        setShowOptions(false);
+        setCurrentField(FORM_FIELDS.length + 1); // Return to Options field
+        return;
+      }
+      if (key.upArrow) {
+        setCurrentField(Math.max(0, currentField - 1));
+        return;
+      }
+      if (key.downArrow) {
+        setCurrentField(Math.min(1, currentField + 1));
+        return;
+      }
+      if (input === " ") {
+        if (currentField === 0) {
+          setFormData((prev) => ({
+            ...prev,
+            mustChangePassword: !prev.mustChangePassword,
+          }));
+        } else if (currentField === 1) {
+          setFormData((prev) => ({
+            ...prev,
+            sendWelcomeEmail: !prev.sendWelcomeEmail,
+          }));
+        }
+        return;
+      }
+      if (key.return) {
+        setShowOptions(false);
+        setCurrentField(FORM_FIELDS.length + 1);
+        return;
+      }
+      return;
+    }
 
     // Only handle navigation when IN the form (like NavDeleteModal pattern)
     if (!inCreateForm) return;
@@ -242,6 +286,12 @@ export function UserCreateForm({
         }
       } else if (key.downArrow) {
         navigateFields("down");
+      } else if (input === " ") {
+        // Space toggles provider field
+        const field = FORM_FIELDS[currentField];
+        if (field && field.key === "providerKey") {
+          toggleProvider();
+        }
       } else if (key.return) {
         // If on the "Create User" button (last position)
         if (currentField === FORM_FIELDS.length + 2) {

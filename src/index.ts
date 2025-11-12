@@ -21,7 +21,7 @@ program
 
 // Set InstanceContext before any command action runs
 // This eliminates the need to pass instance to every command function
-program.hook("preAction", (thisCommand, actionCommand) => {
+program.hook("preAction", () => {
   const globalOptions = program.opts<GlobalOptions>();
   InstanceContext.setInstance(globalOptions.instance ?? null);
 });

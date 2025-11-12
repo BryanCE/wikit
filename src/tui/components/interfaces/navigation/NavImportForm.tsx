@@ -6,7 +6,6 @@ import { useEscape } from "@/tui/contexts/EscapeContext";
 import { AsyncActionDialog } from "@comps/modals/AsyncActionDialog";
 import { VirtualizedList } from "@comps/ui/VirtualizedList";
 import { FileBrowserModal } from "@comps/modals/FileBrowserModal/FileBrowserModal";
-import { InstanceContext } from "@/contexts/InstanceContext";
 import { logger } from "@/utils/logger";
 import type { NavigationTree, NavigationConfig } from "@/types";
 
@@ -30,7 +29,6 @@ export function NavImportForm({
   onCancel,
 }: NavImportFormProps) {
   const { theme } = useTheme();
-  const instance = InstanceContext.getInstance();
   const [viewMode, setViewMode] = useState<ViewMode>("file_list");
   const [discoveredFiles, setDiscoveredFiles] = useState<string[]>([]);
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);

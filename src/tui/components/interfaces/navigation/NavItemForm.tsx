@@ -13,7 +13,6 @@ import { NavItemFormField } from "./NavItemFormField";
 import { NavItemFormButtons } from "./NavItemFormButtons";
 import type { FormData, FormFieldConfig, ActionButton } from "./navFormTypes";
 import { FORM_FIELDS, KIND_TYPES, TARGET_TYPES, PREVIEW_INPUT_HANDLER } from "./navFormTypes";
-import { InstanceContext } from "@/contexts/InstanceContext";
 
 interface NavItemFormProps {
   locale: string;
@@ -102,7 +101,7 @@ export function NavItemForm({
       } else if (currentFieldKey === "targetType") {
         return "↑↓ navigate • Space cycle target type • Esc exit";
       } else if (currentFieldKey === "insertAfterId") {
-        return "↑↓ navigate • Space cycle • → open placement picker • Esc exit";
+        return "↑↓ navigate • Space cycle • Enter open placement picker • Esc exit";
       } else {
         const field = visibleFields[currentField];
         if (field?.isSelect) {
@@ -371,18 +370,6 @@ export function NavItemForm({
       } else if (key.rightArrow) {
         if (focusArea === "buttons") {
           navigateButtons("right");
-        } else if (focusArea === "fields") {
-          const visibleFields = getVisibleFields();
-          const field = visibleFields[currentField];
-          if (field?.key === "insertAfterId") {
-            // Calculate initial position based on current insertAfterId
-            const items = existingTree?.items ?? [];
-            const currentIndex = formData.insertAfterId
-              ? items.findIndex(item => item.id === formData.insertAfterId)
-              : -1;
-            setPlacementPreviewIndex(currentIndex + 1);
-            setShowPlacementPreview(true);
-          }
         }
       } else if (input === " ") {
         if (focusArea === "fields") {
@@ -394,7 +381,19 @@ export function NavItemForm({
         }
       } else if (key.return) {
         if (focusArea === "fields") {
-          startEditing();
+          const visibleFields = getVisibleFields();
+          const field = visibleFields[currentField];
+          if (field?.key === "insertAfterId") {
+            // Calculate initial position based on current insertAfterId
+            const items = existingTree?.items ?? [];
+            const currentIndex = formData.insertAfterId
+              ? items.findIndex(item => item.id === formData.insertAfterId)
+              : -1;
+            setPlacementPreviewIndex(currentIndex + 1);
+            setShowPlacementPreview(true);
+          } else {
+            startEditing();
+          }
         } else if (focusArea === "buttons") {
           if (selectedButton === "save") {
             void handleSave();
@@ -485,18 +484,15 @@ export function NavItemForm({
         loadingMessage="Adding navigation item..."
         successMessage="Navigation item added successfully!"
         onConfirm={async () => {
-          await addNavigationItem(
-            {
-              kind: formData.kind,
-              label: formData.kind === "divider" ? undefined : formData.label ?? undefined,
-              target: formData.kind === "link" ? formData.target ?? undefined : undefined,
-              targetType: formData.kind === "link" ? formData.targetType : undefined,
-              icon: formData.kind !== "divider" && formData.icon ? formData.icon ?? undefined : undefined,
-              locale,
-              insertAfterId: formData.insertAfterId ?? undefined,
-            },
-            { instance: InstanceContext.getInstance() }
-          );
+          await addNavigationItem({
+            kind: formData.kind,
+            label: formData.kind === "divider" ? undefined : formData.label ?? undefined,
+            target: formData.kind === "link" ? formData.target ?? undefined : undefined,
+            targetType: formData.kind === "link" ? formData.targetType : undefined,
+            icon: formData.kind !== "divider" && formData.icon ? formData.icon ?? undefined : undefined,
+            locale,
+            insertAfterId: formData.insertAfterId ?? undefined,
+          });
         }}
         onSuccess={() => {
           setShowConfirmDialog(false);

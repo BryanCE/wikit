@@ -6,7 +6,6 @@ import { useIcon } from "@/tui/contexts/IconContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useFooterHelp, useFooterStatus } from "@/tui/contexts/FooterContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
-import { InstanceContext } from "@/contexts/InstanceContext";
 import { AsyncActionDialog } from "@comps/modals/AsyncActionDialog";
 import { VirtualizedList } from "@comps/ui/VirtualizedList";
 
@@ -29,7 +28,6 @@ export function NavItemMoveInterface({
 }: NavItemMoveInterfaceProps) {
   const { theme } = useTheme();
   const { formatIcon } = useIcon();
-  const instance = InstanceContext.getInstance();
   const [phase, setPhase] = useState<MovePhase>("select");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [markedItemIds, setMarkedItemIds] = useState<Set<string>>(new Set());

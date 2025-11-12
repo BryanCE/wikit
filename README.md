@@ -4,12 +4,17 @@ CLI and TUI for managing Wiki.js instances.
 
 ## Features
 
-- **Multi-instance support**: Manage multiple Wiki.js instances
-- **CLI commands**: Direct command-line operations
-- **Interactive TUI**: Full-featured terminal user interface
-- **Bulk operations**: Delete, compare, and sync pages in bulk
-- **Page management**: Browse, search, and manage wiki pages
-- **Configuration sync**: Compare and synchronize configurations between instances
+- **Multi-instance support**: Manage multiple Wiki.js instances with encrypted configuration
+- **CLI commands**: Direct command-line operations for automation
+- **Interactive TUI**: Full-featured terminal user interface with React/Ink
+- **Page management**: Browse, search, edit, move, and delete pages
+- **Navigation management**: Create, edit, move, and delete navigation items
+- **User management**: Create, edit, and manage Wiki.js users and profiles
+- **Group management**: Manage groups, members, permissions, and page rules
+- **Bulk operations**: Delete multiple pages or navigation items at once
+- **Content analysis**: Analyze page structure, find orphaned pages, compare navigation
+- **Instance sync**: Compare and synchronize configurations between instances
+- **Theme support**: Multiple color themes with Nerd Font icon support
 
 ## Installation
 

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useInput } from "ink";
+import { Box, Text, useInput } from "ink";
 import { syncForTui } from "@/commands/sync";
 import { type SyncCommandOptions, type SyncSummary } from "@/types";
 import { getAvailableInstances, getInstanceLabels } from "@/config/dynamicConfig";
-import { InstanceContext } from "@/contexts/InstanceContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
 import { useFooterStatus } from "@/tui/contexts/FooterContext";
+import { useTheme } from "@/tui/contexts/ThemeContext";
 import { SyncOptions } from "./SyncOptions.js";
 import { SyncConfirmation } from "./SyncConfirmation.js";
 import { SyncResults } from "./SyncResults.js";
@@ -18,6 +18,7 @@ interface SyncInterfaceProps {
 export function SyncInterface({
   onEsc,
 }: SyncInterfaceProps) {
+  const { theme } = useTheme();
   // Setup escape handling
   useEscape('sync', () => {
     onEsc?.();
@@ -30,15 +31,15 @@ export function SyncInterface({
   const [statusMsg, setStatusMsg] = useState("");
   const [availableInstances, setAvailableInstances] = useState<string[]>([]);
   const [instanceLabels, setInstanceLabels] = useState<Record<string, string>>({});
+  const [fromInstance, setFromInstance] = useState("");
+  const [toInstance, setToInstance] = useState("");
+  const [selectionMode, setSelectionMode] = useState<"from" | "to" | "options">("from");
+  const [selectedInstanceIndex, setSelectedInstanceIndex] = useState(0);
   useFooterStatus(statusMsg);
-
-  const instance = InstanceContext.getInstance();
-  const otherInstances = availableInstances.filter(i => i !== instance);
-  const otherInstance = otherInstances[0] ?? instance;
 
   useHeaderData({
     title: "Sync Configurations",
-    metadata: `${instance} → ${otherInstance}${isDryRun ? " (dry run)" : ""}`
+    metadata: fromInstance && toInstance ? `${fromInstance} → ${toInstance}${isDryRun ? " (dry run)" : ""}` : "Loading..."
   });
 
   useEffect(() => {
@@ -73,6 +74,11 @@ export function SyncInterface({
       label: "Pages Content",
       desc: "Copy missing pages from source to target",
     },
+    {
+      key: "toggle-mode",
+      label: isDryRun ? "Switch to Live Sync" : "Switch to Dry Run",
+      desc: isDryRun ? "Execute actual sync" : "Preview changes only",
+    },
   ];
 
   useInput((input, key) => {
@@ -97,17 +103,43 @@ export function SyncInterface({
       return;
     }
 
-    if (key.upArrow) {
-      setSelectedOption((prev) => (prev > 0 ? prev - 1 : options.length - 1));
-    } else if (key.downArrow) {
-      setSelectedOption((prev) => (prev < options.length - 1 ? prev + 1 : 0));
-    } else if (input === "d") {
-      setIsDryRun(!isDryRun);
-    } else if (key.return) {
-      if (isDryRun) {
-        void performSync(true);
-      } else {
-        setShowConfirmation(true);
+    if (selectionMode === "from") {
+      if (key.upArrow) {
+        setSelectedInstanceIndex((prev) => (prev > 0 ? prev - 1 : availableInstances.length - 1));
+      } else if (key.downArrow) {
+        setSelectedInstanceIndex((prev) => (prev < availableInstances.length - 1 ? prev + 1 : 0));
+      } else if (key.return) {
+        setFromInstance(availableInstances[selectedInstanceIndex] ?? "");
+        setSelectionMode("to");
+        setSelectedInstanceIndex(0);
+      }
+    } else if (selectionMode === "to") {
+      if (key.upArrow) {
+        setSelectedInstanceIndex((prev) => (prev > 0 ? prev - 1 : availableInstances.length - 1));
+      } else if (key.downArrow) {
+        setSelectedInstanceIndex((prev) => (prev < availableInstances.length - 1 ? prev + 1 : 0));
+      } else if (key.return) {
+        setToInstance(availableInstances[selectedInstanceIndex] ?? "");
+        setSelectionMode("options");
+        setSelectedOption(0);
+      }
+    } else {
+      // selectionMode === "options"
+      if (key.upArrow) {
+        setSelectedOption((prev) => (prev > 0 ? prev - 1 : options.length - 1));
+      } else if (key.downArrow) {
+        setSelectedOption((prev) => (prev < options.length - 1 ? prev + 1 : 0));
+      } else if (key.return) {
+        const option = options[selectedOption];
+        if (option?.key === "toggle-mode") {
+          setIsDryRun(!isDryRun);
+        } else {
+          if (isDryRun) {
+            void performSync(true);
+          } else {
+            setShowConfirmation(true);
+          }
+        }
       }
     }
   });
@@ -117,8 +149,8 @@ export function SyncInterface({
     const mode = dryRun ? "dry run" : "sync";
     setStatusMsg(
       `🔄 ${dryRun ? "Checking what would be synced" : "Syncing"} from ${
-        instanceLabels[instance]
-      } to ${instanceLabels[otherInstance]}...`
+        instanceLabels[fromInstance]
+      } to ${instanceLabels[toInstance]}...`
     );
 
     try {
@@ -129,8 +161,8 @@ export function SyncInterface({
       }
 
       const syncOptions: SyncCommandOptions = {
-        from: instance,
-        to: otherInstance,
+        from: fromInstance,
+        to: toInstance,
         [option.key]: true,
         dryRun,
       };
@@ -170,9 +202,11 @@ export function SyncInterface({
   if (showConfirmation) {
     return (
       <SyncConfirmation
-        otherInstance={otherInstance}
+        fromInstance={fromInstance}
+        toInstance={toInstance}
         selectedOption={selectedOption}
         options={options}
+        instanceLabels={instanceLabels}
       />
     );
   }
@@ -181,13 +215,54 @@ export function SyncInterface({
     return <SyncResults results={results} />;
   }
 
+  if (availableInstances.length < 2) {
+    return (
+      <Box flexDirection="column">
+        <Text color={theme.colors.error} bold>
+          Error: Not Enough Instances
+        </Text>
+        <Text color={theme.colors.text}>
+          Sync requires at least 2 configured instances.
+        </Text>
+        <Text color={theme.colors.muted}>
+          Press Esc to return
+        </Text>
+      </Box>
+    );
+  }
+
+  if (selectionMode === "from" || selectionMode === "to") {
+    return (
+      <Box flexDirection="column">
+        <Text color={theme.colors.primary} bold>
+          Select {selectionMode === "from" ? "Source" : "Target"} Instance
+        </Text>
+        <Box marginY={1} flexDirection="column">
+          {availableInstances.map((inst, index) => (
+            <Text
+              key={inst}
+              color={index === selectedInstanceIndex ? theme.colors.background : theme.colors.text}
+              backgroundColor={index === selectedInstanceIndex ? theme.colors.primary : undefined}
+            >
+              {index === selectedInstanceIndex ? " ► " : "   "}
+              {instanceLabels[inst] ?? inst}
+            </Text>
+          ))}
+        </Box>
+        <Text color={theme.colors.muted}>↑↓=navigate • Enter=select</Text>
+      </Box>
+    );
+  }
+
   return (
     <SyncOptions
-      otherInstance={otherInstance}
+      fromInstance={fromInstance}
+      toInstance={toInstance}
       selectedOption={selectedOption}
       isDryRun={isDryRun}
       isLoading={isLoading}
       options={options}
+      instanceLabels={instanceLabels}
     />
   );
 }

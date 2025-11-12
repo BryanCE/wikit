@@ -5,7 +5,6 @@ import { getPages } from "@/commands/listPages";
 import { type Page } from "@/types";
 import { getPageContent, createPage } from "@/api/pages";
 import { getAvailableInstances, getInstanceLabels } from "@/config/dynamicConfig";
-import { InstanceContext } from "@/contexts/InstanceContext";
 import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
@@ -35,15 +34,15 @@ export function PageCopyInterface({
   const [statusMsg, setStatusMsg] = useState("");
   const [availableInstances, setAvailableInstances] = useState<string[]>([]);
   const [instanceLabels, setInstanceLabels] = useState<Record<string, string>>({});
+  const [fromInstance, setFromInstance] = useState("");
+  const [targetInstance, setTargetInstance] = useState("");
+  const [selectionMode, setSelectionMode] = useState<"from" | "to" | "pages">("from");
+  const [selectedInstanceIndex, setSelectedInstanceIndex] = useState(0);
   useFooterStatus(statusMsg);
-
-  const instance = InstanceContext.getInstance();
-  const otherInstances = availableInstances.filter(i => i !== instance);
-  const targetInstance = otherInstances[0] ?? instance;
 
   useHeaderData({
     title: "Copy Pages",
-    metadata: `${markedForCopy.size} marked • ${instance} → ${targetInstance}`
+    metadata: fromInstance && targetInstance ? `${markedForCopy.size} marked • ${fromInstance} → ${targetInstance}` : "Loading..."
   });
 
   useEffect(() => {
@@ -66,7 +65,6 @@ export function PageCopyInterface({
       setError(null);
 
       const pages = await getPages("", {
-        instance,
         recursive: true,
         limit: 500,
       });
@@ -150,7 +148,27 @@ export function PageCopyInterface({
   useInput((input, key) => {
     if (loading || copying || confirmMode) return;
 
-    if (key.upArrow) {
+    if (selectionMode === "from") {
+      if (key.upArrow) {
+        setSelectedInstanceIndex((prev) => (prev > 0 ? prev - 1 : availableInstances.length - 1));
+      } else if (key.downArrow) {
+        setSelectedInstanceIndex((prev) => (prev < availableInstances.length - 1 ? prev + 1 : 0));
+      } else if (key.return) {
+        setFromInstance(availableInstances[selectedInstanceIndex] ?? "");
+        setSelectionMode("to");
+        setSelectedInstanceIndex(0);
+      }
+    } else if (selectionMode === "to") {
+      if (key.upArrow) {
+        setSelectedInstanceIndex((prev) => (prev > 0 ? prev - 1 : availableInstances.length - 1));
+      } else if (key.downArrow) {
+        setSelectedInstanceIndex((prev) => (prev < availableInstances.length - 1 ? prev + 1 : 0));
+      } else if (key.return) {
+        setTargetInstance(availableInstances[selectedInstanceIndex] ?? "");
+        setSelectionMode("pages");
+        void loadPages();
+      }
+    } else if (key.upArrow) {
       setSelectedIndex((prev) => Math.max(0, prev - 1));
     } else if (key.downArrow) {
       setSelectedIndex((prev) => Math.min(pages.length - 1, prev + 1));
@@ -169,10 +187,47 @@ export function PageCopyInterface({
       }
     } else if (key.return && markedForCopy.size > 0) {
       setConfirmMode(true);
-    } else if (input === "c") {
-      setMarkedForCopy(new Set());
     }
   });
+
+  if (availableInstances.length < 2) {
+    return (
+      <Box flexDirection="column">
+        <Text color={theme.colors.error} bold>
+          Error: Not Enough Instances
+        </Text>
+        <Text color={theme.colors.text}>
+          Copy Pages requires at least 2 configured instances.
+        </Text>
+        <Text color={theme.colors.muted}>
+          Press Esc to return
+        </Text>
+      </Box>
+    );
+  }
+
+  if (selectionMode === "from" || selectionMode === "to") {
+    return (
+      <Box flexDirection="column">
+        <Text color={theme.colors.primary} bold>
+          Select {selectionMode === "from" ? "Source" : "Target"} Instance
+        </Text>
+        <Box marginY={1} flexDirection="column">
+          {availableInstances.map((inst, index) => (
+            <Text
+              key={inst}
+              color={index === selectedInstanceIndex ? theme.colors.background : theme.colors.text}
+              backgroundColor={index === selectedInstanceIndex ? theme.colors.primary : undefined}
+            >
+              {index === selectedInstanceIndex ? " ► " : "   "}
+              {instanceLabels[inst] ?? inst}
+            </Text>
+          ))}
+        </Box>
+        <Text color={theme.colors.muted}>↑↓=navigate • Enter=select</Text>
+      </Box>
+    );
+  }
 
   if (loading) {
     return (
@@ -195,7 +250,7 @@ export function PageCopyInterface({
     return (
       <ConfirmationDialog
         title="CONFIRM COPY"
-        message={`Copy ${pagesToCopy.length} page(s) from ${instanceLabels[instance]} to ${instanceLabels[targetInstance]}?`}
+        message={`Copy ${pagesToCopy.length} page(s) from ${instanceLabels[fromInstance]} to ${instanceLabels[targetInstance]}?`}
         confirmText="Yes, copy them"
         cancelText="No, cancel"
         items={pagesToCopy

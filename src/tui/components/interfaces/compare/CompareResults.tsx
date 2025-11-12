@@ -3,7 +3,9 @@ import { Box, Text, useInput } from "ink";
 import Table from "@comps/ui/Table.js";
 import type { CompareResults, InstanceDiffResult } from "@/types";
 import { useTheme } from "@/tui/contexts/ThemeContext";
+import { useFooterHelp } from "@/tui/contexts/FooterContext";
 import { useTerminalDimensions } from "@/tui/hooks/useTerminalDimensions";
+import { COMMON_HELP_PATTERNS } from "@/tui/constants/keyboard";
 
 interface CompareResultsProps {
   results: CompareResults;
@@ -18,29 +20,33 @@ export function CompareResultsDisplay({
   const { height } = useTerminalDimensions();
   const [scrollPosition, setScrollPosition] = useState(0);
 
+  useFooterHelp(COMMON_HELP_PATTERNS.LIST);
+
   const formatValue = (value: unknown): string => {
     if (value === null || value === undefined) return "null";
+    const maxLength = showDetails ? 100 : 30;
+
     if (typeof value === "string") {
-      // Truncate long strings aggressively for table display
-      if (value.length > 30) {
-        return value.slice(0, 30) + "...";
+      if (value.length > maxLength) {
+        return value.slice(0, maxLength) + "...";
       }
-      // For multiline strings, show only first line
-      if (value.includes("\n")) {
+      // For multiline strings, show only first line in brief mode
+      if (!showDetails && value.includes("\n")) {
         return (value.split("\n")[0] ?? "").slice(0, 30) + "...";
       }
       return value;
     }
     if (typeof value === "object") {
-      const json = JSON.stringify(value, null, 0);
-      if (json.length > 30) {
-        return json.slice(0, 30) + "...";
+      const json = JSON.stringify(value, null, showDetails ? 2 : 0);
+      const objMaxLength = showDetails ? 200 : 30;
+      if (json.length > objMaxLength) {
+        return json.slice(0, objMaxLength) + "...";
       }
       return json;
     }
     const str = JSON.stringify(value);
-    if (str.length > 30) {
-      return str.slice(0, 30) + "...";
+    if (str.length > maxLength) {
+      return str.slice(0, maxLength) + "...";
     }
     return str;
   };
@@ -197,12 +203,6 @@ export function CompareResultsDisplay({
             })}
         </Box>
 
-        <Box borderStyle="single" borderColor={theme.colors.muted} paddingX={1}>
-          <Text color={theme.colors.muted}>
-            ↑↓ Navigate • 'r' run again • 'd' {showDetails ? "hide" : "show"}{" "}
-            details • Esc return
-          </Text>
-        </Box>
       </Box>
     );
   }
@@ -239,12 +239,6 @@ export function CompareResultsDisplay({
         <Text color={theme.colors.muted}>No data to compare</Text>
       )}
 
-      <Box borderStyle="single" borderColor={theme.colors.muted} paddingX={1}>
-        <Text color={theme.colors.muted}>
-          'r' run again • 'd' {showDetails ? "hide" : "show"} details • Esc
-          return
-        </Text>
-      </Box>
     </Box>
   );
 }

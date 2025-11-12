@@ -14,12 +14,16 @@ type InstanceListener = (instance: string | null) => void;
 
 class InstanceContextManager {
   private currentInstance: string | null = null;
-  private listeners: Set<InstanceListener> = new Set();
+  private listeners = new Set<InstanceListener>();
 
   /**
    * Get the current active instance
+   * @throws Error if no instance is set (should only happen during setup)
    */
-  getInstance(): string | null {
+  getInstance(): string {
+    if (!this.currentInstance) {
+      throw new Error("No instance set - this should not happen outside of setup");
+    }
     return this.currentInstance;
   }
 

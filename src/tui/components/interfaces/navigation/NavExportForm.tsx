@@ -50,8 +50,8 @@ export function NavExportForm({
   const loadNavigation = async () => {
     try {
       const [tree, config] = await Promise.all([
-        getNavigationTree(instance),
-        getNavigationConfig(instance),
+        getNavigationTree(),
+        getNavigationConfig(),
       ]);
       setNavigationTree(tree);
       setNavigationConfig(config);
@@ -79,7 +79,7 @@ export function NavExportForm({
       }
 
       const { exportNavigation } = await import("@/commands/navigation");
-      await exportNavigation(fullPath, {});
+      await exportNavigation(fullPath);
 
       onSuccess();
     } catch (err) {

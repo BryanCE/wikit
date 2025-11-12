@@ -1,14 +1,21 @@
 import { Box, Text } from "ink";
 import { useTheme } from "@/tui/contexts/ThemeContext";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import type { HeaderData } from "@/types";
 
 interface HeaderProps {
-  instance: string | null;
   headerData: HeaderData;
 }
 
-export function Header({ instance, headerData }: HeaderProps) {
+export function Header({ headerData }: HeaderProps) {
   const { theme } = useTheme();
+  let instance: string | null = null;
+  try {
+    instance = InstanceContext.getInstance();
+  } catch {
+    // No instance set (during setup)
+    instance = null;
+  }
 
   const getInstanceBgColor = (inst: string | null) => {
     if (!inst) return theme.colors.muted;

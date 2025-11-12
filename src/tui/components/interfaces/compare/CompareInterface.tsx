@@ -7,7 +7,6 @@ import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
 import { useFooterStatus } from "@/tui/contexts/FooterContext";
 import { getAvailableInstances, getInstanceLabels } from "@/config/dynamicConfig";
-import { InstanceContext } from "@/contexts/InstanceContext";
 import { CompareOptions as CompareOptionsComponent } from "./CompareOptions.js";
 import { CompareResultsDisplay } from "./CompareResults.js";
 
@@ -27,11 +26,11 @@ export function CompareInterface({
   const [statusMsg, setStatusMsg] = useState("");
   const [availableInstances, setAvailableInstances] = useState<string[]>([]);
   const [instanceLabels, setInstanceLabels] = useState<Record<string, string>>({});
+  const [fromInstance, setFromInstance] = useState("");
+  const [toInstance, setToInstance] = useState("");
+  const [selectionMode, setSelectionMode] = useState<"from" | "to" | "options">("from");
+  const [selectedInstanceIndex, setSelectedInstanceIndex] = useState(0);
   useFooterStatus(statusMsg);
-
-  const instance = InstanceContext.getInstance();
-  const otherInstances = availableInstances.filter(i => i !== instance);
-  const otherInstance = otherInstances[0] ?? instance;
 
   useEffect(() => {
     void Promise.all([
@@ -101,27 +100,43 @@ export function CompareInterface({
   useInput((input, key) => {
     if (isLoading) return;
 
-    // Handle post-results actions
+    // When showing results, allow Space to toggle details
     if (results) {
-      if (input === "d") {
+      if (input === " ") {
         setShowDetails(!showDetails);
-        return;
       }
-      if (input === "r") {
-        setResults(null);
-        setSelectedOption(0);
-        return;
-      }
-      return; // Block other inputs when showing results
+      return;
     }
 
-    // Handle pre-results navigation
-    if (key.upArrow) {
-      setSelectedOption((prev) => (prev > 0 ? prev - 1 : options.length - 1));
-    } else if (key.downArrow) {
-      setSelectedOption((prev) => (prev < options.length - 1 ? prev + 1 : 0));
-    } else if (key.return) {
-      void handleCompare();
+    if (selectionMode === "from") {
+      if (key.upArrow) {
+        setSelectedInstanceIndex((prev) => (prev > 0 ? prev - 1 : availableInstances.length - 1));
+      } else if (key.downArrow) {
+        setSelectedInstanceIndex((prev) => (prev < availableInstances.length - 1 ? prev + 1 : 0));
+      } else if (key.return) {
+        setFromInstance(availableInstances[selectedInstanceIndex] ?? "");
+        setSelectionMode("to");
+        setSelectedInstanceIndex(0);
+      }
+    } else if (selectionMode === "to") {
+      if (key.upArrow) {
+        setSelectedInstanceIndex((prev) => (prev > 0 ? prev - 1 : availableInstances.length - 1));
+      } else if (key.downArrow) {
+        setSelectedInstanceIndex((prev) => (prev < availableInstances.length - 1 ? prev + 1 : 0));
+      } else if (key.return) {
+        setToInstance(availableInstances[selectedInstanceIndex] ?? "");
+        setSelectionMode("options");
+        setSelectedOption(0);
+      }
+    } else {
+      // selectionMode === "options"
+      if (key.upArrow) {
+        setSelectedOption((prev) => (prev > 0 ? prev - 1 : options.length - 1));
+      } else if (key.downArrow) {
+        setSelectedOption((prev) => (prev < options.length - 1 ? prev + 1 : 0));
+      } else if (key.return) {
+        void handleCompare();
+      }
     }
   });
 
@@ -130,7 +145,7 @@ export function CompareInterface({
 
     setIsLoading(true);
     setStatusMsg(
-      `Comparing ${instanceLabels[instance]} vs ${instanceLabels[otherInstance]}...`
+      `Comparing ${instanceLabels[fromInstance]} vs ${instanceLabels[toInstance]}...`
     );
 
     try {
@@ -141,8 +156,8 @@ export function CompareInterface({
       }
 
       const compareOptions: CompareOptions = {
-        from: instance,
-        to: otherInstance,
+        from: fromInstance,
+        to: toInstance,
         [option.key]: true,
         details: showDetails,
       };
@@ -167,11 +182,50 @@ export function CompareInterface({
     );
   }
 
+  if (availableInstances.length < 2) {
+    return (
+      <Box flexDirection="column">
+        <Text color={theme.colors.error} bold>
+          Error: Not Enough Instances
+        </Text>
+        <Text color={theme.colors.text}>
+          Compare requires at least 2 configured instances.
+        </Text>
+        <Text color={theme.colors.muted}>
+          Press Esc to return
+        </Text>
+      </Box>
+    );
+  }
+
+  if (selectionMode === "from" || selectionMode === "to") {
+    return (
+      <Box flexDirection="column">
+        <Text color={theme.colors.primary} bold>
+          Select {selectionMode === "from" ? "Source" : "Target"} Instance
+        </Text>
+        <Box marginY={1} flexDirection="column">
+          {availableInstances.map((inst, index) => (
+            <Text
+              key={inst}
+              color={index === selectedInstanceIndex ? theme.colors.background : theme.colors.text}
+              backgroundColor={index === selectedInstanceIndex ? theme.colors.primary : undefined}
+            >
+              {index === selectedInstanceIndex ? " ► " : "   "}
+              {instanceLabels[inst] ?? inst}
+            </Text>
+          ))}
+        </Box>
+        <Text color={theme.colors.muted}>↑↓=navigate • Enter=select</Text>
+      </Box>
+    );
+  }
+
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
         <Text color={theme.colors.secondary}>
-          Comparing {instanceLabels[instance]} → {instanceLabels[otherInstance]}
+          Comparing {instanceLabels[fromInstance]} → {instanceLabels[toInstance]}
         </Text>
       </Box>
 

@@ -122,3 +122,4 @@ Create a `.env` file with the required API keys and URLs for your Wiki.js instan
 - Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read @typescript-eslint/prefer-nullish-coalescing
 - Use VirtualizedList do not manually calculate height of things or handle scrolling outside of this unless absolutely needed
 - **CRITICAL**: HeaderContext uses a STACK (like EscapeContext) - any component can call useHeaderData, previous values restore automatically on unmount. DO NOT manually manage headers. (see .claude/docs/memory.md)
+- using single letter commands is against the rules of this project in every way possible if you do it you will die
