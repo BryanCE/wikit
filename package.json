@@ -1,6 +1,6 @@
 {
   "name": "@bryance/wikit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Full-featured CLI and TUI for managing Wiki.js - pages, navigation, users, groups, content analysis, and multi-instance sync",
   "type": "module",
   "main": "dist/index.js",
