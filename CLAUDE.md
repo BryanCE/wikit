@@ -25,12 +25,33 @@ This is a **CLI and TUI tool for Wiki.js API management** built with TypeScript,
 
 ### Multi-Instance Support
 
-The application supports multiple Wiki.js instances configured via environment variables:
-
-- `rmwiki` (default): Uses `WIKIJS_API_URL` and `WIKIJS_API_KEY`
-- `tlwiki`: Uses `TLWIKI_API_URL` and `TLWIKI_API_KEY`
+The application supports multiple Wiki.js instances configured via the dynamic config system (see Config setup in TUI) or via environment variables for legacy support.
 
 Instances can be switched using the `-i/--instance` flag in CLI mode or the `i` command in TUI mode.
+
+### Instance Management
+
+The application uses a global `InstanceContext` singleton to manage the current Wiki.js instance:
+
+**How It Works:**
+- **CLI Mode**: A preAction hook in `src/index.ts` sets the instance before any command runs
+- **TUI Mode**: `AppContent` syncs the instance state with the context via useEffect
+- **API Layer**: The `graphql()` function automatically uses `InstanceContext.getInstance()`
+
+**Key Files:**
+- `src/contexts/InstanceContext.ts` - Singleton implementation
+- `src/index.ts` - PreAction hook for CLI
+- `src/tui/AppContent.tsx` - Instance syncing for TUI
+- `src/api.ts` - Context-aware GraphQL client
+
+**Benefits:**
+- Eliminates instance prop drilling through 69+ component files
+- Cleaner function signatures (no instance parameters)
+- Centralized instance management
+- Consistent pattern for both CLI and TUI modes
+
+**For Commands That Switch Instances:**
+Some commands (`sync.ts`, `status.ts`, `compare.ts`) need to switch between instances internally. They use `InstanceContext.setInstance()` directly to manage multi-instance operations.
 
 ### TUI Architecture
 

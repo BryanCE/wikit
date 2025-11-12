@@ -8,7 +8,6 @@ import { useIcon } from "@/tui/contexts/IconContext";
 interface NavTreeDisplayProps {
   tree?: NavigationTree;
   theme: Theme;
-  instance?: string;
   onItemSelect: (itemId: string) => void;
 }
 
@@ -20,7 +19,6 @@ interface FlatNavigationItem extends NavigationItem {
 export function NavTreeDisplay({
   tree,
   theme,
-  instance: _instance,
   onItemSelect,
 }: NavTreeDisplayProps) {
   const { formatIcon } = useIcon();

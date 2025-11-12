@@ -1,11 +1,8 @@
 import * as groupApi from "@/api/groups";
-import type { GroupCommandOptions } from "@/types";
-import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function listGroupsCommand(
-  options: { filter?: string } & GroupCommandOptions
+  options: { filter?: string }
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   const groups = await groupApi.listGroups(options.filter);
 
   if (groups.length === 0) {
@@ -36,10 +33,8 @@ export async function listGroupsCommand(
 }
 
 export async function showGroupCommand(
-  id: number,
-  options: GroupCommandOptions
+  id: number
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   const group = await groupApi.getGroup(id);
 
   console.log("\nGroup Details:\n");
@@ -82,10 +77,8 @@ export async function showGroupCommand(
 }
 
 export async function createGroupCommand(
-  name: string,
-  options: GroupCommandOptions
+  name: string
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await groupApi.createGroup(name);
 
   if (response.responseResult.succeeded) {
@@ -103,10 +96,8 @@ export async function createGroupCommand(
 }
 
 export async function deleteGroupCommand(
-  id: number,
-  options: GroupCommandOptions
+  id: number
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await groupApi.deleteGroup(id);
 
   if (response.succeeded) {
@@ -119,10 +110,8 @@ export async function deleteGroupCommand(
 
 export async function assignUserCommand(
   groupId: number,
-  userId: number,
-  options: GroupCommandOptions
+  userId: number
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await groupApi.assignUser(
     groupId,
     userId
@@ -138,10 +127,8 @@ export async function assignUserCommand(
 
 export async function unassignUserCommand(
   groupId: number,
-  userId: number,
-  options: GroupCommandOptions
+  userId: number
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await groupApi.unassignUser(
     groupId,
     userId

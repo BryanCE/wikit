@@ -103,7 +103,3 @@ export interface UserListOptions {
   filter?: string;
   orderBy?: string;
 }
-
-export interface UserCommandOptions {
-  instance?: string;
-}

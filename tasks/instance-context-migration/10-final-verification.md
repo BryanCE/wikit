@@ -53,7 +53,7 @@ Test each CLI command to ensure they work:
 bun run dev list
 
 # List pages with specific instance
-bun run dev list -i rmwiki
+bun run dev list -i myinstance
 
 # Delete pages
 bun run dev delete "test/*"
@@ -153,7 +153,7 @@ Update `CLAUDE.md` to document the InstanceContext pattern:
 
 The application uses a global `InstanceContext` singleton to manage the current Wiki.js instance:
 
-- **Setting instance**: `InstanceContext.setInstance('rmwiki')`
+- **Setting instance**: `InstanceContext.setInstance('myinstance')`
 - **Getting instance**: `InstanceContext.getInstance()`
 - **Subscribing to changes**: `InstanceContext.subscribe((instance) => { ... })`
 

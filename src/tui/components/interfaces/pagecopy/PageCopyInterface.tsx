@@ -4,7 +4,8 @@ import { ConfirmationDialog } from "@comps/modals/ConfirmationDialog";
 import { getPages } from "@/commands/listPages";
 import { type Page } from "@/types";
 import { getPageContent, createPage } from "@/api/pages";
-import { instanceLabels } from "@/config";
+import { getAvailableInstances, getInstanceLabels } from "@/config";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
@@ -32,15 +33,28 @@ export function PageCopyInterface({
   const [confirmMode, setConfirmMode] = useState(false);
   const [copying, setCopying] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
+  const [availableInstances, setAvailableInstances] = useState<string[]>([]);
+  const [instanceLabels, setInstanceLabels] = useState<Record<string, string>>({});
   useFooterStatus(statusMsg);
 
-  const instance = "rmwiki"; // TODO: Get from InstanceContext
-  const targetInstance = instance === "rmwiki" ? "tlwiki" : "rmwiki";
+  const instance = InstanceContext.getInstance();
+  const otherInstances = availableInstances.filter(i => i !== instance);
+  const targetInstance = otherInstances[0] ?? instance;
 
   useHeaderData({
     title: "Copy Pages",
     metadata: `${markedForCopy.size} marked • ${instance} → ${targetInstance}`
   });
+
+  useEffect(() => {
+    void Promise.all([
+      getAvailableInstances(),
+      getInstanceLabels()
+    ]).then(([instances, labels]) => {
+      setAvailableInstances(instances);
+      setInstanceLabels(labels);
+    });
+  }, []);
 
   useEffect(() => {
     void loadPages();

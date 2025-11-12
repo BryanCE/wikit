@@ -6,16 +6,15 @@ import { setNavigationMode } from "@/commands/navigation";
 import { AsyncActionDialog } from "@comps/modals/AsyncActionDialog";
 import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useFooterHelp } from "@/tui/contexts/FooterContext";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 interface NavModeSelectorProps {
-  instance: string;
   currentMode: NavigationConfig["mode"];
   onModeChange: () => void;
   onCancel: () => void;
 }
 
 export function NavModeSelector({
-  instance,
   currentMode,
   onModeChange,
   onCancel,
@@ -63,7 +62,7 @@ export function NavModeSelector({
         successMessage="Navigation mode updated successfully!"
         onConfirm={async () => {
           if (!selectedMode) throw new Error("No mode selected");
-          await setNavigationMode(selectedMode.mode, { instance });
+          await setNavigationMode(selectedMode.mode, { instance: InstanceContext.getInstance() });
         }}
         onSuccess={() => {
           setShowConfirm(false);

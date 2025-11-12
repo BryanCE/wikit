@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Text } from "ink";
 import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useFooterHelp } from "@/tui/contexts/FooterContext";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import { instanceLabels } from "@/config";
 
 interface SyncOption {
@@ -11,19 +12,18 @@ interface SyncOption {
 }
 
 interface SyncConfirmationProps {
-  instance: string;
   otherInstance: string;
   selectedOption: number;
   options: SyncOption[];
 }
 
 export function SyncConfirmation({
-  instance,
   otherInstance,
   selectedOption,
   options,
 }: SyncConfirmationProps) {
   const { theme } = useTheme();
+  const instance = InstanceContext.getInstance();
 
   useFooterHelp("Y=Yes • N/Esc=Cancel");
 

@@ -1,9 +1,7 @@
 import { getAllPages } from "@/api/pages";
 import { type Page } from "@/types";
-import { InstanceContext } from "@/contexts/InstanceContext";
 
 interface ListOptions {
-  instance?: string;
   limit?: number;
   showAll?: boolean;
   recursive?: boolean;
@@ -38,7 +36,6 @@ function filterPages(allPages: Page[], pathPrefix: string, recursive = false): P
 }
 
 export async function listPages(pathPrefix: string, options: ListOptions = {}) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Querying Wiki.js pages...`);
 
   const allPages = await getAllPages();
@@ -100,7 +97,6 @@ export async function listPages(pathPrefix: string, options: ListOptions = {}) {
 }
 
 export async function getPages(pathPrefix = "", options: ListOptions & { silent?: boolean } = {}): Promise<Page[]> {
-  InstanceContext.setInstance(options.instance ?? "");
   const allPages = await getAllPages();
   const results = filterPages(allPages, pathPrefix, options.recursive);
 

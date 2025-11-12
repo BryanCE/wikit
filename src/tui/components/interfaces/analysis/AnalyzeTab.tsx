@@ -8,7 +8,6 @@ import type { AnalysisResult, Page } from "@/types";
 
 interface AnalyzeTabProps {
   inContent: boolean;
-  instance?: string;
   // Form state
   pagesExportPath: string;
   navExportPath: string;
@@ -35,7 +34,6 @@ interface AnalyzeTabProps {
 
 export function AnalyzeTab({
   inContent,
-  instance,
   pagesExportPath,
   navExportPath,
   currentField,
@@ -86,7 +84,6 @@ export function AnalyzeTab({
         result={analysisResult}
         inContent={inContent}
         selectedIndex={resultsSelectedIndex}
-        instance={instance}
         onSelectedPageChange={setSelectedPage}
       />
     );

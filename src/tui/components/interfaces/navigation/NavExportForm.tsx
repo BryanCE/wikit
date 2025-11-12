@@ -6,10 +6,10 @@ import { useEscape } from "@/tui/contexts/EscapeContext";
 import { getNavigationTree, getNavigationConfig } from "@/api/navigation";
 import { logger } from "@/utils/logger";
 import { FileBrowserModal } from "@comps/modals/FileBrowserModal/FileBrowserModal";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import type { NavigationTree, NavigationConfig } from "@/types";
 
 interface NavExportFormProps {
-  instance: string;
   onSuccess: () => void;
   onCancel: () => void;
 }
@@ -23,11 +23,11 @@ const FORM_FIELDS = [
 ] as const;
 
 export function NavExportForm({
-  instance,
   onSuccess,
   onCancel,
 }: NavExportFormProps) {
   const { theme } = useTheme();
+  const instance = InstanceContext.getInstance();
   const [directory, setDirectory] = useState(".");
   const [filename, setFilename] = useState("");
   const [currentField, setCurrentField] = useState(0);
@@ -79,7 +79,7 @@ export function NavExportForm({
       }
 
       const { exportNavigation } = await import("@/commands/navigation");
-      await exportNavigation(fullPath, { instance });
+      await exportNavigation(fullPath, {});
 
       onSuccess();
     } catch (err) {

@@ -1,11 +1,9 @@
 import { deletePage, getAllPages } from "@/api/pages";
-import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function deletePages(
   pathPrefix: string,
-  options: { force?: boolean; instance?: string }
+  options: { force?: boolean }
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`🔍 Fetching pages under '${pathPrefix}'...`);
 
   const allPages = await getAllPages();

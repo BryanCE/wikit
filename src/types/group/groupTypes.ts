@@ -26,7 +26,3 @@ export interface PageRule {
 }
 
 export type PageRuleMatch = "START" | "EXACT" | "END" | "REGEX" | "TAG";
-
-export interface GroupCommandOptions {
-  instance?: string;
-}

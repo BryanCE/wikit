@@ -9,7 +9,6 @@ interface AnalysisResultsViewProps {
   result: AnalysisResult;
   inContent: boolean;
   selectedIndex: number;
-  instance?: string;
   onSelectedPageChange?: (page: Page | undefined) => void;
 }
 

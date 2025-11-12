@@ -13,9 +13,9 @@ import { NavItemFormField } from "./NavItemFormField";
 import { NavItemFormButtons } from "./NavItemFormButtons";
 import type { FormData, FormFieldConfig, ActionButton } from "./navFormTypes";
 import { FORM_FIELDS, KIND_TYPES, TARGET_TYPES, PREVIEW_INPUT_HANDLER } from "./navFormTypes";
+import { InstanceContext } from "@/contexts/InstanceContext";
 
 interface NavItemFormProps {
-  instance: string;
   locale: string;
   existingTree?: NavigationTree;
   onSubmit: () => void;
@@ -23,7 +23,6 @@ interface NavItemFormProps {
 }
 
 export function NavItemForm({
-  instance,
   locale,
   existingTree,
   onSubmit,
@@ -496,7 +495,7 @@ export function NavItemForm({
               locale,
               insertAfterId: formData.insertAfterId ?? undefined,
             },
-            { instance }
+            { instance: InstanceContext.getInstance() }
           );
         }}
         onSuccess={() => {

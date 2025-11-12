@@ -24,8 +24,12 @@ import { InstanceContext } from "@/contexts/InstanceContext";
 export async function compareInstances(
   options: CompareOptions
 ): Promise<CompareResults> {
-  const instance1 = options.from ?? "rmwiki";
-  const instance2 = options.to ?? "tlwiki";
+  if (!options.from || !options.to) {
+    throw new Error("Both --from and --to instance parameters are required for comparison");
+  }
+
+  const instance1 = options.from;
+  const instance2 = options.to;
 
   const instance1Name = instanceLabels[instance1] ?? instance1;
   const instance2Name = instanceLabels[instance2] ?? instance2;
@@ -171,10 +175,15 @@ export async function compareInstances(
 }
 
 export async function compareForCli(options: CompareOptions): Promise<void> {
+  if (!options.from || !options.to) {
+    console.error("❌ Both --from and --to parameters are required for comparison");
+    process.exit(1);
+  }
+
   const instance1Name =
-    instanceLabels[options.from ?? "rmwiki"] ?? options.from ?? "rmwiki";
+    instanceLabels[options.from] ?? options.from;
   const instance2Name =
-    instanceLabels[options.to ?? "tlwiki"] ?? options.to ?? "tlwiki";
+    instanceLabels[options.to] ?? options.to;
 
   console.log(`🔍 Comparing ${instance1Name} vs ${instance2Name}...\n`);
 

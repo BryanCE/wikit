@@ -7,7 +7,6 @@ import {
   assignUserCommand,
   unassignUserCommand,
 } from "@/commands/groups";
-import type { GlobalOptions } from "@/types";
 
 export function register(program: Command) {
   const groupsCommand = program
@@ -19,8 +18,7 @@ export function register(program: Command) {
     .description("List all groups")
     .option("-f, --filter <text>", "Filter groups by text")
     .action(async (options: { filter?: string }) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await listGroupsCommand({ ...options, instance: globalOptions.instance });
+      await listGroupsCommand(options);
     });
 
   groupsCommand
@@ -28,8 +26,7 @@ export function register(program: Command) {
     .description("Show detailed group information")
     .argument("<id>", "Group ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await showGroupCommand(parseInt(id), { instance: globalOptions.instance });
+      await showGroupCommand(parseInt(id));
     });
 
   groupsCommand
@@ -37,8 +34,7 @@ export function register(program: Command) {
     .description("Create a new group")
     .argument("<name>", "Group name")
     .action(async (name: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await createGroupCommand(name, { instance: globalOptions.instance });
+      await createGroupCommand(name);
     });
 
   groupsCommand
@@ -46,8 +42,7 @@ export function register(program: Command) {
     .description("Delete a group")
     .argument("<id>", "Group ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await deleteGroupCommand(parseInt(id), { instance: globalOptions.instance });
+      await deleteGroupCommand(parseInt(id));
     });
 
   groupsCommand
@@ -56,12 +51,7 @@ export function register(program: Command) {
     .argument("<group-id>", "Group ID")
     .argument("<user-id>", "User ID")
     .action(async (groupId: string, userId: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await assignUserCommand(
-        parseInt(groupId),
-        parseInt(userId),
-        { instance: globalOptions.instance }
-      );
+      await assignUserCommand(parseInt(groupId), parseInt(userId));
     });
 
   groupsCommand
@@ -70,11 +60,6 @@ export function register(program: Command) {
     .argument("<group-id>", "Group ID")
     .argument("<user-id>", "User ID")
     .action(async (groupId: string, userId: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await unassignUserCommand(
-        parseInt(groupId),
-        parseInt(userId),
-        { instance: globalOptions.instance }
-      );
+      await unassignUserCommand(parseInt(groupId), parseInt(userId));
     });
 }

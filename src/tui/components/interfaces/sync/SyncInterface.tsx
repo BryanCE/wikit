@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useInput } from "ink";
 import { syncForTui } from "@/commands/sync";
 import { type SyncCommandOptions, type SyncSummary } from "@/types";
-import { instanceLabels } from "@/config";
+import { getAvailableInstances, getInstanceLabels } from "@/config";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
 import { useFooterStatus } from "@/tui/contexts/FooterContext";
@@ -27,15 +28,28 @@ export function SyncInterface({
   const [isDryRun, setIsDryRun] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
+  const [availableInstances, setAvailableInstances] = useState<string[]>([]);
+  const [instanceLabels, setInstanceLabels] = useState<Record<string, string>>({});
   useFooterStatus(statusMsg);
 
-  const instance = "rmwiki"; // TODO: Get from InstanceContext
-  const otherInstance = instance === "rmwiki" ? "tlwiki" : "rmwiki";
+  const instance = InstanceContext.getInstance();
+  const otherInstances = availableInstances.filter(i => i !== instance);
+  const otherInstance = otherInstances[0] ?? instance;
 
   useHeaderData({
     title: "Sync Configurations",
     metadata: `${instance} → ${otherInstance}${isDryRun ? " (dry run)" : ""}`
   });
+
+  useEffect(() => {
+    void Promise.all([
+      getAvailableInstances(),
+      getInstanceLabels()
+    ]).then(([instances, labels]) => {
+      setAvailableInstances(instances);
+      setInstanceLabels(labels);
+    });
+  }, []);
 
   const options = [
     { key: "all", label: "Sync All", desc: "Site config, theme, assets, and pages" },
@@ -156,7 +170,6 @@ export function SyncInterface({
   if (showConfirmation) {
     return (
       <SyncConfirmation
-        instance={instance}
         otherInstance={otherInstance}
         selectedOption={selectedOption}
         options={options}
@@ -170,7 +183,6 @@ export function SyncInterface({
 
   return (
     <SyncOptions
-      instance={instance}
       otherInstance={otherInstance}
       selectedOption={selectedOption}
       isDryRun={isDryRun}

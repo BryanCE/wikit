@@ -9,7 +9,7 @@ import {
   migrateLocaleCommand,
   rebuildTreeCommand,
 } from "@/commands/pages";
-import type { GlobalOptions, ListOptions, DeleteOptions } from "@/types";
+import type { ListOptions, DeleteOptions } from "@/types";
 
 export function register(program: Command) {
   const pagesCommand = program
@@ -28,9 +28,7 @@ export function register(program: Command) {
     )
     .option("-s, --search <query>", "Search pages by title or path")
     .action(async (prefix: string | undefined, options: ListOptions & { search?: string }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       await listPages(prefix ?? "", {
-        instance: globalOptions.instance,
         limit: parseInt(options.limit),
         showAll: Boolean(options.all),
         recursive: Boolean(options.recursive),
@@ -44,8 +42,7 @@ export function register(program: Command) {
     .argument("<prefix>", "Path prefix (e.g. /en/tls)")
     .option("-f, --force", "Skip confirm prompt")
     .action(async (prefix: string, options: DeleteOptions) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await deletePages(prefix, { ...options, instance: globalOptions.instance });
+      await deletePages(prefix, options);
     });
 
   pagesCommand
@@ -55,10 +52,8 @@ export function register(program: Command) {
     .argument("<destination>", "Destination path")
     .option("-l, --locale <locale>", "Destination locale", "en")
     .action(async (id: string, destination: string, options: { locale?: string }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       await movePageCommand(parseInt(id), destination, {
         locale: options.locale,
-        instance: globalOptions.instance,
       });
     });
 
@@ -68,10 +63,7 @@ export function register(program: Command) {
     .argument("<id>", "Page ID")
     .argument("<editor>", "Editor type (markdown, wysiwyg, etc.)")
     .action(async (id: string, editor: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await convertPageCommand(parseInt(id), editor, {
-        instance: globalOptions.instance,
-      });
+      await convertPageCommand(parseInt(id), editor);
     });
 
   pagesCommand
@@ -79,10 +71,7 @@ export function register(program: Command) {
     .description("Force re-render of page")
     .argument("<id>", "Page ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await renderPageCommand(parseInt(id), {
-        instance: globalOptions.instance,
-      });
+      await renderPageCommand(parseInt(id));
     });
 
   pagesCommand
@@ -91,20 +80,14 @@ export function register(program: Command) {
     .argument("<source>", "Source locale")
     .argument("<target>", "Target locale")
     .action(async (source: string, target: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await migrateLocaleCommand(source, target, {
-        instance: globalOptions.instance,
-      });
+      await migrateLocaleCommand(source, target);
     });
 
   pagesCommand
     .command("rebuild-tree")
     .description("Rebuild navigation tree")
     .action(async () => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await rebuildTreeCommand({
-        instance: globalOptions.instance,
-      });
+      await rebuildTreeCommand();
     });
 
   pagesCommand
@@ -113,9 +96,7 @@ export function register(program: Command) {
     .argument("<file>", "Output file path")
     .option("--with-content", "Include page content in export (increases file size)")
     .action(async (file: string, options: { withContent?: boolean }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       await exportPagesCommand(file, {
-        instance: globalOptions.instance,
         includeContent: options.withContent,
       });
     });

@@ -6,11 +6,11 @@ import { useIcon } from "@/tui/contexts/IconContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useFooterHelp, useFooterStatus } from "@/tui/contexts/FooterContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import { AsyncActionDialog } from "@comps/modals/AsyncActionDialog";
 import { VirtualizedList } from "@comps/ui/VirtualizedList";
 
 interface NavItemMoveInterfaceProps {
-  instance: string;
   locale: string;
   existingTree?: NavigationTree;
   onSubmit: () => void;
@@ -22,7 +22,6 @@ type MovePhase = "select" | "placement" | "confirm";
 type PreviewItem = { item: NavigationItem | null; isMoving: boolean };
 
 export function NavItemMoveInterface({
-  instance,
   locale,
   existingTree,
   onSubmit,
@@ -30,6 +29,7 @@ export function NavItemMoveInterface({
 }: NavItemMoveInterfaceProps) {
   const { theme } = useTheme();
   const { formatIcon } = useIcon();
+  const instance = InstanceContext.getInstance();
   const [phase, setPhase] = useState<MovePhase>("select");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [markedItemIds, setMarkedItemIds] = useState<Set<string>>(new Set());
@@ -212,7 +212,6 @@ export function NavItemMoveInterface({
 
           const { moveNavigationItems } = await import("@/commands/navigation");
           await moveNavigationItems(Array.from(markedItemIds), {
-            instance,
             locale,
             insertAfterId,
           });

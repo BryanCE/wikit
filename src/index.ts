@@ -2,6 +2,7 @@
 import { Command } from "commander";
 import { logger } from "@/utils/logger";
 import { startTui } from "@/tui/AppContent";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import type { GlobalOptions } from "@/types";
 
 import { register as registerNavigation } from "@/cli/navigation";
@@ -17,6 +18,13 @@ program
   .description("CLI and TUI toolkit for Wiki.js")
   .version("0.1.0")
   .option("-i, --instance <name>", "Wiki instance to use");
+
+// Set InstanceContext before any command action runs
+// This eliminates the need to pass instance to every command function
+program.hook("preAction", (thisCommand, actionCommand) => {
+  const globalOptions = program.opts<GlobalOptions>();
+  InstanceContext.setInstance(globalOptions.instance ?? null);
+});
 
 registerMisc(program);
 registerNavigation(program);

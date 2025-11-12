@@ -8,7 +8,7 @@ import {
   exportNavigation,
   importNavigation
 } from "@/commands/navigation";
-import type { NavigationMode, GlobalOptions } from "@/types";
+import type { NavigationMode } from "@/types";
 import { logger } from "@/utils/logger";
 
 export function register(program: Command) {
@@ -20,8 +20,7 @@ export function register(program: Command) {
     .command("list")
     .description("Show navigation tree and configuration")
     .action(async () => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await listNavigation({ instance: globalOptions.instance });
+      await listNavigation();
     });
 
   navCommand
@@ -40,7 +39,6 @@ export function register(program: Command) {
       locale?: string;
       parent?: string;
     }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       await addNavigationItem({
         label,
         target: options.target,
@@ -48,7 +46,7 @@ export function register(program: Command) {
         icon: options.icon,
         locale: options.locale,
         insertAfterId: options.parent,
-      }, { instance: globalOptions.instance });
+      });
     });
 
   navCommand
@@ -57,9 +55,7 @@ export function register(program: Command) {
     .argument("<id>", "Navigation item ID")
     .option("-l, --locale <locale>", "Locale to remove from", "en")
     .action(async (id: string, options: { locale?: string }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       await removeNavigationItem(id, {
-        instance: globalOptions.instance,
         locale: options.locale
       });
     });
@@ -71,9 +67,7 @@ export function register(program: Command) {
     .option("-a, --after <id>", "Insert after this item ID (omit to move to top)")
     .option("-l, --locale <locale>", "Locale to move in", "en")
     .action(async (id: string, options: { after?: string; locale?: string }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       await moveNavigationItem(id, {
-        instance: globalOptions.instance,
         insertAfterId: options.after,
         locale: options.locale
       });
@@ -84,7 +78,6 @@ export function register(program: Command) {
     .description("Get or set navigation mode")
     .argument("[mode]", "Navigation mode (NONE, TREE, MIXED, STATIC)")
     .action(async (mode?: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
       if (mode) {
         const validModes: NavigationMode[] = ["NONE", "TREE", "MIXED", "STATIC"];
         const upperMode = mode.toUpperCase();
@@ -92,9 +85,9 @@ export function register(program: Command) {
           logger.error({ mode, validModes }, "Invalid navigation mode");
           return;
         }
-        await setNavigationMode(upperMode as NavigationMode, { instance: globalOptions.instance });
+        await setNavigationMode(upperMode as NavigationMode);
       } else {
-        await listNavigation({ instance: globalOptions.instance });
+        await listNavigation();
       }
     });
 
@@ -103,8 +96,7 @@ export function register(program: Command) {
     .description("Export navigation to JSON file")
     .argument("<file>", "Output file path")
     .action(async (file: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await exportNavigation(file, { instance: globalOptions.instance });
+      await exportNavigation(file);
     });
 
   navCommand
@@ -113,9 +105,7 @@ export function register(program: Command) {
     .argument("<file>", "Input file path")
     .option("--mode", "Also import navigation mode")
     .action(async (file: string, options: { mode?: boolean }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       await importNavigation(file, {
-        instance: globalOptions.instance,
         mode: options.mode
       });
     });

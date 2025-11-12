@@ -1,12 +1,10 @@
 import * as userApi from "@/api/users";
-import type { UserCommandOptions, CreateUserInput, UpdateUserInput } from "@/types";
+import type { CreateUserInput, UpdateUserInput } from "@/types";
 import { getProviderName } from "@/utils/users";
-import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function listUsersCommand(
-  options: { filter?: string; orderBy?: string } & UserCommandOptions
+  options: { filter?: string; orderBy?: string }
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   const users = await userApi.listUsers(
     { filter: options.filter, orderBy: options.orderBy }
   );
@@ -41,10 +39,8 @@ export async function listUsersCommand(
 }
 
 export async function searchUsersCommand(
-  query: string,
-  options: UserCommandOptions
+  query: string
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   const users = await userApi.searchUsers(query);
 
   if (users.length === 0) {
@@ -75,10 +71,8 @@ export async function searchUsersCommand(
 }
 
 export async function showUserCommand(
-  id: number,
-  options: UserCommandOptions
+  id: number
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   const user = await userApi.getUser(id);
 
   console.log("\nUser Details:\n");
@@ -112,10 +106,7 @@ export async function showUserCommand(
   console.log();
 }
 
-export async function lastLoginsCommand(
-  options: UserCommandOptions
-): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
+export async function lastLoginsCommand(): Promise<void> {
   const users = await userApi.getLastLogins();
 
   if (users.length === 0) {
@@ -142,10 +133,8 @@ export async function lastLoginsCommand(
 }
 
 export async function createUserCommand(
-  input: CreateUserInput,
-  options: UserCommandOptions
+  input: CreateUserInput
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await userApi.createUser(input);
 
   if (response.responseResult.succeeded) {
@@ -162,10 +151,8 @@ export async function createUserCommand(
 }
 
 export async function updateUserCommand(
-  input: UpdateUserInput,
-  options: UserCommandOptions
+  input: UpdateUserInput
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await userApi.updateUser(input);
 
   if (response.responseResult.succeeded) {
@@ -178,10 +165,8 @@ export async function updateUserCommand(
 
 export async function deleteUserCommand(
   id: number,
-  replaceId: number,
-  options: UserCommandOptions
+  replaceId: number
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await userApi.deleteUser(id, replaceId);
 
   if (response.responseResult.succeeded) {
@@ -193,10 +178,8 @@ export async function deleteUserCommand(
 }
 
 export async function activateUserCommand(
-  id: number,
-  options: UserCommandOptions
+  id: number
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await userApi.activateUser(id);
 
   if (response.responseResult.succeeded) {
@@ -208,10 +191,8 @@ export async function activateUserCommand(
 }
 
 export async function deactivateUserCommand(
-  id: number,
-  options: UserCommandOptions
+  id: number
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   const response = await userApi.deactivateUser(id);
 
   if (response.responseResult.succeeded) {
@@ -223,10 +204,8 @@ export async function deactivateUserCommand(
 }
 
 export async function verifyUserCommand(
-  id: number,
-  options: UserCommandOptions
+  id: number
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   // Get user to check their provider
   const user = await userApi.getUser(id);
 
@@ -248,10 +227,8 @@ export async function verifyUserCommand(
 }
 
 export async function enable2FACommand(
-  id: number,
-  options: UserCommandOptions
+  id: number
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   // Get user to check their provider
   const user = await userApi.getUser(id);
 
@@ -273,10 +250,8 @@ export async function enable2FACommand(
 }
 
 export async function disable2FACommand(
-  id: number,
-  options: UserCommandOptions
+  id: number
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   // Get user to check their provider
   const user = await userApi.getUser(id);
 
@@ -298,10 +273,8 @@ export async function disable2FACommand(
 }
 
 export async function resetPasswordCommand(
-  id: number,
-  options: UserCommandOptions
+  id: number
 ): Promise<void> {
-  InstanceContext.setInstance(options.instance ?? "");
   // Get user to check their provider
   const user = await userApi.getUser(id);
 

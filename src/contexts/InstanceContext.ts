@@ -5,7 +5,7 @@
  * It works for both CLI and TUI modes.
  *
  * Usage:
- * - Set instance: InstanceContext.setInstance('rmwiki')
+ * - Set instance: InstanceContext.setInstance('myinstance')
  * - Get instance: InstanceContext.getInstance()
  * - Subscribe to changes: InstanceContext.subscribe((instance) => { ... })
  */

@@ -7,7 +7,6 @@ import type { OrphanAnalysisResult, Page } from "@/types";
 
 interface OrphanedTabProps {
   inContent: boolean;
-  instance?: string;
   // Form state
   focusArea: "button" | "results";
   isFetching: boolean;

@@ -2,13 +2,11 @@ import * as pageApi from "@/api/pages";
 import { getAllPages, getAllPagesWithContent } from "@/api/pages";
 import type { PageExportData } from "@/types";
 import { logger } from "@/utils/logger";
-import { InstanceContext } from "@/contexts/InstanceContext";
 
 export async function exportPagesCommand(
   filePath: string,
-  options: { instance?: string; includeContent?: boolean }
+  options: { includeContent?: boolean }
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Exporting pages${options.includeContent ? " with content" : ""} to ${filePath}...`);
 
   try {
@@ -25,7 +23,7 @@ export async function exportPagesCommand(
     const exportData: PageExportData = {
       pages,
       exportedAt: new Date().toISOString(),
-      instanceId: options.instance,
+      instanceId: undefined,
       includeContent: options.includeContent ?? false,
       summary: {
         totalPages: pages.length,
@@ -51,12 +49,11 @@ export async function exportPagesCommand(
 
 export async function exportPages(
   filePath: string,
-  options: { instance?: string; includeContent?: boolean; onProgress?: (msg: string) => void }
+  options: { includeContent?: boolean; onProgress?: (msg: string) => void }
 ): Promise<{ success: boolean; message: string; pageCount?: number }> {
-  InstanceContext.setInstance(options.instance ?? "");
   try {
     options.onProgress?.("Loading pages...");
-    logger.info({ filePath, instance: options.instance, includeContent: options.includeContent }, "Exporting pages");
+    logger.info({ filePath, includeContent: options.includeContent }, "Exporting pages");
 
     const pages = options.includeContent
       ? await getAllPagesWithContent((current, total) => {
@@ -69,7 +66,7 @@ export async function exportPages(
     const exportData: PageExportData = {
       pages,
       exportedAt: new Date().toISOString(),
-      instanceId: options.instance,
+      instanceId: undefined,
       includeContent: options.includeContent ?? false,
       summary: {
         totalPages: pages.length,
@@ -103,9 +100,8 @@ export async function exportPages(
 export async function movePageCommand(
   id: number,
   destinationPath: string,
-  options: { locale?: string; instance?: string }
+  options: { locale?: string }
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Moving page ${id} to ${destinationPath}${options.locale ? ` (${options.locale})` : ""}...`);
 
   const result = await pageApi.movePage(
@@ -124,10 +120,8 @@ export async function movePageCommand(
 
 export async function convertPageCommand(
   id: number,
-  editor: string,
-  options: { instance?: string }
+  editor: string
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Converting page ${id} to ${editor} editor...`);
 
   const result = await pageApi.convertPage(id, editor);
@@ -141,10 +135,8 @@ export async function convertPageCommand(
 }
 
 export async function renderPageCommand(
-  id: number,
-  options: { instance?: string }
+  id: number
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Rendering page ${id}...`);
 
   const result = await pageApi.renderPage(id);
@@ -159,10 +151,8 @@ export async function renderPageCommand(
 
 export async function migrateLocaleCommand(
   sourceLocale: string,
-  targetLocale: string,
-  options: { instance?: string }
+  targetLocale: string
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`Migrating pages from ${sourceLocale} to ${targetLocale}...`);
 
   const result = await pageApi.migrateLocale(
@@ -180,8 +170,7 @@ export async function migrateLocaleCommand(
   }
 }
 
-export async function rebuildTreeCommand(options: { instance?: string }) {
-  InstanceContext.setInstance(options.instance ?? "");
+export async function rebuildTreeCommand() {
   console.log("Rebuilding page tree...");
 
   const result = await pageApi.rebuildTree();

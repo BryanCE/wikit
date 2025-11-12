@@ -336,8 +336,13 @@ async function performSync(options: { from: string; to: string; config?: boolean
 }
 
 export async function syncForCli(options: SyncOptions): Promise<void> {
-  const fromInstance = options.from ?? "rmwiki";
-  const toInstance = options.to ?? "tlwiki";
+  if (!options.from || !options.to) {
+    console.error("❌ Both --from and --to parameters are required for sync");
+    process.exit(1);
+  }
+
+  const fromInstance = options.from;
+  const toInstance = options.to;
 
   if (fromInstance === toInstance) {
     console.error("❌ Cannot sync instance with itself");
@@ -418,8 +423,12 @@ export async function syncForCli(options: SyncOptions): Promise<void> {
 }
 
 export async function syncForTui(options: SyncCommandOptions): Promise<SyncSummary> {
-  const fromInstance = options.from ?? "rmwiki";
-  const toInstance = options.to ?? "tlwiki";
+  if (!options.from || !options.to) {
+    throw new Error("Both from and to instance parameters are required for sync");
+  }
+
+  const fromInstance = options.from;
+  const toInstance = options.to;
 
   const syncOptions: SyncOptions = {
     from: fromInstance,

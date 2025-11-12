@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Text, useInput } from "ink";
 import { compareForTui } from "@/commands/compare";
 import type { CompareOptions, CompareResults } from "@/types";
@@ -6,7 +6,8 @@ import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
 import { useFooterStatus } from "@/tui/contexts/FooterContext";
-import { instanceLabels } from "@/config";
+import { getAvailableInstances, getInstanceLabels } from "@/config";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import { CompareOptions as CompareOptionsComponent } from "./CompareOptions.js";
 import { CompareResultsDisplay } from "./CompareResults.js";
 
@@ -24,10 +25,23 @@ export function CompareInterface({
   const [selectedOption, setSelectedOption] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
+  const [availableInstances, setAvailableInstances] = useState<string[]>([]);
+  const [instanceLabels, setInstanceLabels] = useState<Record<string, string>>({});
   useFooterStatus(statusMsg);
 
-  const instance = "rmwiki"; // TODO: Get from InstanceContext
-  const otherInstance = instance === "rmwiki" ? "tlwiki" : "rmwiki";
+  const instance = InstanceContext.getInstance();
+  const otherInstances = availableInstances.filter(i => i !== instance);
+  const otherInstance = otherInstances[0] ?? instance;
+
+  useEffect(() => {
+    void Promise.all([
+      getAvailableInstances(),
+      getInstanceLabels()
+    ]).then(([instances, labels]) => {
+      setAvailableInstances(instances);
+      setInstanceLabels(labels);
+    });
+  }, []);
 
   const options = [
     {

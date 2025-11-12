@@ -14,7 +14,6 @@ import {
   disable2FACommand,
   resetPasswordCommand,
 } from "@/commands/users";
-import type { GlobalOptions } from "@/types";
 
 export function register(program: Command) {
   const usersCommand = program
@@ -27,8 +26,7 @@ export function register(program: Command) {
     .option("-f, --filter <text>", "Filter users by text")
     .option("-o, --order-by <field>", "Order by field")
     .action(async (options: { filter?: string; orderBy?: string }) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await listUsersCommand({ ...options, instance: globalOptions.instance });
+      await listUsersCommand(options);
     });
 
   usersCommand
@@ -36,8 +34,7 @@ export function register(program: Command) {
     .description("Search users")
     .argument("<query>", "Search query")
     .action(async (query: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await searchUsersCommand(query, { instance: globalOptions.instance });
+      await searchUsersCommand(query);
     });
 
   usersCommand
@@ -45,16 +42,14 @@ export function register(program: Command) {
     .description("Show detailed user information")
     .argument("<id>", "User ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await showUserCommand(parseInt(id), { instance: globalOptions.instance });
+      await showUserCommand(parseInt(id));
     });
 
   usersCommand
     .command("last-logins")
     .description("Show users with recent login times")
     .action(async () => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await lastLoginsCommand({ instance: globalOptions.instance });
+      await lastLoginsCommand();
     });
 
   usersCommand
@@ -76,20 +71,16 @@ export function register(program: Command) {
       mustChangePassword?: boolean;
       sendWelcomeEmail?: boolean;
     }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       const groups = options.groups.split(",").map((g) => parseInt(g.trim()));
-      await createUserCommand(
-        {
-          email: options.email,
-          name: options.name,
-          passwordRaw: options.password,
-          providerKey: options.provider,
-          groups,
-          mustChangePassword: options.mustChangePassword,
-          sendWelcomeEmail: options.sendWelcomeEmail,
-        },
-        { instance: globalOptions.instance }
-      );
+      await createUserCommand({
+        email: options.email,
+        name: options.name,
+        passwordRaw: options.password,
+        providerKey: options.provider,
+        groups,
+        mustChangePassword: options.mustChangePassword,
+        sendWelcomeEmail: options.sendWelcomeEmail,
+      });
     });
 
   usersCommand
@@ -116,7 +107,6 @@ export function register(program: Command) {
       dateFormat?: string;
       appearance?: string;
     }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       const updateData = {
         id: parseInt(id),
         email: options.email,
@@ -129,7 +119,7 @@ export function register(program: Command) {
         dateFormat: options.dateFormat,
         appearance: options.appearance,
       };
-      await updateUserCommand(updateData, { instance: globalOptions.instance });
+      await updateUserCommand(updateData);
     });
 
   usersCommand
@@ -138,11 +128,9 @@ export function register(program: Command) {
     .argument("<id>", "User ID to delete")
     .requiredOption("-r, --replace-with <id>", "User ID to reassign content to")
     .action(async (id: string, options: { replaceWith: string }) => {
-      const globalOptions = program.opts<GlobalOptions>();
       await deleteUserCommand(
         parseInt(id),
-        parseInt(options.replaceWith),
-        { instance: globalOptions.instance }
+        parseInt(options.replaceWith)
       );
     });
 
@@ -151,8 +139,7 @@ export function register(program: Command) {
     .description("Activate a user account")
     .argument("<id>", "User ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await activateUserCommand(parseInt(id), { instance: globalOptions.instance });
+      await activateUserCommand(parseInt(id));
     });
 
   usersCommand
@@ -160,8 +147,7 @@ export function register(program: Command) {
     .description("Deactivate a user account")
     .argument("<id>", "User ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await deactivateUserCommand(parseInt(id), { instance: globalOptions.instance });
+      await deactivateUserCommand(parseInt(id));
     });
 
   usersCommand
@@ -169,8 +155,7 @@ export function register(program: Command) {
     .description("Verify a user email")
     .argument("<id>", "User ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await verifyUserCommand(parseInt(id), { instance: globalOptions.instance });
+      await verifyUserCommand(parseInt(id));
     });
 
   usersCommand
@@ -178,8 +163,7 @@ export function register(program: Command) {
     .description("Enable two-factor authentication")
     .argument("<id>", "User ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await enable2FACommand(parseInt(id), { instance: globalOptions.instance });
+      await enable2FACommand(parseInt(id));
     });
 
   usersCommand
@@ -187,8 +171,7 @@ export function register(program: Command) {
     .description("Disable two-factor authentication")
     .argument("<id>", "User ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await disable2FACommand(parseInt(id), { instance: globalOptions.instance });
+      await disable2FACommand(parseInt(id));
     });
 
   usersCommand
@@ -196,7 +179,6 @@ export function register(program: Command) {
     .description("Send password reset email")
     .argument("<id>", "User ID")
     .action(async (id: string) => {
-      const globalOptions = program.opts<GlobalOptions>();
-      await resetPasswordCommand(parseInt(id), { instance: globalOptions.instance });
+      await resetPasswordCommand(parseInt(id));
     });
 }

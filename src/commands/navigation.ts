@@ -6,7 +6,6 @@ import {
 } from "@/api/navigation";
 import type { NavigationItem, NavigationConfig, NavigationTree } from "@/types";
 import { logger } from "@/utils/logger";
-import { InstanceContext } from "@/contexts/InstanceContext";
 
 interface NavigationExportData {
   config: NavigationConfig;
@@ -14,12 +13,7 @@ interface NavigationExportData {
   exportedAt: string;
 }
 
-interface NavigationOptions {
-  instance?: string;
-}
-
-export async function listNavigation(options: NavigationOptions = {}) {
-  InstanceContext.setInstance(options.instance ?? "");
+export async function listNavigation() {
   console.log("🔍 Fetching navigation tree...");
 
   try {
@@ -72,10 +66,8 @@ function printNavigationItems(items: NavigationItem[], indent: string) {
 }
 
 export async function setNavigationMode(
-  mode: NavigationConfig["mode"],
-  options: NavigationOptions = {}
+  mode: NavigationConfig["mode"]
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`🔧 Setting navigation mode to: ${mode}`);
 
   try {
@@ -107,11 +99,9 @@ export async function addNavigationItem(
     icon?: string;
     locale?: string;
     insertAfterId?: string;
-  },
-  options: NavigationOptions = {}
+  }
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
-  logger.info({ itemData, options }, "Adding navigation item");
+  logger.info({ itemData }, "Adding navigation item");
 
   try {
     const tree = await getNavigationTree();
@@ -176,9 +166,8 @@ export async function addNavigationItem(
 
 export async function removeNavigationItem(
   itemId: string,
-  options: NavigationOptions & { locale?: string } = {}
+  options: { locale?: string } = {}
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`🗑️ Removing navigation item: ${itemId}`);
 
   try {
@@ -218,10 +207,8 @@ export async function removeNavigationItem(
 }
 
 export async function exportNavigation(
-  filePath: string,
-  options: NavigationOptions = {}
+  filePath: string
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`📄 Exporting navigation to: ${filePath}`);
 
   try {
@@ -251,9 +238,8 @@ export async function exportNavigation(
 
 export async function importNavigation(
   filePath: string,
-  options: NavigationOptions & { mode?: boolean } = {}
+  options: { mode?: boolean } = {}
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   console.log(`📄 Importing navigation from: ${filePath}`);
 
   try {
@@ -330,9 +316,8 @@ function findNavigationItemRecursive(
 
 export async function moveNavigationItem(
   itemId: string,
-  options: NavigationOptions & { locale?: string; insertAfterId?: string } = {}
+  options: { locale?: string; insertAfterId?: string } = {}
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   logger.info({ itemId, options }, "Moving navigation item");
 
   try {
@@ -402,9 +387,8 @@ export async function moveNavigationItem(
 
 export async function moveNavigationItems(
   itemIds: string[],
-  options: NavigationOptions & { locale?: string; insertAfterId?: string } = {}
+  options: { locale?: string; insertAfterId?: string } = {}
 ) {
-  InstanceContext.setInstance(options.instance ?? "");
   logger.info({ itemIds, options }, "Moving multiple navigation items");
 
   if (itemIds.length === 0) {

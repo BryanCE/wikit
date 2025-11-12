@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { useTheme } from "@/tui/contexts/ThemeContext";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import { instanceLabels } from "@/config";
 
 interface SyncOption {
@@ -10,7 +11,6 @@ interface SyncOption {
 }
 
 interface SyncOptionsProps {
-  instance: string;
   otherInstance: string;
   selectedOption: number;
   isDryRun: boolean;
@@ -19,7 +19,6 @@ interface SyncOptionsProps {
 }
 
 export function SyncOptions({
-  instance,
   otherInstance,
   selectedOption,
   isDryRun,
@@ -27,6 +26,7 @@ export function SyncOptions({
   options,
 }: SyncOptionsProps) {
   const { theme } = useTheme();
+  const instance = InstanceContext.getInstance();
 
   return (
     <Box flexDirection="column">

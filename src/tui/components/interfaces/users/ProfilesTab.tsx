@@ -8,7 +8,6 @@ import { SearchBar } from "@/tui/components/ui/SearchBar";
 import type { User } from "@/types";
 
 interface ProfilesTabProps {
-  instance: string;
   users: User[];
   selectedIndex: number;
   loading: boolean;
@@ -19,7 +18,6 @@ interface ProfilesTabProps {
 }
 
 export function ProfilesTab({
-  instance: _instance,
   users,
   selectedIndex,
   loading,

@@ -153,89 +153,114 @@ Work directory by directory to maintain focus:
 ## Checklist
 
 ### Users Directory
-- [ ] `AllUsersTab.tsx`
-- [ ] `CreateUserTab.tsx`
-- [ ] `ImportExportTab.tsx`
-- [ ] `ProfilesTab.tsx`
-- [ ] `GroupSelector.tsx`
-- [ ] `UserCreateForm.tsx`
-- [ ] `UserDeleteDialog.tsx`
-- [ ] `UserDetailView.tsx`
-- [ ] `UserEditForm.tsx`
-- [ ] `UserActionMenu.tsx`
-- [ ] `UsersList.tsx`
-- [ ] `UsersMenu.tsx`
-- [ ] `EditProfileModal.tsx`
-- [ ] `useUserActions.ts`
-- [ ] Test users interface works
+- [x] `AllUsersTab.tsx`
+- [x] `CreateUserTab.tsx`
+- [x] `ImportExportTab.tsx`
+- [x] `ProfilesTab.tsx`
+- [x] `GroupSelector.tsx`
+- [x] `UserCreateForm.tsx`
+- [x] `UserDeleteDialog.tsx`
+- [x] `UserDetailView.tsx`
+- [x] `UserEditForm.tsx`
+- [x] `UserActionMenu.tsx`
+- [x] `UsersList.tsx`
+- [x] `UsersMenu.tsx`
+- [x] `EditProfileModal.tsx`
+- [x] `useUserActions.ts`
+- [x] Test users interface works
 
 ### Groups Directory
-- [ ] `AllGroupsTab.tsx`
-- [ ] `AddUsersTab.tsx`
-- [ ] `MembersTab.tsx`
-- [ ] `OrphanedUsersTab.tsx`
-- [ ] `OrphanedUsersView.tsx`
-- [ ] `GroupActionMenu.tsx`
-- [ ] `GroupCreateForm.tsx`
-- [ ] `GroupDeleteDialog.tsx`
-- [ ] `GroupDetailView.tsx`
-- [ ] `GroupMembersManager.tsx`
-- [ ] `GroupPageRulesView.tsx`
-- [ ] `GroupPermissionsView.tsx`
-- [ ] `GroupsList.tsx`
-- [ ] `GroupsMainMenu.tsx`
-- [ ] Hook files
-- [ ] Test groups interface works
+- [x] `AllGroupsTab.tsx`
+- [x] `AddUsersTab.tsx`
+- [x] `MembersTab.tsx`
+- [x] `OrphanedUsersTab.tsx`
+- [x] `OrphanedUsersView.tsx`
+- [x] `GroupActionMenu.tsx`
+- [x] `GroupCreateForm.tsx`
+- [x] `GroupDeleteDialog.tsx`
+- [x] `GroupDetailView.tsx`
+- [x] `GroupMembersManager.tsx`
+- [x] `GroupPageRulesView.tsx`
+- [x] `GroupPermissionsView.tsx`
+- [x] `GroupsList.tsx`
+- [x] `GroupsMainMenu.tsx`
+- [x] Hook files
+- [x] Test groups interface works
 
 ### Pages Directory
-- [ ] `AllPagesTab.tsx`
-- [ ] `DeleteTab.tsx`
-- [ ] `ExportTab.tsx`
-- [ ] `PageDetails.tsx`
-- [ ] `InfoTab.tsx`
-- [ ] `ContentTab.tsx`
-- [ ] `MetaTab.tsx`
-- [ ] `ActionsTab.tsx`
-- [ ] `ConvertEditorDialog.tsx`
-- [ ] `MovePageDialog.tsx`
-- [ ] Hook files
-- [ ] Test pages interface works
+- [x] `AllPagesTab.tsx`
+- [x] `DeleteTab.tsx`
+- [x] `ExportTab.tsx`
+- [x] `PageDetails.tsx`
+- [x] `InfoTab.tsx`
+- [x] `ContentTab.tsx`
+- [x] `MetaTab.tsx`
+- [x] `ActionsTab.tsx`
+- [x] `ConvertEditorDialog.tsx`
+- [x] `MovePageDialog.tsx`
+- [x] Hook files
+- [x] Test pages interface works
 
 ### Navigation Directory
-- [ ] `NavTree.tsx`
-- [ ] `NavItemForm.tsx`
-- [ ] `NavItemFormField.tsx`
-- [ ] `NavItemFormButtons.tsx`
-- [ ] `NavExportForm.tsx`
-- [ ] `NavImportForm.tsx`
-- [ ] `NavModeSelector.tsx`
-- [ ] `NavItemMoveInterface.tsx`
-- [ ] `NavItemPlacementPreview.tsx`
-- [ ] `NavItemTreePreview.tsx`
-- [ ] `NavDeleteInterface/` files
-- [ ] Test navigation interface works
+- [~] `NavTree.tsx` (mostly done, some have unused instance prop)
+- [~] `NavItemForm.tsx` (mostly done)
+- [~] `NavItemFormField.tsx` (mostly done)
+- [~] `NavItemFormButtons.tsx` (mostly done)
+- [ ] `NavExportForm.tsx` - NEEDS CLEANUP
+- [ ] `NavImportForm.tsx` - NEEDS CLEANUP
+- [~] `NavModeSelector.tsx` (mostly done)
+- [ ] `NavItemMoveInterface.tsx` - NEEDS CLEANUP
+- [~] `NavItemPlacementPreview.tsx` (mostly done)
+- [~] `NavItemTreePreview.tsx` (mostly done)
+- [ ] `NavDeleteInterface/NavDeleteModal.tsx` - NEEDS CLEANUP
+- [~] Test navigation interface works
 
 ### Analysis Directory
-- [ ] `AnalyzeTab.tsx`
-- [ ] `CompareTab.tsx`
-- [ ] `CompareNavTab.tsx`
-- [ ] `ComparePagesTab.tsx`
-- [ ] `OrphanedTab.tsx`
-- [ ] `AnalysisResultsView.tsx`
-- [ ] `ComparisonResultsView.tsx`
-- [ ] Hook files
-- [ ] Test analysis interface works
+- [ ] `AnalyzeTab.tsx` - NEEDS CLEANUP (passing instance to children)
+- [ ] `CompareTab.tsx` - NEEDS CLEANUP (passing instance to children)
+- [ ] `CompareNavTab.tsx` - NEEDS CLEANUP (passing instance to children)
+- [ ] `ComparePagesTab.tsx` - NEEDS CLEANUP (passing instance to children)
+- [x] `OrphanedTab.tsx`
+- [x] `AnalysisResultsView.tsx`
+- [x] `ComparisonResultsView.tsx`
+- [x] Hook files
+- [~] Test analysis interface works
+
+### Sync Components
+- [ ] `SyncConfirmation.tsx` - NEEDS CLEANUP
+- [ ] `SyncOptions.tsx` - NEEDS CLEANUP
+- [ ] `SyncInterface.tsx` - NEEDS CLEANUP (passing instance to children)
 
 ### Other Components
-- [ ] `PageCopyInterface/` components
-- [ ] `PageBrowser.tsx`
-- [ ] `DeletePageSelector.tsx`
-- [ ] `MarkedPagesForDeletion.tsx`
-- [ ] `MarkedPagesSummary.tsx`
-- [ ] `PageSelector.tsx`
-- [ ] Sync components
-- [ ] Compare components
-- [ ] Test all interfaces work
+- [x] `PageCopyInterface/` components
+- [x] `PageBrowser.tsx`
+- [x] `DeletePageSelector.tsx`
+- [x] `MarkedPagesForDeletion.tsx`
+- [x] `MarkedPagesSummary.tsx`
+- [x] `PageSelector.tsx`
+- [x] Compare components
+- [~] Test all interfaces work
+
+## Remaining Work Summary
+
+Only **11 files** need final cleanup:
+
+**Navigation (4 files):**
+- NavExportForm.tsx
+- NavImportForm.tsx
+- NavItemMoveInterface.tsx
+- NavDeleteModal.tsx
+
+**Analysis (4 files):**
+- AnalyzeTab.tsx
+- CompareTab.tsx
+- CompareNavTab.tsx
+- ComparePagesTab.tsx
+
+**Sync (3 files):**
+- SyncConfirmation.tsx
+- SyncOptions.tsx
+- SyncInterface.tsx
 
 ## Verification
 

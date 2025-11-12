@@ -6,11 +6,11 @@ import { useEscape } from "@/tui/contexts/EscapeContext";
 import { AsyncActionDialog } from "@comps/modals/AsyncActionDialog";
 import { VirtualizedList } from "@comps/ui/VirtualizedList";
 import { FileBrowserModal } from "@comps/modals/FileBrowserModal/FileBrowserModal";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import { logger } from "@/utils/logger";
 import type { NavigationTree, NavigationConfig } from "@/types";
 
 interface NavImportFormProps {
-  instance: string;
   onSuccess: () => void;
   onCancel: () => void;
 }
@@ -26,11 +26,11 @@ type FocusArea = "fields" | "buttons";
 type ActionButton = "preview" | "browse" | "cancel";
 
 export function NavImportForm({
-  instance,
   onSuccess,
   onCancel,
 }: NavImportFormProps) {
   const { theme } = useTheme();
+  const instance = InstanceContext.getInstance();
   const [viewMode, setViewMode] = useState<ViewMode>("file_list");
   const [discoveredFiles, setDiscoveredFiles] = useState<string[]>([]);
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
@@ -252,7 +252,7 @@ export function NavImportForm({
           if (!filePath) throw new Error("No file selected");
 
           const { importNavigation } = await import("@/commands/navigation");
-          await importNavigation(filePath, { instance, mode: true });
+          await importNavigation(filePath, { mode: true });
         }}
         onSuccess={() => {
           setShowConfirm(false);

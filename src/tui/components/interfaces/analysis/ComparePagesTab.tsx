@@ -8,7 +8,6 @@ import type { ExportDiffResult, Page } from "@/types";
 
 interface ComparePagesTabProps {
   inContent: boolean;
-  instance?: string;
   // Form state
   oldPagesPath: string;
   newPagesPath: string;
@@ -35,7 +34,6 @@ interface ComparePagesTabProps {
 
 export function ComparePagesTab({
   inContent,
-  instance,
   oldPagesPath,
   newPagesPath,
   currentField,
@@ -87,7 +85,6 @@ export function ComparePagesTab({
         result={comparisonResult}
         inContent={inContent}
         selectedIndex={resultsSelectedIndex}
-        instance={instance}
         onSelectedPageChange={setSelectedPage}
       />
     );

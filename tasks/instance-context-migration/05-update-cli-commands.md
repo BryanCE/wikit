@@ -1,114 +1,146 @@
 # Task 5: Update CLI Commands
 
 ## Objective
-Update CLI commands to set instance in context before calling API functions, and remove instance arguments from API calls.
+Remove instance parameter from CLI command functions since InstanceContext is now set globally via preAction hook.
 
-## Files to Modify
+## Files Modified
+- `src/index.ts` - Added preAction hook
 - `src/commands/pages.ts`
 - `src/commands/navigation.ts`
 - `src/commands/users.ts`
 - `src/commands/groups.ts`
-- `src/commands/sync.ts`
-- `src/commands/status.ts`
 - `src/commands/deletePages.ts`
 - `src/commands/listPages.ts`
-- `src/commands/compare.ts`
-- `src/commands/compareExports.ts`
-- `src/commands/analyze.ts`
-- `src/commands/config.ts`
+- `src/cli/pages.ts`
+- `src/cli/navigation.ts`
+- `src/cli/users.ts`
+- `src/cli/groups.ts`
 
-## Pattern to Follow
+Note: `sync.ts`, `status.ts`, and `compare.ts` retain InstanceContext because they switch instances internally.
+
+## New Pattern: PreAction Hook
+
+### src/index.ts
+```typescript
+import { InstanceContext } from "@/contexts/InstanceContext";
+
+program.hook("preAction", (thisCommand, actionCommand) => {
+  const globalOptions = program.opts<GlobalOptions>();
+  InstanceContext.setInstance(globalOptions.instance ?? null);
+});
+```
+
+This hook runs ONCE before any command, eliminating the need to:
+1. Get global options in every CLI action
+2. Pass instance to every command function
+3. Set instance in every command function
+
+## Pattern for Command Functions
 
 ### Before
 ```typescript
-export async function listPagesCommand(instance: string, options: any) {
-  const pages = await listPages(instance, options);
-  // ... process pages
+import { InstanceContext } from "@/contexts/InstanceContext";
+
+export async function listUsersCommand(
+  options: { filter?: string } & UserCommandOptions
+): Promise<void> {
+  InstanceContext.setInstance(options.instance ?? "");
+  const users = await userApi.listUsers({ filter: options.filter });
 }
 ```
 
 ### After
 ```typescript
-import { InstanceContext } from "@/contexts/InstanceContext";
-
-export async function listPagesCommand(instance: string, options: any) {
-  // Set instance in context at the start
-  InstanceContext.setInstance(instance);
-
-  // Now API calls don't need instance parameter
-  const pages = await listPages(options);
-  // ... process pages
+export async function listUsersCommand(
+  options: { filter?: string }
+): Promise<void> {
+  // Instance already set by preAction hook
+  const users = await userApi.listUsers({ filter: options.filter });
 }
 ```
 
-## Steps for Each File
+## Pattern for CLI Registration
 
-1. Add import: `import { InstanceContext } from "@/contexts/InstanceContext";`
-2. At the start of each command function, add: `InstanceContext.setInstance(instance);`
-3. Remove `instance` argument from all API function calls
-4. Keep the `instance` parameter in the command function signature (CLI still passes it)
+### Before
+```typescript
+usersCommand
+  .command("list")
+  .action(async (options: { filter?: string }) => {
+    const globalOptions = program.opts<GlobalOptions>();
+    await listUsersCommand({ ...options, instance: globalOptions.instance });
+  });
+```
+
+### After
+```typescript
+usersCommand
+  .command("list")
+  .action(async (options: { filter?: string }) => {
+    await listUsersCommand(options);
+  });
+```
 
 ## Checklist
 
 ### src/commands/pages.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/navigation.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/users.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/groups.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/sync.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/status.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/deletePages.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/listPages.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/compare.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/compareExports.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/analyze.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions
-- [ ] Remove instance from API calls
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions
+- [x] Remove instance from API calls
 
 ### src/commands/config.ts
-- [ ] Add InstanceContext import
-- [ ] Set instance at start of functions (if applicable)
-- [ ] Remove instance from API calls (if applicable)
+- [x] Add InstanceContext import
+- [x] Set instance at start of functions (if applicable)
+- [x] Remove instance from API calls (if applicable)
 
 ## Verification
 
@@ -120,7 +152,7 @@ bun run typecheck
 bun run dev list
 
 # Test with specific instance
-bun run dev list -i rmwiki
+bun run dev list -i myinstance
 ```
 
 ## Notes

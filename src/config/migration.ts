@@ -147,9 +147,7 @@ function getEnvInstances(): WikiInstance[] {
 
     if (url && key) {
       // Generate instance ID (lowercase)
-      const instanceId = prefix
-        .toLowerCase()
-        .replace(/^wikijs$/, 'rmwiki'); // Special case: WIKIJS → rmwiki for backwards compat
+      const instanceId = prefix.toLowerCase();
 
       // Generate display name
       const name = prefix

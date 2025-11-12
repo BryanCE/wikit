@@ -4,6 +4,7 @@ import { AsyncActionDialog } from "@comps/modals/AsyncActionDialog";
 import { useEscape } from "@/tui/contexts/EscapeContext";
 import { useFooterHelp } from "@/tui/contexts/FooterContext";
 import { useHeaderData } from "@/tui/contexts/HeaderContext";
+import { InstanceContext } from "@/contexts/InstanceContext";
 import type { NavigationTree, NavigationItem } from "@/types";
 import { removeNavigationItem } from "@/commands/navigation";
 import { logger } from "@/utils/logger";
@@ -13,7 +14,6 @@ import { useNavDeleteKeyboard } from "./hooks/useNavDeleteKeyboard";
 
 interface NavDeleteModalProps {
   tree: NavigationTree;
-  instance: string;
   onClose: () => void;
   onSuccess: () => void;
   onStatusChange: (message: string) => void;
@@ -26,11 +26,11 @@ interface FlatNavigationItem extends NavigationItem {
 
 export function NavDeleteModal({
   tree,
-  instance,
   onClose,
   onSuccess,
   onStatusChange,
 }: NavDeleteModalProps) {
+  const instance = InstanceContext.getInstance();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [markedForDeletion, setMarkedForDeletion] = useState<Set<string>>(new Set());
@@ -125,7 +125,7 @@ export function NavDeleteModal({
 
           for (const item of markedItems) {
             try {
-              await removeNavigationItem(item.id, { locale: tree.locale, instance });
+              await removeNavigationItem(item.id, { locale: tree.locale });
               successCount++;
             } catch (error) {
               errorCount++;
