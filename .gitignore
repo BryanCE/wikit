@@ -1,9 +1,35 @@
+# Environment files
 *.env
+.env.local
+.env.*.local
+
+# Dependencies
 node_modules/
+
+# Build outputs
 dist/
 build/
+*.tsbuildinfo
+
+# OS files
 .DS_Store
+
+# Logs
 *.log
+
+# Editor directories
 .vscode/
 .idea/
+
+# Claude Code project files
+.claude/
+
+# Development/temporary directories
 tasks/
+Exports/
+
+# Test data files
+profiles-v2.json
+
+# Test coverage
+coverage/
