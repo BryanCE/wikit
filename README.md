@@ -2,6 +2,8 @@
 
 CLI and TUI for managing Wiki.js instances.
 
+![Wikit Demo](demo.gif)
+
 ## Features
 
 - **Multi-instance support**: Manage multiple Wiki.js instances with encrypted configuration
