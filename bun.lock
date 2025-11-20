@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "wikiapi",
+      "name": "wikit",
       "dependencies": {
         "chalk": "^5.3.0",
         "commander": "^14.0.1",
