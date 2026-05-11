@@ -91,16 +91,14 @@
     "react-devtools-core": "^6.1.5"
   },
   "devDependencies": {
+    "@oxlint/migrate": "^1.63.0",
     "@types/bun": "latest",
     "@types/commander": "^2.12.5",
     "@types/react": "^19.1.13",
-    "@typescript-eslint/eslint-plugin": "^8.44.1",
-    "@typescript-eslint/parser": "^8.44.1",
-    "eslint": "^9.36.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "tsc-alias": "^1.8.16",
-    "typescript-eslint": "^8.44.1"
+    "@typescript/native-preview": "^7.0.0-dev.20260511.1",
+    "oxlint": "^1.63.0",
+    "oxlint-tsgolint": "^0.22.1",
+    "tsc-alias": "^1.8.16"
   },
   "peerDependencies": {
     "typescript": "^5"

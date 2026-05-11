@@ -6,7 +6,7 @@ import { useHeaderData } from "@/tui/contexts/HeaderContext";
 import { useFooterHelp, useFooterStatus } from "@/tui/contexts/FooterContext";
 import { useSearch } from "@/tui/hooks/useSearch";
 import * as userApi from "@/api/users";
-import type { UserMinimal, UsersInterfaceMode, User } from "@/types";
+import type { UserMinimal, UsersInterfaceMode } from "@/types";
 import { AllUsersTab } from "./AllUsersTab";
 import { ImportTab } from "./ImportTab";
 import { ExportTab } from "./ExportTab";
