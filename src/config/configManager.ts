@@ -2,28 +2,11 @@ import { createHash, randomBytes, createCipheriv, createDecipheriv } from "crypt
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
+import type { EncryptedConfig, WikiInstance } from "@/config/model";
+import type { GitConfig } from "@/types/config/configTypes";
+import { migrateConfigVersion, CURRENT_CONFIG_VERSION } from "@/config/versionMigration";
 
-export interface WikiInstance {
-  id: string;
-  name: string;
-  url: string;
-  key: string;
-}
-
-export interface EncryptedConfig {
-  version: string;
-  instances: {
-    id: string;
-    name: string;
-    url: string;
-    encryptedKey: string;
-    iv: string;
-  }[];
-  salt: string;
-  preferences?: {
-    defaultTheme?: string;
-  };
-}
+export type { EncryptedConfig, WikiInstance } from "@/config/model";
 
 export interface IConfigManager {
   initialize(password?: string): Promise<void>;
@@ -108,14 +91,21 @@ class ConfigManager {
   private async loadConfig(password: string): Promise<void> {
     try {
       const configData = readFileSync(CONFIG_FILE, "utf8");
-      this.config = JSON.parse(configData) as EncryptedConfig;
+      const raw = JSON.parse(configData) as EncryptedConfig;
 
-      if (!this.config?.salt) {
+      if (!raw?.salt) {
         throw new Error("Invalid config format");
       }
 
-      const salt = Buffer.from(this.config.salt, "hex");
+      const { config: migrated, changed } = migrateConfigVersion(raw);
+      this.config = migrated;
+
+      const salt = Buffer.from(migrated.salt, "hex");
       this.encryptionKey = this.deriveKey(password, salt);
+
+      if (changed) {
+        this.saveConfig();
+      }
     } catch (error) {
       throw new Error(`Failed to load config: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -131,7 +121,7 @@ class ConfigManager {
     this.encryptionKey = this.deriveKey(password, salt);
 
     this.config = {
-      version: "1.0.0",
+      version: CURRENT_CONFIG_VERSION,
       instances: [],
       salt: salt.toString("hex"),
       preferences: {}
@@ -320,6 +310,77 @@ class ConfigManager {
     this.config.preferences ??= {};
 
     this.config.preferences.defaultTheme = theme;
+    this.saveConfig();
+  }
+
+  getGitConfig(): GitConfig | null {
+    const g = this.config?.git;
+    if (!g) return null;
+    return {
+      repoPath: g.repoPath,
+      remote: g.remote,
+      branch: g.branch,
+      authMode: g.authMode,
+    };
+  }
+
+  async setGitConfig(cfg: GitConfig): Promise<void> {
+    if (!this.config) {
+      throw new Error("Config not initialized");
+    }
+    const existing = this.config.git;
+    this.config.git = {
+      repoPath: cfg.repoPath,
+      remote: cfg.remote,
+      branch: cfg.branch,
+      authMode: cfg.authMode,
+      encryptedPat: existing?.encryptedPat,
+      patIv: existing?.patIv,
+      patTag: existing?.patTag,
+    };
+    if (cfg.authMode !== "pat") {
+      delete this.config.git.encryptedPat;
+      delete this.config.git.patIv;
+      delete this.config.git.patTag;
+    }
+    this.saveConfig();
+  }
+
+  async setGitPat(token: string): Promise<void> {
+    if (!this.config || !this.encryptionKey) {
+      throw new Error("Config not initialized");
+    }
+    if (!this.config.git) {
+      throw new Error("Git config not set — call setGitConfig first");
+    }
+    if (token.length < 20) {
+      throw new Error("PAT too short (min 20 chars)");
+    }
+    const { encrypted, iv, tag } = this.encrypt(token, this.encryptionKey);
+    this.config.git.encryptedPat = encrypted;
+    this.config.git.patIv = iv;
+    this.config.git.patTag = tag;
+    this.saveConfig();
+  }
+
+  async getGitPat(): Promise<string | null> {
+    if (!this.config || !this.encryptionKey) {
+      throw new Error("Config not initialized");
+    }
+    const g = this.config.git;
+    if (!g || g.authMode !== "pat") return null;
+    if (!g.encryptedPat || !g.patIv || !g.patTag) return null;
+    return this.decrypt(g.encryptedPat, this.encryptionKey, g.patIv, g.patTag);
+  }
+
+  async clearGitPat(): Promise<void> {
+    if (!this.config) {
+      throw new Error("Config not initialized");
+    }
+    if (!this.config.git) return;
+    delete this.config.git.encryptedPat;
+    delete this.config.git.patIv;
+    delete this.config.git.patTag;
     this.saveConfig();
   }
 }

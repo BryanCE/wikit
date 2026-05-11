@@ -9,6 +9,15 @@ import {
   migrateLocaleCommand,
   rebuildTreeCommand,
 } from "@/commands/pages";
+import { trackForCli } from "@/commands/pages/track";
+import { retrackForCli } from "@/commands/pages/retrack";
+import { untrackForCli } from "@/commands/pages/untrack";
+import { listTrackedForCli } from "@/commands/pages/listTracked";
+import { checkForCli } from "@/commands/pages/check";
+import { pullForCli } from "@/commands/pages/pull";
+import { commitForCli } from "@/commands/pages/commit";
+import { pushForCli } from "@/commands/pages/push";
+import { syncAllForCli } from "@/commands/pages/syncAll";
 import type { ListOptions, DeleteOptions } from "@/types";
 
 export function register(program: Command) {
@@ -98,6 +107,101 @@ export function register(program: Command) {
     .action(async (file: string, options: { withContent?: boolean }) => {
       await exportPagesCommand(file, {
         includeContent: options.withContent,
+      });
+    });
+
+  pagesCommand
+    .command("track")
+    .description("Track a wiki page against a local file")
+    .argument("<wikiPath>", "Wiki page path (e.g. altering-payments)")
+    .argument("[localFile]", "Local file relative to repo root")
+    .option("-l, --locale <locale>", "Page locale", "en")
+    .option("-y, --yes", "Skip seed prompt; auto-confirm")
+    .action(async (wikiPath: string, localFile: string | undefined, options: { locale?: string; yes?: boolean }) => {
+      await trackForCli(wikiPath, localFile, {
+        locale: options.locale,
+        yes: options.yes,
+      });
+    });
+
+  pagesCommand
+    .command("retrack")
+    .description("Rebind tracked wiki page to a different local file")
+    .argument("<wikiPath>", "Wiki page path")
+    .argument("<newLocalFile>", "New local file path relative to repo root")
+    .option("-l, --locale <locale>", "Page locale", "en")
+    .action(async (wikiPath: string, newLocalFile: string, options: { locale?: string }) => {
+      await retrackForCli(wikiPath, newLocalFile, { locale: options.locale });
+    });
+
+  pagesCommand
+    .command("untrack")
+    .description("Remove a wiki page from tracking (local file untouched)")
+    .argument("<wikiPath>", "Wiki page path")
+    .option("-l, --locale <locale>", "Page locale", "en")
+    .action(async (wikiPath: string, options: { locale?: string }) => {
+      await untrackForCli(wikiPath, { locale: options.locale });
+    });
+
+  pagesCommand
+    .command("tracked")
+    .description("List tracked pages with sync status")
+    .action(async () => {
+      await listTrackedForCli({});
+    });
+
+  pagesCommand
+    .command("check")
+    .description("Scan tracked pages for drift (read-only)")
+    .option("--details", "Print unified diff for drifted pages")
+    .option("--json", "Emit machine-readable JSON")
+    .action(async (options: { details?: boolean; json?: boolean }) => {
+      await checkForCli({ details: options.details, json: options.json });
+    });
+
+  pagesCommand
+    .command("pull")
+    .description("Pull drifted live pages into local files")
+    .argument("[wikiPaths...]", "Wiki paths to pull (omit with --all)")
+    .option("-l, --locale <locale>", "Page locale", "en")
+    .option("--dry-run", "Print diff without writing")
+    .option("--force", "Overwrite local WIP changes")
+    .option("--all", "Pull every tracked page")
+    .action(async (wikiPaths: string[], options: { locale?: string; dryRun?: boolean; force?: boolean; all?: boolean }) => {
+      await pullForCli(wikiPaths, {
+        locale: options.locale,
+        dryRun: options.dryRun,
+        force: options.force,
+        all: options.all,
+      });
+    });
+
+  pagesCommand
+    .command("commit")
+    .description("Commit staged drift changes")
+    .option("-m, --message <msg>", "Commit message (skips auto-message)")
+    .action(async (options: { message?: string }) => {
+      await commitForCli({ message: options.message });
+    });
+
+  pagesCommand
+    .command("push")
+    .description("Push tracked changes to remote (per configured auth mode)")
+    .action(async () => {
+      await pushForCli();
+    });
+
+  pagesCommand
+    .command("sync-all")
+    .description("Catch up all tracked pages: check → pull → commit → push")
+    .option("-y, --yes", "Skip confirm prompt")
+    .option("--dry-run", "Print diffs without writing")
+    .option("--skip-push", "Stop before pushing to remote")
+    .action(async (options: { yes?: boolean; dryRun?: boolean; skipPush?: boolean }) => {
+      await syncAllForCli({
+        yes: options.yes,
+        dryRun: options.dryRun,
+        skipPush: options.skipPush,
       });
     });
 }

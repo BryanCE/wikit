@@ -4,7 +4,8 @@ import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useFooterStatus } from "@/tui/contexts/FooterContext";
 import { getConfigManager, needsSetup } from "@/config/dynamicConfig";
 import { InstanceForm } from "./InstanceForm";
-import type { WikiInstance } from "@/config/configManager";
+import { GitSetupStep, type GitWizardStep } from "./GitSetupStep";
+import type { WikiInstance } from "@/config/model";
 
 interface SetupWizardProps {
   onComplete: (success: boolean, instanceId?: string) => void;
@@ -14,6 +15,7 @@ enum WizardStep {
   WELCOME = "welcome",
   FORM = "form",
   SUCCESS = "success",
+  GIT = "git",
 }
 
 export function SetupWizard({ onComplete }: SetupWizardProps) {
@@ -21,6 +23,8 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
   const [currentStep, setCurrentStep] = useState<WizardStep>(
     WizardStep.WELCOME
   );
+  const [gitStep, setGitStep] = useState<GitWizardStep>("git-prompt");
+  const [savedInstanceId, setSavedInstanceId] = useState<string | undefined>();
   const [shouldShow, setShouldShow] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
   useFooterStatus(statusMsg);
@@ -53,17 +57,21 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
       await configManager.addInstance(instance);
 
       setStatusMsg(
-        `Welcome! Instance '${instance.name}' configured successfully.`
+        `Instance '${instance.name}' saved. Continue to git setup.`
       );
-      setCurrentStep(WizardStep.SUCCESS);
-
-      // Auto-close after showing success
-      setTimeout(() => {
-        onComplete(true, instance.id);
-      }, 3000);
+      setSavedInstanceId(instance.id);
+      setCurrentStep(WizardStep.GIT);
+      setGitStep("git-prompt");
     } catch (error) {
       throw error instanceof Error ? error : new Error("Unknown error");
     }
+  };
+
+  const finishWizard = () => {
+    setCurrentStep(WizardStep.SUCCESS);
+    setTimeout(() => {
+      onComplete(true, savedInstanceId);
+    }, 2000);
   };
 
   useInput((input, key) => {
@@ -89,7 +97,6 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               Welcome to Wiki.js CLI!
             </Text>
           </Box>
-
           <Box marginBottom={1}>
             <Text color={theme.colors.text}>
               This appears to be your first time using the CLI. Let's set up
@@ -101,13 +108,11 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               Wiki.js instance to get you started.
             </Text>
           </Box>
-
           <Box marginBottom={2}>
             <Text color={theme.colors.warning}>
               You'll need your Wiki.js API URL and API key.
             </Text>
           </Box>
-
           <Box marginBottom={1}>
             <Text color={theme.colors.info}>To find your API key:</Text>
           </Box>
@@ -124,13 +129,11 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               3. Generate a new API key with appropriate permissions
             </Text>
           </Box>
-
           <Box marginTop={1}>
             <Text color={theme.colors.accent}>
               Ready to configure your first instance? (Y/n)
             </Text>
           </Box>
-
           <Box marginTop={1}>
             <Text color={theme.colors.muted}>
               Enter=continue • Esc=skip
@@ -147,7 +150,6 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               Configure Your First Wiki.js Instance
             </Text>
           </Box>
-
           <InstanceForm
             mode="add"
             onSave={handleSaveInstance}
@@ -155,6 +157,16 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             onStatusMessage={setStatusMsg}
           />
         </Box>
+      );
+
+    case WizardStep.GIT:
+      return (
+        <GitSetupStep
+          step={gitStep}
+          setStep={setGitStep}
+          onComplete={finishWizard}
+          onSkip={finishWizard}
+        />
       );
 
     case WizardStep.SUCCESS:
@@ -165,22 +177,14 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               Setup Complete!
             </Text>
           </Box>
-
           <Box marginBottom={1}>
             <Text color={theme.colors.text}>
-              Your Wiki.js instance has been configured successfully.
+              Configuration saved. You can now use all CLI and TUI features.
             </Text>
           </Box>
-
-          <Box marginBottom={1}>
-            <Text color={theme.colors.text}>
-              You can now use all CLI and TUI features.
-            </Text>
-          </Box>
-
           <Box marginTop={1}>
             <Text color={theme.colors.muted}>
-              Returning to main menu in 3 seconds...
+              Returning to main menu…
             </Text>
           </Box>
         </Box>

@@ -9,6 +9,12 @@ export const COMMANDS: Command[] = [
     quickAction: true,
   },
   {
+    name: "tracked",
+    description: "Browse tracked pages and pull drift from live",
+    category: "pages",
+    quickAction: true,
+  },
+  {
     name: "copypages",
     description: "Copy pages between instances",
     category: "pages",

@@ -3,7 +3,7 @@ import { getAvailableInstances } from "@/config/dynamicConfig";
 import { themeNames, themes } from "@/tui/theme";
 import { useTheme } from "@/tui/contexts/ThemeContext";
 import { useFooterStatus } from "@/tui/contexts/FooterContext";
-import type { AppMode } from "@/tui/AppContent";
+import type { AppMode } from "@/tui/appMode";
 
 interface UseAppCommandsOptions {
   currentInstance: string | null;
@@ -25,6 +25,9 @@ export function useAppCommands({
       switch (command) {
         case "pages":
           setCurrentMode("pages" as AppMode);
+          break;
+        case "tracked":
+          setCurrentMode("tracked" as AppMode);
           break;
         case "copypages":
           setCurrentMode("copypages" as AppMode);
@@ -102,7 +105,6 @@ export function useAppCommands({
         case "exit":
         case "quit":
           process.exit(0);
-          break;
         default:
           setStatusMsg(
             `Unknown command: /${command}. Type '/help' for available commands.`

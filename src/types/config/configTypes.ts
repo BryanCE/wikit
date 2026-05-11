@@ -1,3 +1,18 @@
+export type GitAuthMode = "gh" | "pat" | "manual";
+
+export interface GitConfig {
+  repoPath: string;
+  remote: string;
+  branch: string;
+  authMode: GitAuthMode;
+}
+
+export interface GitConfigStored extends GitConfig {
+  encryptedPat?: string;
+  patIv?: string;
+  patTag?: string;
+}
+
 export interface ConfigOptions {
   list?: boolean;
   add?: boolean;

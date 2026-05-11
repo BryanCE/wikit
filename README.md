@@ -246,6 +246,20 @@ wikit sync --config --force            # Skip confirmation
 - `--dry-run`: Show what would be synced without making changes
 - `--force`: Skip confirmation prompt
 
+### Tracking Drift in WikiFiles
+
+Pull live Wiki.js edits into a local git repo so the repo stays current when non-technical users edit pages in the wiki UI. One-way (live → local), per-page manifest, supports `gh` / PAT / manual auth.
+
+Catch up everything in one shot:
+
+```bash
+wikit pages sync-all
+```
+
+Or break it apart: `wikit pages check` to see drift, `wikit pages pull <wikiPath>` to overwrite one page, then `commit` + `push`.
+
+See [`docs/drift-tracking.md`](docs/drift-tracking.md) for setup, the full command surface, and troubleshooting.
+
 ### Interactive TUI
 
 Launch the terminal user interface:
