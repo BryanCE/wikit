@@ -44,7 +44,7 @@ async function resolveStatuses(
   repoPath: string,
   entries: TrackingEntry[]
 ): Promise<EntryStatus[]> {
-  const results: EntryStatus[] = new Array(entries.length);
+  const results: EntryStatus[] = new Array<EntryStatus>(entries.length);
   let idx = 0;
   const workers = Array.from({ length: Math.min(CONCURRENCY, entries.length) }, async () => {
     while (true) {

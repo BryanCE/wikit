@@ -24,7 +24,22 @@ interface TrackedPagesInterfaceProps {
   onTrackNew?: () => void;
 }
 
-type View = "list" | "diff";
+type View = "list" | "diff" | "actions";
+
+type ActionId = "diff" | "pull" | "commit" | "push" | "recheck";
+
+interface ActionItem {
+  id: ActionId;
+  label: string;
+}
+
+const ROW_ACTIONS: ActionItem[] = [
+  { id: "diff", label: "View diff" },
+  { id: "pull", label: "Pull (current or selected)" },
+  { id: "commit", label: "Commit staged" },
+  { id: "push", label: "Push to remote" },
+  { id: "recheck", label: "Recheck drift" },
+];
 
 function entryKey(entry: TrackingEntry): string {
   return `${entry.wikiPath}::${entry.locale}`;
@@ -39,6 +54,7 @@ export function TrackedPagesInterface({ onEsc, onTrackNew }: TrackedPagesInterfa
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [view, setView] = useState<View>("list");
+  const [actionIndex, setActionIndex] = useState(0);
   const [diffEntry, setDiffEntry] = useState<TrackingEntry | null>(null);
   const [diffLocal, setDiffLocal] = useState<string>("");
   const [diffLive, setDiffLive] = useState<string>("");
@@ -200,8 +216,29 @@ export function TrackedPagesInterface({ onEsc, onTrackNew }: TrackedPagesInterfa
     setStatusMsg(`Pushed ${outcome.remote}/${outcome.branch}.`);
   };
 
+  const runAction = (id: ActionId) => {
+    setView("list");
+    switch (id) {
+      case "diff":
+        void openDiffForFocused();
+        return;
+      case "pull":
+        void pullCurrentOrSelected();
+        return;
+      case "commit":
+        void commitStaged();
+        return;
+      case "push":
+        void pushRemote();
+        return;
+      case "recheck":
+        if (manifest) void runDriftCheck(repoPath, manifest.entries);
+        return;
+    }
+  };
+
   useEscape("tracked-pages", () => {
-    if (view === "diff") {
+    if (view === "diff" || view === "actions") {
       setView("list");
       return;
     }
@@ -211,20 +248,31 @@ export function TrackedPagesInterface({ onEsc, onTrackNew }: TrackedPagesInterfa
   useFooterHelp(
     view === "diff"
       ? formatHelpText(HELP_TEXT.NAVIGATE, "PgUp/PgDn=scroll", HELP_TEXT.BACK)
-      : formatHelpText(
-          HELP_TEXT.NAVIGATE,
-          HELP_TEXT.TOGGLE,
-          HELP_TEXT.ENTER_VIEW,
-          "p=pull",
-          "c=commit",
-          "P=push",
-          "r=recheck",
-          HELP_TEXT.BACK
-        )
+      : view === "actions"
+        ? formatHelpText(HELP_TEXT.NAVIGATE, HELP_TEXT.ENTER_SELECT, HELP_TEXT.BACK)
+        : formatHelpText(
+            HELP_TEXT.NAVIGATE,
+            HELP_TEXT.TOGGLE,
+            HELP_TEXT.ENTER_SELECT,
+            HELP_TEXT.BACK
+          )
   );
 
-  useInput(async (input, key) => {
+  useInput((input, key) => {
     if (view === "diff") return;
+
+    if (view === "actions") {
+      if (key.upArrow) {
+        setActionIndex((i) => Math.max(0, i - 1));
+      } else if (key.downArrow) {
+        setActionIndex((i) => Math.min(ROW_ACTIONS.length - 1, i + 1));
+      } else if (key.return) {
+        const action = ROW_ACTIONS[actionIndex];
+        if (action) runAction(action.id);
+      }
+      return;
+    }
+
     if (key.upArrow) setSelectedIndex((i) => Math.max(0, i - 1));
     else if (key.downArrow)
       setSelectedIndex((i) => Math.min(totalRows - 1, i + 1));
@@ -234,12 +282,8 @@ export function TrackedPagesInterface({ onEsc, onTrackNew }: TrackedPagesInterfa
         onTrackNew?.();
         return;
       }
-      await openDiffForFocused();
-    } else if (input === "p") await pullCurrentOrSelected();
-    else if (input === "c") await commitStaged();
-    else if (input === "P") await pushRemote();
-    else if (input === "r" && manifest) {
-      void runDriftCheck(repoPath, manifest.entries);
+      setActionIndex(0);
+      setView("actions");
     }
   });
 
@@ -259,6 +303,29 @@ export function TrackedPagesInterface({ onEsc, onTrackNew }: TrackedPagesInterfa
         liveContent={diffLive}
         onBack={() => setView("list")}
       />
+    );
+  }
+
+  if (view === "actions") {
+    const targetLabel = focusedEntry?.wikiPath ?? "selection";
+    return (
+      <Box flexDirection="column" paddingX={1}>
+        <Box marginBottom={1}>
+          <Text color={theme.colors.muted}>Actions for </Text>
+          <Text color={theme.colors.primary}>{targetLabel}</Text>
+        </Box>
+        {ROW_ACTIONS.map((action, i) => {
+          const focused = i === actionIndex;
+          return (
+            <Box key={action.id}>
+              <Text color={focused ? theme.colors.accent : theme.colors.text}>
+                {focused ? "› " : "  "}
+                {action.label}
+              </Text>
+            </Box>
+          );
+        })}
+      </Box>
     );
   }
 

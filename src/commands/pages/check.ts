@@ -72,7 +72,7 @@ export async function runCheck(
   repoPath: string,
   entries: TrackingEntry[]
 ): Promise<CheckResult[]> {
-  const out: CheckResult[] = new Array(entries.length);
+  const out: CheckResult[] = new Array<CheckResult>(entries.length);
   let idx = 0;
   const workers = Array.from(
     { length: Math.min(CONCURRENCY, entries.length) },

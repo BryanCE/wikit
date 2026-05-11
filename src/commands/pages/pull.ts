@@ -87,8 +87,8 @@ function selectEntries(
   locale: string,
   all: boolean | undefined
 ): TrackingEntry[] {
-  if (all || wikiPaths.length === 0) {
-    return all ? manifest.entries : [];
+  if (all === true || wikiPaths.length === 0) {
+    return all === true ? manifest.entries : [];
   }
   const picks: TrackingEntry[] = [];
   for (const wp of wikiPaths) {
