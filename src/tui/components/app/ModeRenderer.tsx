@@ -12,11 +12,13 @@ import { NavInterface } from "@comps/interfaces/navigation/NavInterface.js";
 import { UsersInterface } from "@comps/interfaces/users/UsersInterface.js";
 import { GroupsInterface } from "@comps/interfaces/groups/GroupsInterface.js";
 import { PagesInterface } from "@comps/interfaces/pages/PagesInterface.js";
+import { TrackedPagesInterface } from "@comps/interfaces/pages/TrackedPagesInterface.js";
+import { TrackPickerInterface } from "@comps/interfaces/pages/TrackPickerInterface.js";
 import { AnalysisInterface } from "@comps/interfaces/analysis/AnalysisInterface.js";
 import { ThemeSelector } from "@comps/ui/ThemeSelector.js";
 import { NoInstanceMessage } from "./NoInstanceMessage";
 import { getAvailableInstances } from "@/config/dynamicConfig";
-import { AppMode } from "@/tui/AppContent";
+import { AppMode } from "@/tui/appMode";
 
 interface ModeRendererProps {
   currentMode: AppMode;
@@ -62,6 +64,22 @@ export function ModeRenderer({
       return (
         <PagesInterface
           onEsc={handleEscape}
+        />
+      );
+
+    case AppMode.TRACKED:
+      return (
+        <TrackedPagesInterface
+          onEsc={handleEscape}
+          onTrackNew={() => setCurrentMode(AppMode.TRACK_PICKER)}
+        />
+      );
+
+    case AppMode.TRACK_PICKER:
+      return (
+        <TrackPickerInterface
+          onEsc={() => setCurrentMode(AppMode.TRACKED)}
+          onDone={() => setCurrentMode(AppMode.TRACKED)}
         />
       );
 

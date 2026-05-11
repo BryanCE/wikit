@@ -12,26 +12,12 @@ import { Footer } from "@comps/ui/Footer.js";
 import { Header } from "@comps/ui/Header";
 import { COMMON_HELP_PATTERNS, formatHelpText, HELP_TEXT } from "@/tui/constants/keyboard";
 import { InstanceContext } from "@/contexts/InstanceContext";
+import { AppMode } from "@/tui/appMode";
+
+export { AppMode };
 
 interface AppProps {
   instance?: string;
-}
-
-export enum AppMode {
-  COMMAND = "command",
-  PAGES = "pages",
-  COPY_PAGES = "copypages",
-  COMPARE = "compare",
-  STATUS = "status",
-  SYNC = "sync",
-  CONFIG = "config",
-  NAVIGATION = "navigation",
-  USERS = "users",
-  GROUPS = "groups",
-  EXPORTS = "exports",
-  SETUP = "setup",
-  HELP = "help",
-  THEME = "theme",
 }
 
 export function AppContent({ instance: initialInstance }: AppProps) {
