@@ -40,9 +40,11 @@
   },
   "scripts": {
     "dev": "bun run src/index.ts",
-    "tsc": "tsc --noEmit",
-    "lint": "eslint src",
-    "check": "tsc --noEmit && eslint src",
+    "typecheck": "bunx tsgo --noEmit",
+    "typecheckold": "tsc --noEmit",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "check": "oxlint . && bunx tsgo --noEmit",
     "build": "tsc && bunx tsc-alias -p tsconfig.json --resolve-full-paths",
     "start": "node dist/index.js",
     "prepublishOnly": "bun run build"
